@@ -1,5 +1,7 @@
 # Unifi Go SDK [![GoDoc](https://godoc.org/github.com/paultyng/go-unifi?status.svg)](https://godoc.org/github.com/paultyng/go-unifi)
 
+This was written primary for use in my [Terraform provider for Unifi](https://github.com/paultyng/terraform-provider-unifi).
+
 ## Note on Code Generation
 
 The data models and basic REST methods are "generated" from JSON files in the JAR that show all fields and the associated regex/validation information.
