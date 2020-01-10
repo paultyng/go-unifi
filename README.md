@@ -1,4 +1,4 @@
-# Unifi Go SDK
+# Unifi Go SDK [![GoDoc](https://godoc.org/github.com/paultyng/go-unifi?status.svg)](https://godoc.org/github.com/paultyng/go-unifi)
 
 ## Note on Code Generation
 
