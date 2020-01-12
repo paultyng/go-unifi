@@ -29,7 +29,7 @@ type PortConf struct {
 	LldpmedEnabled               bool     `json:"lldpmed_enabled"`
 	LldpmedNotifyEnabled         bool     `json:"lldpmed_notify_enabled"`
 	Name                         string   `json:"name,omitempty"`
-	NATiveNetworkconfID          string   `json:"native_networkconf_id"`
+	NATiveNetworkID              string   `json:"native_networkconf_id"`
 	OpMode                       string   `json:"op_mode,omitempty"`  // switch
 	PoeMode                      string   `json:"poe_mode,omitempty"` // auto|pasv24|passthrough|off
 	PortSecurityEnabled          bool     `json:"port_security_enabled"`
@@ -50,8 +50,8 @@ type PortConf struct {
 	StormctrlUcastLevel          int      `json:"stormctrl_ucast_level,omitempty"` // [0-9]|[1-9][0-9]|100
 	StormctrlUcastRate           int      `json:"stormctrl_ucast_rate,omitempty"`  // [0-9]|[1-9][0-9]{1,6}|1[0-3][0-9]{6}|14[0-7][0-9]{5}|148[0-7][0-9]{4}|14880000
 	StpPortMode                  bool     `json:"stp_port_mode"`
-	TaggedNetworkconfIDs         []string `json:"tagged_networkconf_ids,omitempty"`
-	VoiceNetworkconfID           string   `json:"voice_networkconf_id"`
+	TaggedNetworkIDs             []string `json:"tagged_networkconf_ids,omitempty"`
+	VoiceNetworkID               string   `json:"voice_networkconf_id"`
 }
 
 func (c *Client) listPortConf(site string) ([]PortConf, error) {

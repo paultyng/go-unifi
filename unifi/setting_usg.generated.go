@@ -45,7 +45,7 @@ type SettingUsg struct {
 	GeoIPFilteringTrafficDirection string `json:"geo_ip_filtering_traffic_direction,omitempty"` // ^(both|ingress|egress)$
 	GreModule                      bool   `json:"gre_module"`
 	H323Module                     bool   `json:"h323_module"`
-	IcmpTimeout                    int    `json:"icmp_timeout,omitempty"`
+	ICMPTimeout                    int    `json:"icmp_timeout,omitempty"`
 	LldpEnableAll                  bool   `json:"lldp_enable_all"`
 	MdnsEnabled                    bool   `json:"mdns_enabled"`
 	MssClamp                       string `json:"mss_clamp,omitempty"`     // auto|custom|disabled
