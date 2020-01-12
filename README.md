@@ -2,6 +2,10 @@
 
 This was written primary for use in my [Terraform provider for Unifi](https://github.com/paultyng/terraform-provider-unifi).
 
+## Versioning
+
+Many of the naming adjustments are breaking changes, but to simplify things, treating naming errors as minor changes for the 1.0.0 version (probably should have just started at 0.1.0).
+
 ## Note on Code Generation
 
 The data models and basic REST methods are "generated" from JSON files in the JAR that show all fields and the associated regex/validation information.
