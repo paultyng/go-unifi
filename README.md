@@ -1,6 +1,6 @@
 # Unifi Go SDK [![GoDoc](https://godoc.org/github.com/paultyng/go-unifi?status.svg)](https://godoc.org/github.com/paultyng/go-unifi)
 
-This was written primary for use in my [Terraform provider for Unifi](https://github.com/paultyng/terraform-provider-unifi).
+This was written primarily for use in my [Terraform provider for Unifi](https://github.com/paultyng/terraform-provider-unifi).
 
 ## Versioning
 
