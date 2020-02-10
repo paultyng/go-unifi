@@ -5,26 +5,39 @@ import (
 	"fmt"
 )
 
-func (n *Network) UnmarshalJSON(b []byte) error {
+func (dst *Network) UnmarshalJSON(b []byte) error {
 	type Alias Network
 	aux := &struct {
-		VLAN json.Number `json:"vlan"`
+		VLAN           json.Number `json:"vlan"`
+		DHCPDLeaseTime json.Number `json:"dhcpd_leasetime"`
+
 		*Alias
 	}{
-		Alias: (*Alias)(n),
+		Alias: (*Alias)(dst),
 	}
 	err := json.Unmarshal(b, &aux)
 	if err != nil {
 		return err
 	}
-	n.VLAN = 0
+
+	dst.VLAN = 0
 	if aux.VLAN.String() != "" {
-		vlan, err := aux.VLAN.Int64()
+		n, err := aux.VLAN.Int64()
 		if err != nil {
 			return err
 		}
-		n.VLAN = int(vlan)
+		dst.VLAN = int(n)
 	}
+
+	dst.DHCPDLeaseTime = 0
+	if aux.DHCPDLeaseTime.String() != "" {
+		n, err := aux.DHCPDLeaseTime.Int64()
+		if err != nil {
+			return err
+		}
+		dst.DHCPDLeaseTime = int(n)
+	}
+
 	return nil
 }
 
