@@ -2,6 +2,9 @@ package unifi
 
 import "fmt"
 
+// GetUserByMAC returns slightly different information than GetUser, as they
+// use separate endpoints for their lookups. Specifically IP is only returned
+// by this method.
 func (c *Client) GetUserByMAC(site, mac string) (*User, error) {
 	var respBody struct {
 		Meta meta   `json:"meta"`
@@ -129,6 +132,9 @@ func (c *Client) ListUser(site string) ([]User, error) {
 	return c.listUser(site)
 }
 
+// GetUser returns information about a user from the REST endpoint.
+// The GetUserByMAC method returns slightly different information (for
+// example the IP) as it uses a different endpoint.
 func (c *Client) GetUser(site, id string) (*User, error) {
 	return c.getUser(site, id)
 }

@@ -204,6 +204,11 @@ type %s struct {
 		code += fieldCode + "\n"
 	}
 
+	switch structName {
+	case "User":
+		code += "\t// non-generated fields\n\tIP string `json:\"ip,omitempty\"`\n"
+	}
+
 	code = code + "}\n"
 
 	if strings.HasPrefix(structName, "Setting") {

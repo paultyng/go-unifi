@@ -29,6 +29,8 @@ type User struct {
 	Note        string `json:"note,omitempty"`
 	UseFixedIP  bool   `json:"use_fixedip"`
 	UserGroupID string `json:"usergroup_id"`
+	// non-generated fields
+	IP string `json:"ip,omitempty"`
 }
 
 func (c *Client) listUser(site string) ([]User, error) {
