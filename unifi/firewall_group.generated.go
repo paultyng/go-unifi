@@ -4,11 +4,15 @@
 package unifi
 
 import (
+	"context"
 	"fmt"
 )
 
 // just to fix compile issues with the import
-var _ fmt.Formatter
+var (
+	_ fmt.Formatter
+	_ context.Context
+)
 
 type FirewallGroup struct {
 	ID     string `json:"_id,omitempty"`
@@ -24,13 +28,13 @@ type FirewallGroup struct {
 	Name         string   `json:"name,omitempty"`       // .{1,64}
 }
 
-func (c *Client) listFirewallGroup(site string) ([]FirewallGroup, error) {
+func (c *Client) listFirewallGroup(ctx context.Context, site string) ([]FirewallGroup, error) {
 	var respBody struct {
 		Meta meta            `json:"meta"`
 		Data []FirewallGroup `json:"data"`
 	}
 
-	err := c.do("GET", fmt.Sprintf("s/%s/rest/firewallgroup", site), nil, &respBody)
+	err := c.do(ctx, "GET", fmt.Sprintf("s/%s/rest/firewallgroup", site), nil, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -38,13 +42,13 @@ func (c *Client) listFirewallGroup(site string) ([]FirewallGroup, error) {
 	return respBody.Data, nil
 }
 
-func (c *Client) getFirewallGroup(site, id string) (*FirewallGroup, error) {
+func (c *Client) getFirewallGroup(ctx context.Context, site, id string) (*FirewallGroup, error) {
 	var respBody struct {
 		Meta meta            `json:"meta"`
 		Data []FirewallGroup `json:"data"`
 	}
 
-	err := c.do("GET", fmt.Sprintf("s/%s/rest/firewallgroup/%s", site, id), nil, &respBody)
+	err := c.do(ctx, "GET", fmt.Sprintf("s/%s/rest/firewallgroup/%s", site, id), nil, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -57,21 +61,21 @@ func (c *Client) getFirewallGroup(site, id string) (*FirewallGroup, error) {
 	return &d, nil
 }
 
-func (c *Client) deleteFirewallGroup(site, id string) error {
-	err := c.do("DELETE", fmt.Sprintf("s/%s/rest/firewallgroup/%s", site, id), struct{}{}, nil)
+func (c *Client) deleteFirewallGroup(ctx context.Context, site, id string) error {
+	err := c.do(ctx, "DELETE", fmt.Sprintf("s/%s/rest/firewallgroup/%s", site, id), struct{}{}, nil)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (c *Client) createFirewallGroup(site string, d *FirewallGroup) (*FirewallGroup, error) {
+func (c *Client) createFirewallGroup(ctx context.Context, site string, d *FirewallGroup) (*FirewallGroup, error) {
 	var respBody struct {
 		Meta meta            `json:"meta"`
 		Data []FirewallGroup `json:"data"`
 	}
 
-	err := c.do("POST", fmt.Sprintf("s/%s/rest/firewallgroup", site), d, &respBody)
+	err := c.do(ctx, "POST", fmt.Sprintf("s/%s/rest/firewallgroup", site), d, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -85,13 +89,13 @@ func (c *Client) createFirewallGroup(site string, d *FirewallGroup) (*FirewallGr
 	return &new, nil
 }
 
-func (c *Client) updateFirewallGroup(site string, d *FirewallGroup) (*FirewallGroup, error) {
+func (c *Client) updateFirewallGroup(ctx context.Context, site string, d *FirewallGroup) (*FirewallGroup, error) {
 	var respBody struct {
 		Meta meta            `json:"meta"`
 		Data []FirewallGroup `json:"data"`
 	}
 
-	err := c.do("PUT", fmt.Sprintf("s/%s/rest/firewallgroup/%s", site, d.ID), d, &respBody)
+	err := c.do(ctx, "PUT", fmt.Sprintf("s/%s/rest/firewallgroup/%s", site, d.ID), d, &respBody)
 	if err != nil {
 		return nil, err
 	}

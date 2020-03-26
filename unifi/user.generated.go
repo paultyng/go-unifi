@@ -4,11 +4,15 @@
 package unifi
 
 import (
+	"context"
 	"fmt"
 )
 
 // just to fix compile issues with the import
-var _ fmt.Formatter
+var (
+	_ fmt.Formatter
+	_ context.Context
+)
 
 type User struct {
 	ID     string `json:"_id,omitempty"`
@@ -33,13 +37,13 @@ type User struct {
 	IP string `json:"ip,omitempty"`
 }
 
-func (c *Client) listUser(site string) ([]User, error) {
+func (c *Client) listUser(ctx context.Context, site string) ([]User, error) {
 	var respBody struct {
 		Meta meta   `json:"meta"`
 		Data []User `json:"data"`
 	}
 
-	err := c.do("GET", fmt.Sprintf("s/%s/rest/user", site), nil, &respBody)
+	err := c.do(ctx, "GET", fmt.Sprintf("s/%s/rest/user", site), nil, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -47,13 +51,13 @@ func (c *Client) listUser(site string) ([]User, error) {
 	return respBody.Data, nil
 }
 
-func (c *Client) getUser(site, id string) (*User, error) {
+func (c *Client) getUser(ctx context.Context, site, id string) (*User, error) {
 	var respBody struct {
 		Meta meta   `json:"meta"`
 		Data []User `json:"data"`
 	}
 
-	err := c.do("GET", fmt.Sprintf("s/%s/rest/user/%s", site, id), nil, &respBody)
+	err := c.do(ctx, "GET", fmt.Sprintf("s/%s/rest/user/%s", site, id), nil, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -66,21 +70,21 @@ func (c *Client) getUser(site, id string) (*User, error) {
 	return &d, nil
 }
 
-func (c *Client) deleteUser(site, id string) error {
-	err := c.do("DELETE", fmt.Sprintf("s/%s/rest/user/%s", site, id), struct{}{}, nil)
+func (c *Client) deleteUser(ctx context.Context, site, id string) error {
+	err := c.do(ctx, "DELETE", fmt.Sprintf("s/%s/rest/user/%s", site, id), struct{}{}, nil)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (c *Client) createUser(site string, d *User) (*User, error) {
+func (c *Client) createUser(ctx context.Context, site string, d *User) (*User, error) {
 	var respBody struct {
 		Meta meta   `json:"meta"`
 		Data []User `json:"data"`
 	}
 
-	err := c.do("POST", fmt.Sprintf("s/%s/rest/user", site), d, &respBody)
+	err := c.do(ctx, "POST", fmt.Sprintf("s/%s/rest/user", site), d, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -94,13 +98,13 @@ func (c *Client) createUser(site string, d *User) (*User, error) {
 	return &new, nil
 }
 
-func (c *Client) updateUser(site string, d *User) (*User, error) {
+func (c *Client) updateUser(ctx context.Context, site string, d *User) (*User, error) {
 	var respBody struct {
 		Meta meta   `json:"meta"`
 		Data []User `json:"data"`
 	}
 
-	err := c.do("PUT", fmt.Sprintf("s/%s/rest/user/%s", site, d.ID), d, &respBody)
+	err := c.do(ctx, "PUT", fmt.Sprintf("s/%s/rest/user/%s", site, d.ID), d, &respBody)
 	if err != nil {
 		return nil, err
 	}

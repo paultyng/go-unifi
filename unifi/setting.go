@@ -1,8 +1,10 @@
 package unifi
 
-import "fmt"
-
-import "encoding/json"
+import (
+	"context"
+	"encoding/json"
+	"fmt"
+)
 
 type Setting struct {
 	ID     string `json:"_id,omitempty"`
@@ -77,13 +79,13 @@ func (s *Setting) newFields() (interface{}, error) {
 	return nil, fmt.Errorf("unexpected key %q", s.Key)
 }
 
-func (c *Client) GetSetting(site, key string) (*Setting, interface{}, error) {
+func (c *Client) GetSetting(ctx context.Context, site, key string) (*Setting, interface{}, error) {
 	var respBody struct {
 		Meta meta              `json:"meta"`
 		Data []json.RawMessage `json:"data"`
 	}
 
-	err := c.do("GET", fmt.Sprintf("s/%s/get/setting", site), nil, &respBody)
+	err := c.do(ctx, "GET", fmt.Sprintf("s/%s/get/setting", site), nil, &respBody)
 	if err != nil {
 		return nil, nil, err
 	}

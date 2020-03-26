@@ -4,11 +4,15 @@
 package unifi
 
 import (
+	"context"
 	"fmt"
 )
 
 // just to fix compile issues with the import
-var _ fmt.Formatter
+var (
+	_ fmt.Formatter
+	_ context.Context
+)
 
 type DHCPOption struct {
 	ID     string `json:"_id,omitempty"`
@@ -26,13 +30,13 @@ type DHCPOption struct {
 	Width  int    `json:"width,omitempty"` // ^(8|16|32)$
 }
 
-func (c *Client) listDHCPOption(site string) ([]DHCPOption, error) {
+func (c *Client) listDHCPOption(ctx context.Context, site string) ([]DHCPOption, error) {
 	var respBody struct {
 		Meta meta         `json:"meta"`
 		Data []DHCPOption `json:"data"`
 	}
 
-	err := c.do("GET", fmt.Sprintf("s/%s/rest/dhcpoption", site), nil, &respBody)
+	err := c.do(ctx, "GET", fmt.Sprintf("s/%s/rest/dhcpoption", site), nil, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -40,13 +44,13 @@ func (c *Client) listDHCPOption(site string) ([]DHCPOption, error) {
 	return respBody.Data, nil
 }
 
-func (c *Client) getDHCPOption(site, id string) (*DHCPOption, error) {
+func (c *Client) getDHCPOption(ctx context.Context, site, id string) (*DHCPOption, error) {
 	var respBody struct {
 		Meta meta         `json:"meta"`
 		Data []DHCPOption `json:"data"`
 	}
 
-	err := c.do("GET", fmt.Sprintf("s/%s/rest/dhcpoption/%s", site, id), nil, &respBody)
+	err := c.do(ctx, "GET", fmt.Sprintf("s/%s/rest/dhcpoption/%s", site, id), nil, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -59,21 +63,21 @@ func (c *Client) getDHCPOption(site, id string) (*DHCPOption, error) {
 	return &d, nil
 }
 
-func (c *Client) deleteDHCPOption(site, id string) error {
-	err := c.do("DELETE", fmt.Sprintf("s/%s/rest/dhcpoption/%s", site, id), struct{}{}, nil)
+func (c *Client) deleteDHCPOption(ctx context.Context, site, id string) error {
+	err := c.do(ctx, "DELETE", fmt.Sprintf("s/%s/rest/dhcpoption/%s", site, id), struct{}{}, nil)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (c *Client) createDHCPOption(site string, d *DHCPOption) (*DHCPOption, error) {
+func (c *Client) createDHCPOption(ctx context.Context, site string, d *DHCPOption) (*DHCPOption, error) {
 	var respBody struct {
 		Meta meta         `json:"meta"`
 		Data []DHCPOption `json:"data"`
 	}
 
-	err := c.do("POST", fmt.Sprintf("s/%s/rest/dhcpoption", site), d, &respBody)
+	err := c.do(ctx, "POST", fmt.Sprintf("s/%s/rest/dhcpoption", site), d, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -87,13 +91,13 @@ func (c *Client) createDHCPOption(site string, d *DHCPOption) (*DHCPOption, erro
 	return &new, nil
 }
 
-func (c *Client) updateDHCPOption(site string, d *DHCPOption) (*DHCPOption, error) {
+func (c *Client) updateDHCPOption(ctx context.Context, site string, d *DHCPOption) (*DHCPOption, error) {
 	var respBody struct {
 		Meta meta         `json:"meta"`
 		Data []DHCPOption `json:"data"`
 	}
 
-	err := c.do("PUT", fmt.Sprintf("s/%s/rest/dhcpoption/%s", site, d.ID), d, &respBody)
+	err := c.do(ctx, "PUT", fmt.Sprintf("s/%s/rest/dhcpoption/%s", site, d.ID), d, &respBody)
 	if err != nil {
 		return nil, err
 	}

@@ -4,11 +4,15 @@
 package unifi
 
 import (
+	"context"
 	"fmt"
 )
 
 // just to fix compile issues with the import
-var _ fmt.Formatter
+var (
+	_ fmt.Formatter
+	_ context.Context
+)
 
 type DpiApp struct {
 	ID     string `json:"_id,omitempty"`
@@ -29,13 +33,13 @@ type DpiApp struct {
 	QOSRateMaxUp   int    `json:"qos_rate_max_up,omitempty"`   // -1|[2-9]|[1-9][0-9]{1,4}|100000|10[0-1][0-9]{3}|102[0-3][0-9]{2}|102400
 }
 
-func (c *Client) listDpiApp(site string) ([]DpiApp, error) {
+func (c *Client) listDpiApp(ctx context.Context, site string) ([]DpiApp, error) {
 	var respBody struct {
 		Meta meta     `json:"meta"`
 		Data []DpiApp `json:"data"`
 	}
 
-	err := c.do("GET", fmt.Sprintf("s/%s/rest/dpiapp", site), nil, &respBody)
+	err := c.do(ctx, "GET", fmt.Sprintf("s/%s/rest/dpiapp", site), nil, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -43,13 +47,13 @@ func (c *Client) listDpiApp(site string) ([]DpiApp, error) {
 	return respBody.Data, nil
 }
 
-func (c *Client) getDpiApp(site, id string) (*DpiApp, error) {
+func (c *Client) getDpiApp(ctx context.Context, site, id string) (*DpiApp, error) {
 	var respBody struct {
 		Meta meta     `json:"meta"`
 		Data []DpiApp `json:"data"`
 	}
 
-	err := c.do("GET", fmt.Sprintf("s/%s/rest/dpiapp/%s", site, id), nil, &respBody)
+	err := c.do(ctx, "GET", fmt.Sprintf("s/%s/rest/dpiapp/%s", site, id), nil, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -62,21 +66,21 @@ func (c *Client) getDpiApp(site, id string) (*DpiApp, error) {
 	return &d, nil
 }
 
-func (c *Client) deleteDpiApp(site, id string) error {
-	err := c.do("DELETE", fmt.Sprintf("s/%s/rest/dpiapp/%s", site, id), struct{}{}, nil)
+func (c *Client) deleteDpiApp(ctx context.Context, site, id string) error {
+	err := c.do(ctx, "DELETE", fmt.Sprintf("s/%s/rest/dpiapp/%s", site, id), struct{}{}, nil)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (c *Client) createDpiApp(site string, d *DpiApp) (*DpiApp, error) {
+func (c *Client) createDpiApp(ctx context.Context, site string, d *DpiApp) (*DpiApp, error) {
 	var respBody struct {
 		Meta meta     `json:"meta"`
 		Data []DpiApp `json:"data"`
 	}
 
-	err := c.do("POST", fmt.Sprintf("s/%s/rest/dpiapp", site), d, &respBody)
+	err := c.do(ctx, "POST", fmt.Sprintf("s/%s/rest/dpiapp", site), d, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -90,13 +94,13 @@ func (c *Client) createDpiApp(site string, d *DpiApp) (*DpiApp, error) {
 	return &new, nil
 }
 
-func (c *Client) updateDpiApp(site string, d *DpiApp) (*DpiApp, error) {
+func (c *Client) updateDpiApp(ctx context.Context, site string, d *DpiApp) (*DpiApp, error) {
 	var respBody struct {
 		Meta meta     `json:"meta"`
 		Data []DpiApp `json:"data"`
 	}
 
-	err := c.do("PUT", fmt.Sprintf("s/%s/rest/dpiapp/%s", site, d.ID), d, &respBody)
+	err := c.do(ctx, "PUT", fmt.Sprintf("s/%s/rest/dpiapp/%s", site, d.ID), d, &respBody)
 	if err != nil {
 		return nil, err
 	}

@@ -4,11 +4,15 @@
 package unifi
 
 import (
+	"context"
 	"fmt"
 )
 
 // just to fix compile issues with the import
-var _ fmt.Formatter
+var (
+	_ fmt.Formatter
+	_ context.Context
+)
 
 type Map struct {
 	ID     string `json:"_id,omitempty"`
@@ -34,13 +38,13 @@ type Map struct {
 	Zoom       int     `json:"zoom,omitempty"`
 }
 
-func (c *Client) listMap(site string) ([]Map, error) {
+func (c *Client) listMap(ctx context.Context, site string) ([]Map, error) {
 	var respBody struct {
 		Meta meta  `json:"meta"`
 		Data []Map `json:"data"`
 	}
 
-	err := c.do("GET", fmt.Sprintf("s/%s/rest/map", site), nil, &respBody)
+	err := c.do(ctx, "GET", fmt.Sprintf("s/%s/rest/map", site), nil, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -48,13 +52,13 @@ func (c *Client) listMap(site string) ([]Map, error) {
 	return respBody.Data, nil
 }
 
-func (c *Client) getMap(site, id string) (*Map, error) {
+func (c *Client) getMap(ctx context.Context, site, id string) (*Map, error) {
 	var respBody struct {
 		Meta meta  `json:"meta"`
 		Data []Map `json:"data"`
 	}
 
-	err := c.do("GET", fmt.Sprintf("s/%s/rest/map/%s", site, id), nil, &respBody)
+	err := c.do(ctx, "GET", fmt.Sprintf("s/%s/rest/map/%s", site, id), nil, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -67,21 +71,21 @@ func (c *Client) getMap(site, id string) (*Map, error) {
 	return &d, nil
 }
 
-func (c *Client) deleteMap(site, id string) error {
-	err := c.do("DELETE", fmt.Sprintf("s/%s/rest/map/%s", site, id), struct{}{}, nil)
+func (c *Client) deleteMap(ctx context.Context, site, id string) error {
+	err := c.do(ctx, "DELETE", fmt.Sprintf("s/%s/rest/map/%s", site, id), struct{}{}, nil)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (c *Client) createMap(site string, d *Map) (*Map, error) {
+func (c *Client) createMap(ctx context.Context, site string, d *Map) (*Map, error) {
 	var respBody struct {
 		Meta meta  `json:"meta"`
 		Data []Map `json:"data"`
 	}
 
-	err := c.do("POST", fmt.Sprintf("s/%s/rest/map", site), d, &respBody)
+	err := c.do(ctx, "POST", fmt.Sprintf("s/%s/rest/map", site), d, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -95,13 +99,13 @@ func (c *Client) createMap(site string, d *Map) (*Map, error) {
 	return &new, nil
 }
 
-func (c *Client) updateMap(site string, d *Map) (*Map, error) {
+func (c *Client) updateMap(ctx context.Context, site string, d *Map) (*Map, error) {
 	var respBody struct {
 		Meta meta  `json:"meta"`
 		Data []Map `json:"data"`
 	}
 
-	err := c.do("PUT", fmt.Sprintf("s/%s/rest/map/%s", site, d.ID), d, &respBody)
+	err := c.do(ctx, "PUT", fmt.Sprintf("s/%s/rest/map/%s", site, d.ID), d, &respBody)
 	if err != nil {
 		return nil, err
 	}

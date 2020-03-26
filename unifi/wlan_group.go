@@ -1,6 +1,9 @@
 package unifi
 
-import "encoding/json"
+import (
+	"context"
+	"encoding/json"
+)
 
 func (n *WLANGroup) UnmarshalJSON(b []byte) error {
 	type Alias WLANGroup
@@ -25,22 +28,22 @@ func (n *WLANGroup) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-func (c *Client) ListWLANGroup(site string) ([]WLANGroup, error) {
-	return c.listWLANGroup(site)
+func (c *Client) ListWLANGroup(ctx context.Context, site string) ([]WLANGroup, error) {
+	return c.listWLANGroup(ctx, site)
 }
 
-func (c *Client) GetWLANGroup(site, id string) (*WLANGroup, error) {
-	return c.getWLANGroup(site, id)
+func (c *Client) GetWLANGroup(ctx context.Context, site, id string) (*WLANGroup, error) {
+	return c.getWLANGroup(ctx, site, id)
 }
 
-func (c *Client) DeleteWLANGroup(site, id string) error {
-	return c.deleteWLANGroup(site, id)
+func (c *Client) DeleteWLANGroup(ctx context.Context, site, id string) error {
+	return c.deleteWLANGroup(ctx, site, id)
 }
 
-func (c *Client) CreateWLANGroup(site string, d *WLANGroup) (*WLANGroup, error) {
-	return c.createWLANGroup(site, d)
+func (c *Client) CreateWLANGroup(ctx context.Context, site string, d *WLANGroup) (*WLANGroup, error) {
+	return c.createWLANGroup(ctx, site, d)
 }
 
-func (c *Client) UpdateWLANGroup(site string, d *WLANGroup) (*WLANGroup, error) {
-	return c.updateWLANGroup(site, d)
+func (c *Client) UpdateWLANGroup(ctx context.Context, site string, d *WLANGroup) (*WLANGroup, error) {
+	return c.updateWLANGroup(ctx, site, d)
 }

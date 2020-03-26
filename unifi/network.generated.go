@@ -4,11 +4,15 @@
 package unifi
 
 import (
+	"context"
 	"fmt"
 )
 
 // just to fix compile issues with the import
-var _ fmt.Formatter
+var (
+	_ fmt.Formatter
+	_ context.Context
+)
 
 type Network struct {
 	ID     string `json:"_id,omitempty"`
@@ -157,13 +161,13 @@ type Network struct {
 	XWANPassword            string   `json:"x_wan_password,omitempty"`              // [^"' ]+
 }
 
-func (c *Client) listNetwork(site string) ([]Network, error) {
+func (c *Client) listNetwork(ctx context.Context, site string) ([]Network, error) {
 	var respBody struct {
 		Meta meta      `json:"meta"`
 		Data []Network `json:"data"`
 	}
 
-	err := c.do("GET", fmt.Sprintf("s/%s/rest/networkconf", site), nil, &respBody)
+	err := c.do(ctx, "GET", fmt.Sprintf("s/%s/rest/networkconf", site), nil, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -171,13 +175,13 @@ func (c *Client) listNetwork(site string) ([]Network, error) {
 	return respBody.Data, nil
 }
 
-func (c *Client) getNetwork(site, id string) (*Network, error) {
+func (c *Client) getNetwork(ctx context.Context, site, id string) (*Network, error) {
 	var respBody struct {
 		Meta meta      `json:"meta"`
 		Data []Network `json:"data"`
 	}
 
-	err := c.do("GET", fmt.Sprintf("s/%s/rest/networkconf/%s", site, id), nil, &respBody)
+	err := c.do(ctx, "GET", fmt.Sprintf("s/%s/rest/networkconf/%s", site, id), nil, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -190,21 +194,21 @@ func (c *Client) getNetwork(site, id string) (*Network, error) {
 	return &d, nil
 }
 
-func (c *Client) deleteNetwork(site, id string) error {
-	err := c.do("DELETE", fmt.Sprintf("s/%s/rest/networkconf/%s", site, id), struct{}{}, nil)
+func (c *Client) deleteNetwork(ctx context.Context, site, id string) error {
+	err := c.do(ctx, "DELETE", fmt.Sprintf("s/%s/rest/networkconf/%s", site, id), struct{}{}, nil)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (c *Client) createNetwork(site string, d *Network) (*Network, error) {
+func (c *Client) createNetwork(ctx context.Context, site string, d *Network) (*Network, error) {
 	var respBody struct {
 		Meta meta      `json:"meta"`
 		Data []Network `json:"data"`
 	}
 
-	err := c.do("POST", fmt.Sprintf("s/%s/rest/networkconf", site), d, &respBody)
+	err := c.do(ctx, "POST", fmt.Sprintf("s/%s/rest/networkconf", site), d, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -218,13 +222,13 @@ func (c *Client) createNetwork(site string, d *Network) (*Network, error) {
 	return &new, nil
 }
 
-func (c *Client) updateNetwork(site string, d *Network) (*Network, error) {
+func (c *Client) updateNetwork(ctx context.Context, site string, d *Network) (*Network, error) {
 	var respBody struct {
 		Meta meta      `json:"meta"`
 		Data []Network `json:"data"`
 	}
 
-	err := c.do("PUT", fmt.Sprintf("s/%s/rest/networkconf/%s", site, d.ID), d, &respBody)
+	err := c.do(ctx, "PUT", fmt.Sprintf("s/%s/rest/networkconf/%s", site, d.ID), d, &respBody)
 	if err != nil {
 		return nil, err
 	}

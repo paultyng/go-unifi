@@ -4,11 +4,15 @@
 package unifi
 
 import (
+	"context"
 	"fmt"
 )
 
 // just to fix compile issues with the import
-var _ fmt.Formatter
+var (
+	_ fmt.Formatter
+	_ context.Context
+)
 
 type DynamicDNS struct {
 	ID     string `json:"_id,omitempty"`
@@ -29,13 +33,13 @@ type DynamicDNS struct {
 	XPassword     string   `json:"x_password,omitempty"`     // ^[^"' ]+$
 }
 
-func (c *Client) listDynamicDNS(site string) ([]DynamicDNS, error) {
+func (c *Client) listDynamicDNS(ctx context.Context, site string) ([]DynamicDNS, error) {
 	var respBody struct {
 		Meta meta         `json:"meta"`
 		Data []DynamicDNS `json:"data"`
 	}
 
-	err := c.do("GET", fmt.Sprintf("s/%s/rest/dynamicdns", site), nil, &respBody)
+	err := c.do(ctx, "GET", fmt.Sprintf("s/%s/rest/dynamicdns", site), nil, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -43,13 +47,13 @@ func (c *Client) listDynamicDNS(site string) ([]DynamicDNS, error) {
 	return respBody.Data, nil
 }
 
-func (c *Client) getDynamicDNS(site, id string) (*DynamicDNS, error) {
+func (c *Client) getDynamicDNS(ctx context.Context, site, id string) (*DynamicDNS, error) {
 	var respBody struct {
 		Meta meta         `json:"meta"`
 		Data []DynamicDNS `json:"data"`
 	}
 
-	err := c.do("GET", fmt.Sprintf("s/%s/rest/dynamicdns/%s", site, id), nil, &respBody)
+	err := c.do(ctx, "GET", fmt.Sprintf("s/%s/rest/dynamicdns/%s", site, id), nil, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -62,21 +66,21 @@ func (c *Client) getDynamicDNS(site, id string) (*DynamicDNS, error) {
 	return &d, nil
 }
 
-func (c *Client) deleteDynamicDNS(site, id string) error {
-	err := c.do("DELETE", fmt.Sprintf("s/%s/rest/dynamicdns/%s", site, id), struct{}{}, nil)
+func (c *Client) deleteDynamicDNS(ctx context.Context, site, id string) error {
+	err := c.do(ctx, "DELETE", fmt.Sprintf("s/%s/rest/dynamicdns/%s", site, id), struct{}{}, nil)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (c *Client) createDynamicDNS(site string, d *DynamicDNS) (*DynamicDNS, error) {
+func (c *Client) createDynamicDNS(ctx context.Context, site string, d *DynamicDNS) (*DynamicDNS, error) {
 	var respBody struct {
 		Meta meta         `json:"meta"`
 		Data []DynamicDNS `json:"data"`
 	}
 
-	err := c.do("POST", fmt.Sprintf("s/%s/rest/dynamicdns", site), d, &respBody)
+	err := c.do(ctx, "POST", fmt.Sprintf("s/%s/rest/dynamicdns", site), d, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -90,13 +94,13 @@ func (c *Client) createDynamicDNS(site string, d *DynamicDNS) (*DynamicDNS, erro
 	return &new, nil
 }
 
-func (c *Client) updateDynamicDNS(site string, d *DynamicDNS) (*DynamicDNS, error) {
+func (c *Client) updateDynamicDNS(ctx context.Context, site string, d *DynamicDNS) (*DynamicDNS, error) {
 	var respBody struct {
 		Meta meta         `json:"meta"`
 		Data []DynamicDNS `json:"data"`
 	}
 
-	err := c.do("PUT", fmt.Sprintf("s/%s/rest/dynamicdns/%s", site, d.ID), d, &respBody)
+	err := c.do(ctx, "PUT", fmt.Sprintf("s/%s/rest/dynamicdns/%s", site, d.ID), d, &respBody)
 	if err != nil {
 		return nil, err
 	}

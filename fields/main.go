@@ -156,11 +156,15 @@ func generateCode(fieldsFile string, structName string, urlPath string) (string,
 package unifi
 
 import (
+	"context"
 	"fmt"
 )
 
 // just to fix compile issues with the import
-var _ fmt.Formatter
+var (
+	_ fmt.Formatter
+	_ context.Context
+)
 
 type %s struct {
 	ID     string `+"`json:\"_id,omitempty\"`"+`
@@ -216,13 +220,13 @@ type %s struct {
 	}
 
 	code = code + fmt.Sprintf(`
-func (c *Client) list%[1]s(site string) ([]%[1]s, error) {
+func (c *Client) list%[1]s(ctx context.Context, site string) ([]%[1]s, error) {
 	var respBody struct {
 		Meta meta `+"`"+`json:"meta"`+"`"+`
 		Data []%[1]s `+"`"+`json:"data"`+"`"+`
 	}
 
-	err := c.do("GET", fmt.Sprintf("s/%%s/rest/%[2]s", site), nil, &respBody)
+	err := c.do(ctx, "GET", fmt.Sprintf("s/%%s/rest/%[2]s", site), nil, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -230,13 +234,13 @@ func (c *Client) list%[1]s(site string) ([]%[1]s, error) {
 	return respBody.Data, nil
 }
 
-func (c *Client) get%[1]s(site, id string) (*%[1]s, error) {
+func (c *Client) get%[1]s(ctx context.Context, site, id string) (*%[1]s, error) {
 	var respBody struct {
 		Meta meta `+"`"+`json:"meta"`+"`"+`
 		Data []%[1]s `+"`"+`json:"data"`+"`"+`
 	}
 
-	err := c.do("GET", fmt.Sprintf("s/%%s/rest/%[2]s/%%s", site, id), nil, &respBody)
+	err := c.do(ctx, "GET", fmt.Sprintf("s/%%s/rest/%[2]s/%%s", site, id), nil, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -249,21 +253,21 @@ func (c *Client) get%[1]s(site, id string) (*%[1]s, error) {
 	return &d, nil
 }
 
-func (c *Client) delete%[1]s(site, id string) error {
-	err := c.do("DELETE", fmt.Sprintf("s/%%s/rest/%[2]s/%%s", site, id), struct{}{}, nil)
+func (c *Client) delete%[1]s(ctx context.Context, site, id string) error {
+	err := c.do(ctx, "DELETE", fmt.Sprintf("s/%%s/rest/%[2]s/%%s", site, id), struct{}{}, nil)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (c *Client) create%[1]s(site string, d *%[1]s) (*%[1]s, error) {
+func (c *Client) create%[1]s(ctx context.Context, site string, d *%[1]s) (*%[1]s, error) {
 	var respBody struct {
 		Meta meta `+"`"+`json:"meta"`+"`"+`
 		Data []%[1]s `+"`"+`json:"data"`+"`"+`
 	}
 
-	err := c.do("POST", fmt.Sprintf("s/%%s/rest/%[2]s", site), d, &respBody)
+	err := c.do(ctx, "POST", fmt.Sprintf("s/%%s/rest/%[2]s", site), d, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -277,13 +281,13 @@ func (c *Client) create%[1]s(site string, d *%[1]s) (*%[1]s, error) {
 	return &new, nil
 }
 
-func (c *Client) update%[1]s(site string, d *%[1]s) (*%[1]s, error) {
+func (c *Client) update%[1]s(ctx context.Context, site string, d *%[1]s) (*%[1]s, error) {
 	var respBody struct {
 		Meta meta `+"`"+`json:"meta"`+"`"+`
 		Data []%[1]s `+"`"+`json:"data"`+"`"+`
 	}
 
-	err := c.do("PUT", fmt.Sprintf("s/%%s/rest/%[2]s/%%s", site, d.ID), d, &respBody)
+	err := c.do(ctx, "PUT", fmt.Sprintf("s/%%s/rest/%[2]s/%%s", site, d.ID), d, &respBody)
 	if err != nil {
 		return nil, err
 	}

@@ -4,11 +4,15 @@
 package unifi
 
 import (
+	"context"
 	"fmt"
 )
 
 // just to fix compile issues with the import
-var _ fmt.Formatter
+var (
+	_ fmt.Formatter
+	_ context.Context
+)
 
 type FirewallRule struct {
 	ID     string `json:"_id,omitempty"`
@@ -60,13 +64,13 @@ type FirewallRule struct {
 	WeekdaysNegate        bool     `json:"weekdays_negate"`
 }
 
-func (c *Client) listFirewallRule(site string) ([]FirewallRule, error) {
+func (c *Client) listFirewallRule(ctx context.Context, site string) ([]FirewallRule, error) {
 	var respBody struct {
 		Meta meta           `json:"meta"`
 		Data []FirewallRule `json:"data"`
 	}
 
-	err := c.do("GET", fmt.Sprintf("s/%s/rest/firewallrule", site), nil, &respBody)
+	err := c.do(ctx, "GET", fmt.Sprintf("s/%s/rest/firewallrule", site), nil, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -74,13 +78,13 @@ func (c *Client) listFirewallRule(site string) ([]FirewallRule, error) {
 	return respBody.Data, nil
 }
 
-func (c *Client) getFirewallRule(site, id string) (*FirewallRule, error) {
+func (c *Client) getFirewallRule(ctx context.Context, site, id string) (*FirewallRule, error) {
 	var respBody struct {
 		Meta meta           `json:"meta"`
 		Data []FirewallRule `json:"data"`
 	}
 
-	err := c.do("GET", fmt.Sprintf("s/%s/rest/firewallrule/%s", site, id), nil, &respBody)
+	err := c.do(ctx, "GET", fmt.Sprintf("s/%s/rest/firewallrule/%s", site, id), nil, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -93,21 +97,21 @@ func (c *Client) getFirewallRule(site, id string) (*FirewallRule, error) {
 	return &d, nil
 }
 
-func (c *Client) deleteFirewallRule(site, id string) error {
-	err := c.do("DELETE", fmt.Sprintf("s/%s/rest/firewallrule/%s", site, id), struct{}{}, nil)
+func (c *Client) deleteFirewallRule(ctx context.Context, site, id string) error {
+	err := c.do(ctx, "DELETE", fmt.Sprintf("s/%s/rest/firewallrule/%s", site, id), struct{}{}, nil)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (c *Client) createFirewallRule(site string, d *FirewallRule) (*FirewallRule, error) {
+func (c *Client) createFirewallRule(ctx context.Context, site string, d *FirewallRule) (*FirewallRule, error) {
 	var respBody struct {
 		Meta meta           `json:"meta"`
 		Data []FirewallRule `json:"data"`
 	}
 
-	err := c.do("POST", fmt.Sprintf("s/%s/rest/firewallrule", site), d, &respBody)
+	err := c.do(ctx, "POST", fmt.Sprintf("s/%s/rest/firewallrule", site), d, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -121,13 +125,13 @@ func (c *Client) createFirewallRule(site string, d *FirewallRule) (*FirewallRule
 	return &new, nil
 }
 
-func (c *Client) updateFirewallRule(site string, d *FirewallRule) (*FirewallRule, error) {
+func (c *Client) updateFirewallRule(ctx context.Context, site string, d *FirewallRule) (*FirewallRule, error) {
 	var respBody struct {
 		Meta meta           `json:"meta"`
 		Data []FirewallRule `json:"data"`
 	}
 
-	err := c.do("PUT", fmt.Sprintf("s/%s/rest/firewallrule/%s", site, d.ID), d, &respBody)
+	err := c.do(ctx, "PUT", fmt.Sprintf("s/%s/rest/firewallrule/%s", site, d.ID), d, &respBody)
 	if err != nil {
 		return nil, err
 	}

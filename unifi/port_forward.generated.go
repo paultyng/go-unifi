@@ -4,11 +4,15 @@
 package unifi
 
 import (
+	"context"
 	"fmt"
 )
 
 // just to fix compile issues with the import
-var _ fmt.Formatter
+var (
+	_ fmt.Formatter
+	_ context.Context
+)
 
 type PortForward struct {
 	ID     string `json:"_id,omitempty"`
@@ -30,13 +34,13 @@ type PortForward struct {
 	Src           string `json:"src,omitempty"`            // ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])-(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])/([0-9]|[1-2][0-9]|3[0-2])$|^!(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^!(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])-(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^!(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])/([0-9]|[1-2][0-9]|3[0-2])$|^any$
 }
 
-func (c *Client) listPortForward(site string) ([]PortForward, error) {
+func (c *Client) listPortForward(ctx context.Context, site string) ([]PortForward, error) {
 	var respBody struct {
 		Meta meta          `json:"meta"`
 		Data []PortForward `json:"data"`
 	}
 
-	err := c.do("GET", fmt.Sprintf("s/%s/rest/portforward", site), nil, &respBody)
+	err := c.do(ctx, "GET", fmt.Sprintf("s/%s/rest/portforward", site), nil, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -44,13 +48,13 @@ func (c *Client) listPortForward(site string) ([]PortForward, error) {
 	return respBody.Data, nil
 }
 
-func (c *Client) getPortForward(site, id string) (*PortForward, error) {
+func (c *Client) getPortForward(ctx context.Context, site, id string) (*PortForward, error) {
 	var respBody struct {
 		Meta meta          `json:"meta"`
 		Data []PortForward `json:"data"`
 	}
 
-	err := c.do("GET", fmt.Sprintf("s/%s/rest/portforward/%s", site, id), nil, &respBody)
+	err := c.do(ctx, "GET", fmt.Sprintf("s/%s/rest/portforward/%s", site, id), nil, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -63,21 +67,21 @@ func (c *Client) getPortForward(site, id string) (*PortForward, error) {
 	return &d, nil
 }
 
-func (c *Client) deletePortForward(site, id string) error {
-	err := c.do("DELETE", fmt.Sprintf("s/%s/rest/portforward/%s", site, id), struct{}{}, nil)
+func (c *Client) deletePortForward(ctx context.Context, site, id string) error {
+	err := c.do(ctx, "DELETE", fmt.Sprintf("s/%s/rest/portforward/%s", site, id), struct{}{}, nil)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (c *Client) createPortForward(site string, d *PortForward) (*PortForward, error) {
+func (c *Client) createPortForward(ctx context.Context, site string, d *PortForward) (*PortForward, error) {
 	var respBody struct {
 		Meta meta          `json:"meta"`
 		Data []PortForward `json:"data"`
 	}
 
-	err := c.do("POST", fmt.Sprintf("s/%s/rest/portforward", site), d, &respBody)
+	err := c.do(ctx, "POST", fmt.Sprintf("s/%s/rest/portforward", site), d, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -91,13 +95,13 @@ func (c *Client) createPortForward(site string, d *PortForward) (*PortForward, e
 	return &new, nil
 }
 
-func (c *Client) updatePortForward(site string, d *PortForward) (*PortForward, error) {
+func (c *Client) updatePortForward(ctx context.Context, site string, d *PortForward) (*PortForward, error) {
 	var respBody struct {
 		Meta meta          `json:"meta"`
 		Data []PortForward `json:"data"`
 	}
 
-	err := c.do("PUT", fmt.Sprintf("s/%s/rest/portforward/%s", site, d.ID), d, &respBody)
+	err := c.do(ctx, "PUT", fmt.Sprintf("s/%s/rest/portforward/%s", site, d.ID), d, &respBody)
 	if err != nil {
 		return nil, err
 	}

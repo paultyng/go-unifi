@@ -4,11 +4,15 @@
 package unifi
 
 import (
+	"context"
 	"fmt"
 )
 
 // just to fix compile issues with the import
-var _ fmt.Formatter
+var (
+	_ fmt.Formatter
+	_ context.Context
+)
 
 type Routing struct {
 	ID     string `json:"_id,omitempty"`
@@ -29,13 +33,13 @@ type Routing struct {
 	Type                 string `json:"type,omitempty"`                  // static-route
 }
 
-func (c *Client) listRouting(site string) ([]Routing, error) {
+func (c *Client) listRouting(ctx context.Context, site string) ([]Routing, error) {
 	var respBody struct {
 		Meta meta      `json:"meta"`
 		Data []Routing `json:"data"`
 	}
 
-	err := c.do("GET", fmt.Sprintf("s/%s/rest/routing", site), nil, &respBody)
+	err := c.do(ctx, "GET", fmt.Sprintf("s/%s/rest/routing", site), nil, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -43,13 +47,13 @@ func (c *Client) listRouting(site string) ([]Routing, error) {
 	return respBody.Data, nil
 }
 
-func (c *Client) getRouting(site, id string) (*Routing, error) {
+func (c *Client) getRouting(ctx context.Context, site, id string) (*Routing, error) {
 	var respBody struct {
 		Meta meta      `json:"meta"`
 		Data []Routing `json:"data"`
 	}
 
-	err := c.do("GET", fmt.Sprintf("s/%s/rest/routing/%s", site, id), nil, &respBody)
+	err := c.do(ctx, "GET", fmt.Sprintf("s/%s/rest/routing/%s", site, id), nil, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -62,21 +66,21 @@ func (c *Client) getRouting(site, id string) (*Routing, error) {
 	return &d, nil
 }
 
-func (c *Client) deleteRouting(site, id string) error {
-	err := c.do("DELETE", fmt.Sprintf("s/%s/rest/routing/%s", site, id), struct{}{}, nil)
+func (c *Client) deleteRouting(ctx context.Context, site, id string) error {
+	err := c.do(ctx, "DELETE", fmt.Sprintf("s/%s/rest/routing/%s", site, id), struct{}{}, nil)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (c *Client) createRouting(site string, d *Routing) (*Routing, error) {
+func (c *Client) createRouting(ctx context.Context, site string, d *Routing) (*Routing, error) {
 	var respBody struct {
 		Meta meta      `json:"meta"`
 		Data []Routing `json:"data"`
 	}
 
-	err := c.do("POST", fmt.Sprintf("s/%s/rest/routing", site), d, &respBody)
+	err := c.do(ctx, "POST", fmt.Sprintf("s/%s/rest/routing", site), d, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -90,13 +94,13 @@ func (c *Client) createRouting(site string, d *Routing) (*Routing, error) {
 	return &new, nil
 }
 
-func (c *Client) updateRouting(site string, d *Routing) (*Routing, error) {
+func (c *Client) updateRouting(ctx context.Context, site string, d *Routing) (*Routing, error) {
 	var respBody struct {
 		Meta meta      `json:"meta"`
 		Data []Routing `json:"data"`
 	}
 
-	err := c.do("PUT", fmt.Sprintf("s/%s/rest/routing/%s", site, d.ID), d, &respBody)
+	err := c.do(ctx, "PUT", fmt.Sprintf("s/%s/rest/routing/%s", site, d.ID), d, &respBody)
 	if err != nil {
 		return nil, err
 	}

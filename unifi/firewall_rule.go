@@ -1,21 +1,23 @@
 package unifi
 
-func (c *Client) ListFirewallRule(site string) ([]FirewallRule, error) {
-	return c.listFirewallRule(site)
+import "context"
+
+func (c *Client) ListFirewallRule(ctx context.Context, site string) ([]FirewallRule, error) {
+	return c.listFirewallRule(ctx, site)
 }
 
-func (c *Client) GetFirewallRule(site, id string) (*FirewallRule, error) {
-	return c.getFirewallRule(site, id)
+func (c *Client) GetFirewallRule(ctx context.Context, site, id string) (*FirewallRule, error) {
+	return c.getFirewallRule(ctx, site, id)
 }
 
-func (c *Client) DeleteFirewallRule(site, id string) error {
-	return c.deleteFirewallRule(site, id)
+func (c *Client) DeleteFirewallRule(ctx context.Context, site, id string) error {
+	return c.deleteFirewallRule(ctx, site, id)
 }
 
-func (c *Client) CreateFirewallRule(site string, d *FirewallRule) (*FirewallRule, error) {
-	return c.createFirewallRule(site, d)
+func (c *Client) CreateFirewallRule(ctx context.Context, site string, d *FirewallRule) (*FirewallRule, error) {
+	return c.createFirewallRule(ctx, site, d)
 }
 
-func (c *Client) UpdateFirewallRule(site string, d *FirewallRule) (*FirewallRule, error) {
-	return c.updateFirewallRule(site, d)
+func (c *Client) UpdateFirewallRule(ctx context.Context, site string, d *FirewallRule) (*FirewallRule, error) {
+	return c.updateFirewallRule(ctx, site, d)
 }

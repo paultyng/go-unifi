@@ -1,6 +1,7 @@
 package unifi
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 )
@@ -41,8 +42,8 @@ func (dst *Network) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-func (c *Client) DeleteNetwork(site, id, name string) error {
-	err := c.do("DELETE", fmt.Sprintf("s/%s/rest/networkconf/%s", site, id), struct {
+func (c *Client) DeleteNetwork(ctx context.Context, site, id, name string) error {
+	err := c.do(ctx, "DELETE", fmt.Sprintf("s/%s/rest/networkconf/%s", site, id), struct {
 		Name string `json:"name"`
 	}{
 		Name: name,
@@ -53,18 +54,18 @@ func (c *Client) DeleteNetwork(site, id, name string) error {
 	return nil
 }
 
-func (c *Client) ListNetwork(site string) ([]Network, error) {
-	return c.listNetwork(site)
+func (c *Client) ListNetwork(ctx context.Context, site string) ([]Network, error) {
+	return c.listNetwork(ctx, site)
 }
 
-func (c *Client) GetNetwork(site, id string) (*Network, error) {
-	return c.getNetwork(site, id)
+func (c *Client) GetNetwork(ctx context.Context, site, id string) (*Network, error) {
+	return c.getNetwork(ctx, site, id)
 }
 
-func (c *Client) CreateNetwork(site string, d *Network) (*Network, error) {
-	return c.createNetwork(site, d)
+func (c *Client) CreateNetwork(ctx context.Context, site string, d *Network) (*Network, error) {
+	return c.createNetwork(ctx, site, d)
 }
 
-func (c *Client) UpdateNetwork(site string, d *Network) (*Network, error) {
-	return c.updateNetwork(site, d)
+func (c *Client) UpdateNetwork(ctx context.Context, site string, d *Network) (*Network, error) {
+	return c.updateNetwork(ctx, site, d)
 }

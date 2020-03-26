@@ -2,6 +2,7 @@ package unifi //
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -44,7 +45,7 @@ func (c *Client) SetHTTPClient(hc *http.Client) error {
 	return nil
 }
 
-func (c *Client) Login(user, pass string) error {
+func (c *Client) Login(ctx context.Context, user, pass string) error {
 	if c.c == nil {
 		c.c = &http.Client{}
 
@@ -52,7 +53,7 @@ func (c *Client) Login(user, pass string) error {
 		c.c.Jar = jar
 	}
 
-	err := c.do("POST", "login", &struct {
+	err := c.do(ctx, "POST", "login", &struct {
 		Username string `json:"username"`
 		Password string `json:"password"`
 	}{
@@ -66,7 +67,7 @@ func (c *Client) Login(user, pass string) error {
 	return nil
 }
 
-func (c *Client) do(method, relativeURL string, reqBody interface{}, respBody interface{}) error {
+func (c *Client) do(ctx context.Context, method, relativeURL string, reqBody interface{}, respBody interface{}) error {
 	var (
 		reqReader io.Reader
 		err       error
@@ -88,7 +89,7 @@ func (c *Client) do(method, relativeURL string, reqBody interface{}, respBody in
 
 	url := c.baseURL.ResolveReference(reqURL)
 
-	req, err := http.NewRequest(method, url.String(), reqReader)
+	req, err := http.NewRequestWithContext(ctx, method, url.String(), reqReader)
 	if err != nil {
 		return err
 	}

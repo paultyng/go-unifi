@@ -4,11 +4,15 @@
 package unifi
 
 import (
+	"context"
 	"fmt"
 )
 
 // just to fix compile issues with the import
-var _ fmt.Formatter
+var (
+	_ fmt.Formatter
+	_ context.Context
+)
 
 type MediaFile struct {
 	ID     string `json:"_id,omitempty"`
@@ -22,13 +26,13 @@ type MediaFile struct {
 	Name string `json:"name,omitempty"`
 }
 
-func (c *Client) listMediaFile(site string) ([]MediaFile, error) {
+func (c *Client) listMediaFile(ctx context.Context, site string) ([]MediaFile, error) {
 	var respBody struct {
 		Meta meta        `json:"meta"`
 		Data []MediaFile `json:"data"`
 	}
 
-	err := c.do("GET", fmt.Sprintf("s/%s/rest/mediafile", site), nil, &respBody)
+	err := c.do(ctx, "GET", fmt.Sprintf("s/%s/rest/mediafile", site), nil, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -36,13 +40,13 @@ func (c *Client) listMediaFile(site string) ([]MediaFile, error) {
 	return respBody.Data, nil
 }
 
-func (c *Client) getMediaFile(site, id string) (*MediaFile, error) {
+func (c *Client) getMediaFile(ctx context.Context, site, id string) (*MediaFile, error) {
 	var respBody struct {
 		Meta meta        `json:"meta"`
 		Data []MediaFile `json:"data"`
 	}
 
-	err := c.do("GET", fmt.Sprintf("s/%s/rest/mediafile/%s", site, id), nil, &respBody)
+	err := c.do(ctx, "GET", fmt.Sprintf("s/%s/rest/mediafile/%s", site, id), nil, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -55,21 +59,21 @@ func (c *Client) getMediaFile(site, id string) (*MediaFile, error) {
 	return &d, nil
 }
 
-func (c *Client) deleteMediaFile(site, id string) error {
-	err := c.do("DELETE", fmt.Sprintf("s/%s/rest/mediafile/%s", site, id), struct{}{}, nil)
+func (c *Client) deleteMediaFile(ctx context.Context, site, id string) error {
+	err := c.do(ctx, "DELETE", fmt.Sprintf("s/%s/rest/mediafile/%s", site, id), struct{}{}, nil)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (c *Client) createMediaFile(site string, d *MediaFile) (*MediaFile, error) {
+func (c *Client) createMediaFile(ctx context.Context, site string, d *MediaFile) (*MediaFile, error) {
 	var respBody struct {
 		Meta meta        `json:"meta"`
 		Data []MediaFile `json:"data"`
 	}
 
-	err := c.do("POST", fmt.Sprintf("s/%s/rest/mediafile", site), d, &respBody)
+	err := c.do(ctx, "POST", fmt.Sprintf("s/%s/rest/mediafile", site), d, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -83,13 +87,13 @@ func (c *Client) createMediaFile(site string, d *MediaFile) (*MediaFile, error) 
 	return &new, nil
 }
 
-func (c *Client) updateMediaFile(site string, d *MediaFile) (*MediaFile, error) {
+func (c *Client) updateMediaFile(ctx context.Context, site string, d *MediaFile) (*MediaFile, error) {
 	var respBody struct {
 		Meta meta        `json:"meta"`
 		Data []MediaFile `json:"data"`
 	}
 
-	err := c.do("PUT", fmt.Sprintf("s/%s/rest/mediafile/%s", site, d.ID), d, &respBody)
+	err := c.do(ctx, "PUT", fmt.Sprintf("s/%s/rest/mediafile/%s", site, d.ID), d, &respBody)
 	if err != nil {
 		return nil, err
 	}

@@ -4,11 +4,15 @@
 package unifi
 
 import (
+	"context"
 	"fmt"
 )
 
 // just to fix compile issues with the import
-var _ fmt.Formatter
+var (
+	_ fmt.Formatter
+	_ context.Context
+)
 
 type UserGroup struct {
 	ID     string `json:"_id,omitempty"`
@@ -24,13 +28,13 @@ type UserGroup struct {
 	QOSRateMaxUp   int    `json:"qos_rate_max_up,omitempty"`   // -1|[2-9]|[1-9][0-9]{1,4}|100000
 }
 
-func (c *Client) listUserGroup(site string) ([]UserGroup, error) {
+func (c *Client) listUserGroup(ctx context.Context, site string) ([]UserGroup, error) {
 	var respBody struct {
 		Meta meta        `json:"meta"`
 		Data []UserGroup `json:"data"`
 	}
 
-	err := c.do("GET", fmt.Sprintf("s/%s/rest/usergroup", site), nil, &respBody)
+	err := c.do(ctx, "GET", fmt.Sprintf("s/%s/rest/usergroup", site), nil, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -38,13 +42,13 @@ func (c *Client) listUserGroup(site string) ([]UserGroup, error) {
 	return respBody.Data, nil
 }
 
-func (c *Client) getUserGroup(site, id string) (*UserGroup, error) {
+func (c *Client) getUserGroup(ctx context.Context, site, id string) (*UserGroup, error) {
 	var respBody struct {
 		Meta meta        `json:"meta"`
 		Data []UserGroup `json:"data"`
 	}
 
-	err := c.do("GET", fmt.Sprintf("s/%s/rest/usergroup/%s", site, id), nil, &respBody)
+	err := c.do(ctx, "GET", fmt.Sprintf("s/%s/rest/usergroup/%s", site, id), nil, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -57,21 +61,21 @@ func (c *Client) getUserGroup(site, id string) (*UserGroup, error) {
 	return &d, nil
 }
 
-func (c *Client) deleteUserGroup(site, id string) error {
-	err := c.do("DELETE", fmt.Sprintf("s/%s/rest/usergroup/%s", site, id), struct{}{}, nil)
+func (c *Client) deleteUserGroup(ctx context.Context, site, id string) error {
+	err := c.do(ctx, "DELETE", fmt.Sprintf("s/%s/rest/usergroup/%s", site, id), struct{}{}, nil)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (c *Client) createUserGroup(site string, d *UserGroup) (*UserGroup, error) {
+func (c *Client) createUserGroup(ctx context.Context, site string, d *UserGroup) (*UserGroup, error) {
 	var respBody struct {
 		Meta meta        `json:"meta"`
 		Data []UserGroup `json:"data"`
 	}
 
-	err := c.do("POST", fmt.Sprintf("s/%s/rest/usergroup", site), d, &respBody)
+	err := c.do(ctx, "POST", fmt.Sprintf("s/%s/rest/usergroup", site), d, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -85,13 +89,13 @@ func (c *Client) createUserGroup(site string, d *UserGroup) (*UserGroup, error) 
 	return &new, nil
 }
 
-func (c *Client) updateUserGroup(site string, d *UserGroup) (*UserGroup, error) {
+func (c *Client) updateUserGroup(ctx context.Context, site string, d *UserGroup) (*UserGroup, error) {
 	var respBody struct {
 		Meta meta        `json:"meta"`
 		Data []UserGroup `json:"data"`
 	}
 
-	err := c.do("PUT", fmt.Sprintf("s/%s/rest/usergroup/%s", site, d.ID), d, &respBody)
+	err := c.do(ctx, "PUT", fmt.Sprintf("s/%s/rest/usergroup/%s", site, d.ID), d, &respBody)
 	if err != nil {
 		return nil, err
 	}

@@ -4,11 +4,15 @@
 package unifi
 
 import (
+	"context"
 	"fmt"
 )
 
 // just to fix compile issues with the import
-var _ fmt.Formatter
+var (
+	_ fmt.Formatter
+	_ context.Context
+)
 
 type VirtualDevice struct {
 	ID     string `json:"_id,omitempty"`
@@ -27,13 +31,13 @@ type VirtualDevice struct {
 	Y              string  `json:"y,omitempty"`
 }
 
-func (c *Client) listVirtualDevice(site string) ([]VirtualDevice, error) {
+func (c *Client) listVirtualDevice(ctx context.Context, site string) ([]VirtualDevice, error) {
 	var respBody struct {
 		Meta meta            `json:"meta"`
 		Data []VirtualDevice `json:"data"`
 	}
 
-	err := c.do("GET", fmt.Sprintf("s/%s/rest/virtualdevice", site), nil, &respBody)
+	err := c.do(ctx, "GET", fmt.Sprintf("s/%s/rest/virtualdevice", site), nil, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -41,13 +45,13 @@ func (c *Client) listVirtualDevice(site string) ([]VirtualDevice, error) {
 	return respBody.Data, nil
 }
 
-func (c *Client) getVirtualDevice(site, id string) (*VirtualDevice, error) {
+func (c *Client) getVirtualDevice(ctx context.Context, site, id string) (*VirtualDevice, error) {
 	var respBody struct {
 		Meta meta            `json:"meta"`
 		Data []VirtualDevice `json:"data"`
 	}
 
-	err := c.do("GET", fmt.Sprintf("s/%s/rest/virtualdevice/%s", site, id), nil, &respBody)
+	err := c.do(ctx, "GET", fmt.Sprintf("s/%s/rest/virtualdevice/%s", site, id), nil, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -60,21 +64,21 @@ func (c *Client) getVirtualDevice(site, id string) (*VirtualDevice, error) {
 	return &d, nil
 }
 
-func (c *Client) deleteVirtualDevice(site, id string) error {
-	err := c.do("DELETE", fmt.Sprintf("s/%s/rest/virtualdevice/%s", site, id), struct{}{}, nil)
+func (c *Client) deleteVirtualDevice(ctx context.Context, site, id string) error {
+	err := c.do(ctx, "DELETE", fmt.Sprintf("s/%s/rest/virtualdevice/%s", site, id), struct{}{}, nil)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (c *Client) createVirtualDevice(site string, d *VirtualDevice) (*VirtualDevice, error) {
+func (c *Client) createVirtualDevice(ctx context.Context, site string, d *VirtualDevice) (*VirtualDevice, error) {
 	var respBody struct {
 		Meta meta            `json:"meta"`
 		Data []VirtualDevice `json:"data"`
 	}
 
-	err := c.do("POST", fmt.Sprintf("s/%s/rest/virtualdevice", site), d, &respBody)
+	err := c.do(ctx, "POST", fmt.Sprintf("s/%s/rest/virtualdevice", site), d, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -88,13 +92,13 @@ func (c *Client) createVirtualDevice(site string, d *VirtualDevice) (*VirtualDev
 	return &new, nil
 }
 
-func (c *Client) updateVirtualDevice(site string, d *VirtualDevice) (*VirtualDevice, error) {
+func (c *Client) updateVirtualDevice(ctx context.Context, site string, d *VirtualDevice) (*VirtualDevice, error) {
 	var respBody struct {
 		Meta meta            `json:"meta"`
 		Data []VirtualDevice `json:"data"`
 	}
 
-	err := c.do("PUT", fmt.Sprintf("s/%s/rest/virtualdevice/%s", site, d.ID), d, &respBody)
+	err := c.do(ctx, "PUT", fmt.Sprintf("s/%s/rest/virtualdevice/%s", site, d.ID), d, &respBody)
 	if err != nil {
 		return nil, err
 	}

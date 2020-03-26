@@ -1,17 +1,20 @@
 package unifi
 
-import "fmt"
+import (
+	"context"
+	"fmt"
+)
 
 // GetUserByMAC returns slightly different information than GetUser, as they
 // use separate endpoints for their lookups. Specifically IP is only returned
 // by this method.
-func (c *Client) GetUserByMAC(site, mac string) (*User, error) {
+func (c *Client) GetUserByMAC(ctx context.Context, site, mac string) (*User, error) {
 	var respBody struct {
 		Meta meta   `json:"meta"`
 		Data []User `json:"data"`
 	}
 
-	err := c.do("GET", fmt.Sprintf("s/%s/stat/user/%s", site, mac), nil, &respBody)
+	err := c.do(ctx, "GET", fmt.Sprintf("s/%s/stat/user/%s", site, mac), nil, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -24,7 +27,7 @@ func (c *Client) GetUserByMAC(site, mac string) (*User, error) {
 	return &d, nil
 }
 
-func (c *Client) CreateUser(site string, d *User) (*User, error) {
+func (c *Client) CreateUser(ctx context.Context, site string, d *User) (*User, error) {
 	reqBody := struct {
 		Objects []struct {
 			Data *User `json:"data"`
@@ -45,7 +48,7 @@ func (c *Client) CreateUser(site string, d *User) (*User, error) {
 		} `json:"data"`
 	}
 
-	err := c.do("POST", fmt.Sprintf("s/%s/group/user", site), reqBody, &respBody)
+	err := c.do(ctx, "POST", fmt.Sprintf("s/%s/group/user", site), reqBody, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -67,7 +70,7 @@ func (c *Client) CreateUser(site string, d *User) (*User, error) {
 	return &new, nil
 }
 
-func (c *Client) stamgr(site, cmd string, data map[string]interface{}) ([]User, error) {
+func (c *Client) stamgr(ctx context.Context, site, cmd string, data map[string]interface{}) ([]User, error) {
 	reqBody := map[string]interface{}{}
 
 	for k, v := range data {
@@ -81,7 +84,7 @@ func (c *Client) stamgr(site, cmd string, data map[string]interface{}) ([]User, 
 		Data []User `json:"data"`
 	}
 
-	err := c.do("POST", fmt.Sprintf("s/%s/cmd/stamgr", site), reqBody, &respBody)
+	err := c.do(ctx, "POST", fmt.Sprintf("s/%s/cmd/stamgr", site), reqBody, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -89,8 +92,8 @@ func (c *Client) stamgr(site, cmd string, data map[string]interface{}) ([]User, 
 	return respBody.Data, nil
 }
 
-func (c *Client) BlockUserByMAC(site, mac string) error {
-	users, err := c.stamgr(site, "block-sta", map[string]interface{}{
+func (c *Client) BlockUserByMAC(ctx context.Context, site, mac string) error {
+	users, err := c.stamgr(ctx, site, "block-sta", map[string]interface{}{
 		"mac": mac,
 	})
 	if err != nil {
@@ -102,8 +105,8 @@ func (c *Client) BlockUserByMAC(site, mac string) error {
 	return nil
 }
 
-func (c *Client) UnblockUserByMAC(site, mac string) error {
-	users, err := c.stamgr(site, "unblock-sta", map[string]interface{}{
+func (c *Client) UnblockUserByMAC(ctx context.Context, site, mac string) error {
+	users, err := c.stamgr(ctx, site, "unblock-sta", map[string]interface{}{
 		"mac": mac,
 	})
 	if err != nil {
@@ -115,8 +118,8 @@ func (c *Client) UnblockUserByMAC(site, mac string) error {
 	return nil
 }
 
-func (c *Client) DeleteUserByMAC(site, mac string) error {
-	users, err := c.stamgr(site, "forget-sta", map[string]interface{}{
+func (c *Client) DeleteUserByMAC(ctx context.Context, site, mac string) error {
+	users, err := c.stamgr(ctx, site, "forget-sta", map[string]interface{}{
 		"macs": []string{mac},
 	})
 	if err != nil {
@@ -128,17 +131,17 @@ func (c *Client) DeleteUserByMAC(site, mac string) error {
 	return nil
 }
 
-func (c *Client) ListUser(site string) ([]User, error) {
-	return c.listUser(site)
+func (c *Client) ListUser(ctx context.Context, site string) ([]User, error) {
+	return c.listUser(ctx, site)
 }
 
 // GetUser returns information about a user from the REST endpoint.
 // The GetUserByMAC method returns slightly different information (for
 // example the IP) as it uses a different endpoint.
-func (c *Client) GetUser(site, id string) (*User, error) {
-	return c.getUser(site, id)
+func (c *Client) GetUser(ctx context.Context, site, id string) (*User, error) {
+	return c.getUser(ctx, site, id)
 }
 
-func (c *Client) UpdateUser(site string, d *User) (*User, error) {
-	return c.updateUser(site, d)
+func (c *Client) UpdateUser(ctx context.Context, site string, d *User) (*User, error) {
+	return c.updateUser(ctx, site, d)
 }

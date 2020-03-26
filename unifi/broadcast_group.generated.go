@@ -4,11 +4,15 @@
 package unifi
 
 import (
+	"context"
 	"fmt"
 )
 
 // just to fix compile issues with the import
-var _ fmt.Formatter
+var (
+	_ fmt.Formatter
+	_ context.Context
+)
 
 type BroadcastGroup struct {
 	ID     string `json:"_id,omitempty"`
@@ -23,13 +27,13 @@ type BroadcastGroup struct {
 	Name        string   `json:"name,omitempty"`
 }
 
-func (c *Client) listBroadcastGroup(site string) ([]BroadcastGroup, error) {
+func (c *Client) listBroadcastGroup(ctx context.Context, site string) ([]BroadcastGroup, error) {
 	var respBody struct {
 		Meta meta             `json:"meta"`
 		Data []BroadcastGroup `json:"data"`
 	}
 
-	err := c.do("GET", fmt.Sprintf("s/%s/rest/broadcastgroup", site), nil, &respBody)
+	err := c.do(ctx, "GET", fmt.Sprintf("s/%s/rest/broadcastgroup", site), nil, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -37,13 +41,13 @@ func (c *Client) listBroadcastGroup(site string) ([]BroadcastGroup, error) {
 	return respBody.Data, nil
 }
 
-func (c *Client) getBroadcastGroup(site, id string) (*BroadcastGroup, error) {
+func (c *Client) getBroadcastGroup(ctx context.Context, site, id string) (*BroadcastGroup, error) {
 	var respBody struct {
 		Meta meta             `json:"meta"`
 		Data []BroadcastGroup `json:"data"`
 	}
 
-	err := c.do("GET", fmt.Sprintf("s/%s/rest/broadcastgroup/%s", site, id), nil, &respBody)
+	err := c.do(ctx, "GET", fmt.Sprintf("s/%s/rest/broadcastgroup/%s", site, id), nil, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -56,21 +60,21 @@ func (c *Client) getBroadcastGroup(site, id string) (*BroadcastGroup, error) {
 	return &d, nil
 }
 
-func (c *Client) deleteBroadcastGroup(site, id string) error {
-	err := c.do("DELETE", fmt.Sprintf("s/%s/rest/broadcastgroup/%s", site, id), struct{}{}, nil)
+func (c *Client) deleteBroadcastGroup(ctx context.Context, site, id string) error {
+	err := c.do(ctx, "DELETE", fmt.Sprintf("s/%s/rest/broadcastgroup/%s", site, id), struct{}{}, nil)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (c *Client) createBroadcastGroup(site string, d *BroadcastGroup) (*BroadcastGroup, error) {
+func (c *Client) createBroadcastGroup(ctx context.Context, site string, d *BroadcastGroup) (*BroadcastGroup, error) {
 	var respBody struct {
 		Meta meta             `json:"meta"`
 		Data []BroadcastGroup `json:"data"`
 	}
 
-	err := c.do("POST", fmt.Sprintf("s/%s/rest/broadcastgroup", site), d, &respBody)
+	err := c.do(ctx, "POST", fmt.Sprintf("s/%s/rest/broadcastgroup", site), d, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -84,13 +88,13 @@ func (c *Client) createBroadcastGroup(site string, d *BroadcastGroup) (*Broadcas
 	return &new, nil
 }
 
-func (c *Client) updateBroadcastGroup(site string, d *BroadcastGroup) (*BroadcastGroup, error) {
+func (c *Client) updateBroadcastGroup(ctx context.Context, site string, d *BroadcastGroup) (*BroadcastGroup, error) {
 	var respBody struct {
 		Meta meta             `json:"meta"`
 		Data []BroadcastGroup `json:"data"`
 	}
 
-	err := c.do("PUT", fmt.Sprintf("s/%s/rest/broadcastgroup/%s", site, d.ID), d, &respBody)
+	err := c.do(ctx, "PUT", fmt.Sprintf("s/%s/rest/broadcastgroup/%s", site, d.ID), d, &respBody)
 	if err != nil {
 		return nil, err
 	}

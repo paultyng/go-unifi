@@ -4,11 +4,15 @@
 package unifi
 
 import (
+	"context"
 	"fmt"
 )
 
 // just to fix compile issues with the import
-var _ fmt.Formatter
+var (
+	_ fmt.Formatter
+	_ context.Context
+)
 
 type HeatMap struct {
 	ID     string `json:"_id,omitempty"`
@@ -25,13 +29,13 @@ type HeatMap struct {
 	Type        string `json:"type,omitempty"` // download|upload
 }
 
-func (c *Client) listHeatMap(site string) ([]HeatMap, error) {
+func (c *Client) listHeatMap(ctx context.Context, site string) ([]HeatMap, error) {
 	var respBody struct {
 		Meta meta      `json:"meta"`
 		Data []HeatMap `json:"data"`
 	}
 
-	err := c.do("GET", fmt.Sprintf("s/%s/rest/heatmap", site), nil, &respBody)
+	err := c.do(ctx, "GET", fmt.Sprintf("s/%s/rest/heatmap", site), nil, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -39,13 +43,13 @@ func (c *Client) listHeatMap(site string) ([]HeatMap, error) {
 	return respBody.Data, nil
 }
 
-func (c *Client) getHeatMap(site, id string) (*HeatMap, error) {
+func (c *Client) getHeatMap(ctx context.Context, site, id string) (*HeatMap, error) {
 	var respBody struct {
 		Meta meta      `json:"meta"`
 		Data []HeatMap `json:"data"`
 	}
 
-	err := c.do("GET", fmt.Sprintf("s/%s/rest/heatmap/%s", site, id), nil, &respBody)
+	err := c.do(ctx, "GET", fmt.Sprintf("s/%s/rest/heatmap/%s", site, id), nil, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -58,21 +62,21 @@ func (c *Client) getHeatMap(site, id string) (*HeatMap, error) {
 	return &d, nil
 }
 
-func (c *Client) deleteHeatMap(site, id string) error {
-	err := c.do("DELETE", fmt.Sprintf("s/%s/rest/heatmap/%s", site, id), struct{}{}, nil)
+func (c *Client) deleteHeatMap(ctx context.Context, site, id string) error {
+	err := c.do(ctx, "DELETE", fmt.Sprintf("s/%s/rest/heatmap/%s", site, id), struct{}{}, nil)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (c *Client) createHeatMap(site string, d *HeatMap) (*HeatMap, error) {
+func (c *Client) createHeatMap(ctx context.Context, site string, d *HeatMap) (*HeatMap, error) {
 	var respBody struct {
 		Meta meta      `json:"meta"`
 		Data []HeatMap `json:"data"`
 	}
 
-	err := c.do("POST", fmt.Sprintf("s/%s/rest/heatmap", site), d, &respBody)
+	err := c.do(ctx, "POST", fmt.Sprintf("s/%s/rest/heatmap", site), d, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -86,13 +90,13 @@ func (c *Client) createHeatMap(site string, d *HeatMap) (*HeatMap, error) {
 	return &new, nil
 }
 
-func (c *Client) updateHeatMap(site string, d *HeatMap) (*HeatMap, error) {
+func (c *Client) updateHeatMap(ctx context.Context, site string, d *HeatMap) (*HeatMap, error) {
 	var respBody struct {
 		Meta meta      `json:"meta"`
 		Data []HeatMap `json:"data"`
 	}
 
-	err := c.do("PUT", fmt.Sprintf("s/%s/rest/heatmap/%s", site, d.ID), d, &respBody)
+	err := c.do(ctx, "PUT", fmt.Sprintf("s/%s/rest/heatmap/%s", site, d.ID), d, &respBody)
 	if err != nil {
 		return nil, err
 	}

@@ -1,5 +1,7 @@
 package unifi
 
+import "context"
+
 type Site struct {
 	ID string `json:"_id,omitempty"`
 
@@ -14,13 +16,13 @@ type Site struct {
 	//Role string `json:"role"`
 }
 
-func (c *Client) ListSites() ([]Site, error) {
+func (c *Client) ListSites(ctx context.Context) ([]Site, error) {
 	var respBody struct {
 		Meta meta   `json:"meta"`
 		Data []Site `json:"data"`
 	}
 
-	err := c.do("GET", "self/sites", nil, &respBody)
+	err := c.do(ctx, "GET", "self/sites", nil, &respBody)
 	if err != nil {
 		return nil, err
 	}

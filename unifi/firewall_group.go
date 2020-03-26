@@ -1,21 +1,23 @@
 package unifi
 
-func (c *Client) ListFirewallGroup(site string) ([]FirewallGroup, error) {
-	return c.listFirewallGroup(site)
+import "context"
+
+func (c *Client) ListFirewallGroup(ctx context.Context, site string) ([]FirewallGroup, error) {
+	return c.listFirewallGroup(ctx, site)
 }
 
-func (c *Client) GetFirewallGroup(site, id string) (*FirewallGroup, error) {
-	return c.getFirewallGroup(site, id)
+func (c *Client) GetFirewallGroup(ctx context.Context, site, id string) (*FirewallGroup, error) {
+	return c.getFirewallGroup(ctx, site, id)
 }
 
-func (c *Client) DeleteFirewallGroup(site, id string) error {
-	return c.deleteFirewallGroup(site, id)
+func (c *Client) DeleteFirewallGroup(ctx context.Context, site, id string) error {
+	return c.deleteFirewallGroup(ctx, site, id)
 }
 
-func (c *Client) CreateFirewallGroup(site string, d *FirewallGroup) (*FirewallGroup, error) {
-	return c.createFirewallGroup(site, d)
+func (c *Client) CreateFirewallGroup(ctx context.Context, site string, d *FirewallGroup) (*FirewallGroup, error) {
+	return c.createFirewallGroup(ctx, site, d)
 }
 
-func (c *Client) UpdateFirewallGroup(site string, d *FirewallGroup) (*FirewallGroup, error) {
-	return c.updateFirewallGroup(site, d)
+func (c *Client) UpdateFirewallGroup(ctx context.Context, site string, d *FirewallGroup) (*FirewallGroup, error) {
+	return c.updateFirewallGroup(ctx, site, d)
 }

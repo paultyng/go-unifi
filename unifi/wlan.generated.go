@@ -4,11 +4,15 @@
 package unifi
 
 import (
+	"context"
 	"fmt"
 )
 
 // just to fix compile issues with the import
-var _ fmt.Formatter
+var (
+	_ fmt.Formatter
+	_ context.Context
+)
 
 type WLAN struct {
 	ID     string `json:"_id,omitempty"`
@@ -80,13 +84,13 @@ type WLAN struct {
 	XWEP                      string   `json:"x_wep,omitempty"`
 }
 
-func (c *Client) listWLAN(site string) ([]WLAN, error) {
+func (c *Client) listWLAN(ctx context.Context, site string) ([]WLAN, error) {
 	var respBody struct {
 		Meta meta   `json:"meta"`
 		Data []WLAN `json:"data"`
 	}
 
-	err := c.do("GET", fmt.Sprintf("s/%s/rest/wlanconf", site), nil, &respBody)
+	err := c.do(ctx, "GET", fmt.Sprintf("s/%s/rest/wlanconf", site), nil, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -94,13 +98,13 @@ func (c *Client) listWLAN(site string) ([]WLAN, error) {
 	return respBody.Data, nil
 }
 
-func (c *Client) getWLAN(site, id string) (*WLAN, error) {
+func (c *Client) getWLAN(ctx context.Context, site, id string) (*WLAN, error) {
 	var respBody struct {
 		Meta meta   `json:"meta"`
 		Data []WLAN `json:"data"`
 	}
 
-	err := c.do("GET", fmt.Sprintf("s/%s/rest/wlanconf/%s", site, id), nil, &respBody)
+	err := c.do(ctx, "GET", fmt.Sprintf("s/%s/rest/wlanconf/%s", site, id), nil, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -113,21 +117,21 @@ func (c *Client) getWLAN(site, id string) (*WLAN, error) {
 	return &d, nil
 }
 
-func (c *Client) deleteWLAN(site, id string) error {
-	err := c.do("DELETE", fmt.Sprintf("s/%s/rest/wlanconf/%s", site, id), struct{}{}, nil)
+func (c *Client) deleteWLAN(ctx context.Context, site, id string) error {
+	err := c.do(ctx, "DELETE", fmt.Sprintf("s/%s/rest/wlanconf/%s", site, id), struct{}{}, nil)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (c *Client) createWLAN(site string, d *WLAN) (*WLAN, error) {
+func (c *Client) createWLAN(ctx context.Context, site string, d *WLAN) (*WLAN, error) {
 	var respBody struct {
 		Meta meta   `json:"meta"`
 		Data []WLAN `json:"data"`
 	}
 
-	err := c.do("POST", fmt.Sprintf("s/%s/rest/wlanconf", site), d, &respBody)
+	err := c.do(ctx, "POST", fmt.Sprintf("s/%s/rest/wlanconf", site), d, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -141,13 +145,13 @@ func (c *Client) createWLAN(site string, d *WLAN) (*WLAN, error) {
 	return &new, nil
 }
 
-func (c *Client) updateWLAN(site string, d *WLAN) (*WLAN, error) {
+func (c *Client) updateWLAN(ctx context.Context, site string, d *WLAN) (*WLAN, error) {
 	var respBody struct {
 		Meta meta   `json:"meta"`
 		Data []WLAN `json:"data"`
 	}
 
-	err := c.do("PUT", fmt.Sprintf("s/%s/rest/wlanconf/%s", site, d.ID), d, &respBody)
+	err := c.do(ctx, "PUT", fmt.Sprintf("s/%s/rest/wlanconf/%s", site, d.ID), d, &respBody)
 	if err != nil {
 		return nil, err
 	}

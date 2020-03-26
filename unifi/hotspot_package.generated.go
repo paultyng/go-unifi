@@ -4,11 +4,15 @@
 package unifi
 
 import (
+	"context"
 	"fmt"
 )
 
 // just to fix compile issues with the import
-var _ fmt.Formatter
+var (
+	_ fmt.Formatter
+	_ context.Context
+)
 
 type HotspotPackage struct {
 	ID     string `json:"_id,omitempty"`
@@ -50,13 +54,13 @@ type HotspotPackage struct {
 	TrialReset                     float64 `json:"trial_reset,omitempty"`
 }
 
-func (c *Client) listHotspotPackage(site string) ([]HotspotPackage, error) {
+func (c *Client) listHotspotPackage(ctx context.Context, site string) ([]HotspotPackage, error) {
 	var respBody struct {
 		Meta meta             `json:"meta"`
 		Data []HotspotPackage `json:"data"`
 	}
 
-	err := c.do("GET", fmt.Sprintf("s/%s/rest/hotspotpackage", site), nil, &respBody)
+	err := c.do(ctx, "GET", fmt.Sprintf("s/%s/rest/hotspotpackage", site), nil, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -64,13 +68,13 @@ func (c *Client) listHotspotPackage(site string) ([]HotspotPackage, error) {
 	return respBody.Data, nil
 }
 
-func (c *Client) getHotspotPackage(site, id string) (*HotspotPackage, error) {
+func (c *Client) getHotspotPackage(ctx context.Context, site, id string) (*HotspotPackage, error) {
 	var respBody struct {
 		Meta meta             `json:"meta"`
 		Data []HotspotPackage `json:"data"`
 	}
 
-	err := c.do("GET", fmt.Sprintf("s/%s/rest/hotspotpackage/%s", site, id), nil, &respBody)
+	err := c.do(ctx, "GET", fmt.Sprintf("s/%s/rest/hotspotpackage/%s", site, id), nil, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -83,21 +87,21 @@ func (c *Client) getHotspotPackage(site, id string) (*HotspotPackage, error) {
 	return &d, nil
 }
 
-func (c *Client) deleteHotspotPackage(site, id string) error {
-	err := c.do("DELETE", fmt.Sprintf("s/%s/rest/hotspotpackage/%s", site, id), struct{}{}, nil)
+func (c *Client) deleteHotspotPackage(ctx context.Context, site, id string) error {
+	err := c.do(ctx, "DELETE", fmt.Sprintf("s/%s/rest/hotspotpackage/%s", site, id), struct{}{}, nil)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (c *Client) createHotspotPackage(site string, d *HotspotPackage) (*HotspotPackage, error) {
+func (c *Client) createHotspotPackage(ctx context.Context, site string, d *HotspotPackage) (*HotspotPackage, error) {
 	var respBody struct {
 		Meta meta             `json:"meta"`
 		Data []HotspotPackage `json:"data"`
 	}
 
-	err := c.do("POST", fmt.Sprintf("s/%s/rest/hotspotpackage", site), d, &respBody)
+	err := c.do(ctx, "POST", fmt.Sprintf("s/%s/rest/hotspotpackage", site), d, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -111,13 +115,13 @@ func (c *Client) createHotspotPackage(site string, d *HotspotPackage) (*HotspotP
 	return &new, nil
 }
 
-func (c *Client) updateHotspotPackage(site string, d *HotspotPackage) (*HotspotPackage, error) {
+func (c *Client) updateHotspotPackage(ctx context.Context, site string, d *HotspotPackage) (*HotspotPackage, error) {
 	var respBody struct {
 		Meta meta             `json:"meta"`
 		Data []HotspotPackage `json:"data"`
 	}
 
-	err := c.do("PUT", fmt.Sprintf("s/%s/rest/hotspotpackage/%s", site, d.ID), d, &respBody)
+	err := c.do(ctx, "PUT", fmt.Sprintf("s/%s/rest/hotspotpackage/%s", site, d.ID), d, &respBody)
 	if err != nil {
 		return nil, err
 	}

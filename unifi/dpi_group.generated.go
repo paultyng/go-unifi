@@ -4,11 +4,15 @@
 package unifi
 
 import (
+	"context"
 	"fmt"
 )
 
 // just to fix compile issues with the import
-var _ fmt.Formatter
+var (
+	_ fmt.Formatter
+	_ context.Context
+)
 
 type DpiGroup struct {
 	ID     string `json:"_id,omitempty"`
@@ -24,13 +28,13 @@ type DpiGroup struct {
 	Name      string   `json:"name,omitempty"` // .{1,128}
 }
 
-func (c *Client) listDpiGroup(site string) ([]DpiGroup, error) {
+func (c *Client) listDpiGroup(ctx context.Context, site string) ([]DpiGroup, error) {
 	var respBody struct {
 		Meta meta       `json:"meta"`
 		Data []DpiGroup `json:"data"`
 	}
 
-	err := c.do("GET", fmt.Sprintf("s/%s/rest/dpigroup", site), nil, &respBody)
+	err := c.do(ctx, "GET", fmt.Sprintf("s/%s/rest/dpigroup", site), nil, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -38,13 +42,13 @@ func (c *Client) listDpiGroup(site string) ([]DpiGroup, error) {
 	return respBody.Data, nil
 }
 
-func (c *Client) getDpiGroup(site, id string) (*DpiGroup, error) {
+func (c *Client) getDpiGroup(ctx context.Context, site, id string) (*DpiGroup, error) {
 	var respBody struct {
 		Meta meta       `json:"meta"`
 		Data []DpiGroup `json:"data"`
 	}
 
-	err := c.do("GET", fmt.Sprintf("s/%s/rest/dpigroup/%s", site, id), nil, &respBody)
+	err := c.do(ctx, "GET", fmt.Sprintf("s/%s/rest/dpigroup/%s", site, id), nil, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -57,21 +61,21 @@ func (c *Client) getDpiGroup(site, id string) (*DpiGroup, error) {
 	return &d, nil
 }
 
-func (c *Client) deleteDpiGroup(site, id string) error {
-	err := c.do("DELETE", fmt.Sprintf("s/%s/rest/dpigroup/%s", site, id), struct{}{}, nil)
+func (c *Client) deleteDpiGroup(ctx context.Context, site, id string) error {
+	err := c.do(ctx, "DELETE", fmt.Sprintf("s/%s/rest/dpigroup/%s", site, id), struct{}{}, nil)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (c *Client) createDpiGroup(site string, d *DpiGroup) (*DpiGroup, error) {
+func (c *Client) createDpiGroup(ctx context.Context, site string, d *DpiGroup) (*DpiGroup, error) {
 	var respBody struct {
 		Meta meta       `json:"meta"`
 		Data []DpiGroup `json:"data"`
 	}
 
-	err := c.do("POST", fmt.Sprintf("s/%s/rest/dpigroup", site), d, &respBody)
+	err := c.do(ctx, "POST", fmt.Sprintf("s/%s/rest/dpigroup", site), d, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -85,13 +89,13 @@ func (c *Client) createDpiGroup(site string, d *DpiGroup) (*DpiGroup, error) {
 	return &new, nil
 }
 
-func (c *Client) updateDpiGroup(site string, d *DpiGroup) (*DpiGroup, error) {
+func (c *Client) updateDpiGroup(ctx context.Context, site string, d *DpiGroup) (*DpiGroup, error) {
 	var respBody struct {
 		Meta meta       `json:"meta"`
 		Data []DpiGroup `json:"data"`
 	}
 
-	err := c.do("PUT", fmt.Sprintf("s/%s/rest/dpigroup/%s", site, d.ID), d, &respBody)
+	err := c.do(ctx, "PUT", fmt.Sprintf("s/%s/rest/dpigroup/%s", site, d.ID), d, &respBody)
 	if err != nil {
 		return nil, err
 	}
