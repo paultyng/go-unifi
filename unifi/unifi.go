@@ -77,28 +77,28 @@ func (c *Client) do(ctx context.Context, method, relativeURL string, reqBody int
 
 		reqBytes, err = json.Marshal(reqBody)
 		if err != nil {
-			return err
+			return fmt.Errorf("unable to marshal JSON: %s %s %w", method, relativeURL, err)
 		}
 		reqReader = bytes.NewReader(reqBytes)
 	}
 
 	reqURL, err := url.Parse(relativeURL)
 	if err != nil {
-		return err
+		return fmt.Errorf("unable to parse URL: %s %s %w", method, relativeURL, err)
 	}
 
 	url := c.baseURL.ResolveReference(reqURL)
 
 	req, err := http.NewRequestWithContext(ctx, method, url.String(), reqReader)
 	if err != nil {
-		return err
+		return fmt.Errorf("unable to create request: %s %s %w", method, relativeURL, err)
 	}
 
 	req.Header.Set("User-Agent", "terraform-provider-unifi/0.1")
 
 	resp, err := c.c.Do(req)
 	if err != nil {
-		return err
+		return fmt.Errorf("unable to perform request: %s %s %w", method, relativeURL, err)
 	}
 	defer resp.Body.Close()
 
@@ -123,7 +123,7 @@ func (c *Client) do(ctx context.Context, method, relativeURL string, reqBody int
 
 	err = json.NewDecoder(resp.Body).Decode(respBody)
 	if err != nil {
-		return err
+		return fmt.Errorf("unable to decode body: %s %s %w", method, relativeURL, err)
 	}
 
 	return nil
