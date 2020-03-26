@@ -9,35 +9,21 @@ import (
 func (dst *Network) UnmarshalJSON(b []byte) error {
 	type Alias Network
 	aux := &struct {
-		VLAN           json.Number `json:"vlan"`
-		DHCPDLeaseTime json.Number `json:"dhcpd_leasetime"`
+		VLAN           emptyStringInt `json:"vlan"`
+		DHCPDLeaseTime emptyStringInt `json:"dhcpd_leasetime"`
 
 		*Alias
 	}{
 		Alias: (*Alias)(dst),
 	}
+
 	err := json.Unmarshal(b, &aux)
 	if err != nil {
-		return err
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
 	}
 
-	dst.VLAN = 0
-	if aux.VLAN.String() != "" {
-		n, err := aux.VLAN.Int64()
-		if err != nil {
-			return err
-		}
-		dst.VLAN = int(n)
-	}
-
-	dst.DHCPDLeaseTime = 0
-	if aux.DHCPDLeaseTime.String() != "" {
-		n, err := aux.DHCPDLeaseTime.Int64()
-		if err != nil {
-			return err
-		}
-		dst.DHCPDLeaseTime = int(n)
-	}
+	dst.VLAN = int(aux.VLAN)
+	dst.DHCPDLeaseTime = int(aux.DHCPDLeaseTime)
 
 	return nil
 }

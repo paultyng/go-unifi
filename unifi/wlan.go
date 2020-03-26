@@ -8,23 +8,19 @@ import (
 func (n *WLAN) UnmarshalJSON(b []byte) error {
 	type Alias WLAN
 	aux := &struct {
-		VLAN json.Number `json:"vlan"`
+		VLAN emptyStringInt `json:"vlan"`
 		*Alias
 	}{
 		Alias: (*Alias)(n),
 	}
+
 	err := json.Unmarshal(b, &aux)
 	if err != nil {
 		return err
 	}
-	n.VLAN = 0
-	if aux.VLAN.String() != "" {
-		vlan, err := aux.VLAN.Int64()
-		if err != nil {
-			return err
-		}
-		n.VLAN = int(vlan)
-	}
+
+	n.VLAN = int(aux.VLAN)
+
 	return nil
 }
 
