@@ -26,6 +26,7 @@ type SettingMgmt struct {
 	AdvancedFeatureEnabled  bool     `json:"advanced_feature_enabled"`
 	AlertEnabled            bool     `json:"alert_enabled"`
 	AutoUpgrade             bool     `json:"auto_upgrade"`
+	BootSound               bool     `json:"boot_sound"`
 	LedEnabled              bool     `json:"led_enabled"`
 	OutdoorModeEnabled      bool     `json:"outdoor_mode_enabled"`
 	UnifiIDpEnabled         bool     `json:"unifi_idp_enabled"`

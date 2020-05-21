@@ -64,7 +64,7 @@ type WLAN struct {
 	RADIUSMACAuthEnabled      bool     `json:"radius_mac_auth_enabled"`
 	RADIUSMACaclEmptyPassword bool     `json:"radius_macacl_empty_password"`
 	RADIUSMACaclFormat        string   `json:"radius_macacl_format,omitempty"` // none_lower|hyphen_lower|colon_lower|none_upper|hyphen_upper|colon_upper
-	RADIUSprofileID           string   `json:"radiusprofile_id"`
+	RADIUSProfileID           string   `json:"radiusprofile_id"`
 	RoamClusterID             int      `json:"roam_cluster_id,omitempty"` // [0-9]|[1-2][0-9]|[3][0-1]|^$
 	RrmEnabled                bool     `json:"rrm_enabled"`
 	Schedule                  []string `json:"schedule,omitempty"` // (sun|mon|tue|wed|thu|fri|sat)(\-(sun|mon|tue|wed|thu|fri|sat))?\|([0-2][0-9][0-5][0-9])\-([0-2][0-9][0-5][0-9])

@@ -52,6 +52,7 @@ var fieldReps = []replacement{
 	{"Pd", "PD"},
 	{"Pmf", "PMF"},
 	{"Qos", "QOS"},
+	{"Radiusprofile", "RADIUSProfile"},
 	{"Radius", "RADIUS"},
 	{"Ssid", "SSID"},
 	{"Startdate", "StartDate"},
@@ -75,6 +76,7 @@ var fileReps = []replacement{
 	{"Dhcp", "DHCP"},
 	{"Wlan", "WLAN"},
 	{"NetworkConf", "Network"},
+	{"RadiusProfile", "RADIUSProfile"},
 }
 
 func cleanName(name string, reps []replacement) string {
@@ -115,6 +117,10 @@ func main() {
 		}
 
 		if name == "Setting.json" {
+			continue
+		}
+
+		if name == "Wall.json" {
 			continue
 		}
 
@@ -325,7 +331,7 @@ func normalizeValidation(re string) string {
 	return re
 }
 
-func typeFromValidation(validation interface{}) (string, string, bool, error) {
+func typeFromValidation(validation interface{}) (ty string, comment string, omitempty bool, err error) {
 	switch validation := validation.(type) {
 	case []interface{}:
 		if len(validation) == 0 {
@@ -339,6 +345,28 @@ func typeFromValidation(validation interface{}) (string, string, bool, error) {
 			return "", "", false, err
 		}
 		return fmt.Sprintf("[]%s", elementType), elementComment, true, nil
+	case map[string]interface{}:
+		fieldNames := []string{}
+		fieldCodes := map[string]string{}
+		for name, fv := range validation {
+			fieldNames = append(fieldNames, name)
+			fieldCode, err := generateField(name, fv)
+			if err != nil {
+				return "", "", false, err
+			}
+			fieldCodes[name] = fieldCode
+		}
+
+		// TODO: sort by normalized name, not this name
+		sort.Strings(fieldNames)
+
+		code := "struct {\n"
+		for _, name := range fieldNames {
+			code += fieldCodes[name] + "\n"
+		}
+		code += "\n}"
+
+		return code, "", false, nil
 	case string:
 		comment := validation
 		normalized := normalizeValidation(validation)

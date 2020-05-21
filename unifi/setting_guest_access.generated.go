@@ -78,7 +78,7 @@ type SettingGuestAccess struct {
 	RADIUSDisconnectEnabled                bool     `json:"radius_disconnect_enabled"`
 	RADIUSDisconnectPort                   int      `json:"radius_disconnect_port,omitempty"` // [1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5]
 	RADIUSEnabled                          bool     `json:"radius_enabled"`
-	RADIUSprofileID                        string   `json:"radiusprofile_id"`
+	RADIUSProfileID                        string   `json:"radiusprofile_id"`
 	RedirectEnabled                        bool     `json:"redirect_enabled"`
 	RedirectHttps                          bool     `json:"redirect_https"`
 	RedirectToHttps                        bool     `json:"redirect_to_https"`

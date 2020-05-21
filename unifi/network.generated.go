@@ -118,7 +118,7 @@ type Network struct {
 	PptpcUsername           string   `json:"pptpc_username,omitempty"`       // [^\"\' ]+
 	Priority                int      `json:"priority,omitempty"`             // [1-4]
 	Purpose                 string   `json:"purpose,omitempty"`              // corporate|guest|remote-user-vpn|site-vpn|vlan-only|vpn-client|wan
-	RADIUSprofileID         string   `json:"radiusprofile_id"`
+	RADIUSProfileID         string   `json:"radiusprofile_id"`
 	RemoteSiteID            string   `json:"remote_site_id"`
 	RemoteSiteSubnets       []string `json:"remote_site_subnets,omitempty"` // ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\/([1-9]|[1-2][0-9]|30)$|^$
 	RemoteVPNSubnets        []string `json:"remote_vpn_subnets,omitempty"`  // ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\/([1-9]|[1-2][0-9]|30)$|^$
