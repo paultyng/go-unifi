@@ -193,6 +193,9 @@ type %s struct {
 
 	for _, name := range fieldNames {
 		switch {
+		case structName == "Account" && name == "ip":
+			code += "\tIP string `json:\"ip,omitempty\"`\n"
+			continue
 		case structName == "User" && name == "blocked":
 			code += "\tBlocked bool `json:\"blocked,omitempty\"`\n"
 			continue

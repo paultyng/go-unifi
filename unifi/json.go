@@ -31,3 +31,11 @@ func (e *emptyStringInt) UnmarshalJSON(b []byte) error {
 	*e = emptyStringInt(i)
 	return nil
 }
+
+func (e *emptyStringInt) MarshalJSON() ([]byte, error) {
+	if e == nil || *e == 0 {
+		return []byte(`""`), nil
+	}
+
+	return []byte(strconv.Itoa(int(*e))), nil
+}
