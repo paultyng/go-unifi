@@ -23,7 +23,7 @@ type Device struct {
 	NoDelete bool   `json:"attr_no_delete,omitempty"`
 	NoEdit   bool   `json:"attr_no_edit,omitempty"`
 
-	MAC string `json:"mac"`
+	MAC string `json:"mac,omitempty"`
 
 	AtfEnabled                 bool                      `json:"atf_enabled,omitempty"`
 	BandsteeringMode           string                    `json:"bandsteering_mode,omitempty"` // off|equal|prefer_5g
