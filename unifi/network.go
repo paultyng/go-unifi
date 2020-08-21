@@ -22,8 +22,8 @@ func (dst *Network) UnmarshalJSON(b []byte) error {
 		return fmt.Errorf("unable to unmarshal alias: %w", err)
 	}
 
-	dst.VLAN = int(aux.VLAN)
-	dst.DHCPDLeaseTime = int(aux.DHCPDLeaseTime)
+	dst.VLAN = aux.VLAN.val
+	dst.DHCPDLeaseTime = aux.DHCPDLeaseTime.val
 
 	return nil
 }

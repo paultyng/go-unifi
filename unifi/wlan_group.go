@@ -19,7 +19,7 @@ func (n *WLANGroup) UnmarshalJSON(b []byte) error {
 		return err
 	}
 
-	n.Maxsta = int(aux.Maxsta)
+	n.Maxsta = aux.Maxsta.val
 
 	return nil
 }

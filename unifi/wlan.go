@@ -19,7 +19,7 @@ func (n *WLAN) UnmarshalJSON(b []byte) error {
 		return err
 	}
 
-	n.VLAN = int(aux.VLAN)
+	n.VLAN = aux.VLAN.val
 
 	return nil
 }
