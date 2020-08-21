@@ -138,7 +138,7 @@ func NewResource(structName string, resourcePath string) *Resource {
 	}
 
 	if resource.StructName == "Device" {
-		baseType.Fields[" MAC"] = NewFieldInfo("MAC", "mac", "string", "", false, false)
+		baseType.Fields[" MAC"] = NewFieldInfo("MAC", "mac", "string", "", true, false)
 	}
 
 	if resource.StructName == "User" {
