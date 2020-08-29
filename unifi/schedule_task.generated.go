@@ -34,7 +34,6 @@ type ScheduleTask struct {
 	StreamType              string `json:"stream_type,omitempty"` // media|sample
 	UpgradeTargets          []struct {
 		MAC string `json:"mac,omitempty"` // ^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$
-
 	} `json:"upgrade_targets,omitempty"`
 }
 

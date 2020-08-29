@@ -23,9 +23,13 @@ type SettingUsg struct {
 	NoDelete bool   `json:"attr_no_delete,omitempty"`
 	NoEdit   bool   `json:"attr_no_edit,omitempty"`
 
+	Key string `json:"key"`
+
 	ArpCacheBaseReachable          int    `json:"arp_cache_base_reachable,omitempty"` // ^$|^[1-9]{1}[0-9]{0,4}$
-	ArpCacheTimeout                int    `json:"arp_cache_timeout,omitempty"`
+	ArpCacheTimeout                string `json:"arp_cache_timeout,omitempty"`        // normal|min-dhcp-lease|custom
 	BroadcastPing                  bool   `json:"broadcast_ping"`
+	DHCPDHostfileUpdate            bool   `json:"dhcpd_hostfile_update"`
+	DHCPDUseDNSmasq                bool   `json:"dhcpd_use_dnsmasq"`
 	DHCPRelayAgentsPackets         string `json:"dhcp_relay_agents_packets"`      // append|discard|forward|replace|^$
 	DHCPRelayHopCount              int    `json:"dhcp_relay_hop_count,omitempty"` // ([1-9]|[1-8][0-9]|9[0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])|^$
 	DHCPRelayMaxSize               int    `json:"dhcp_relay_max_size,omitempty"`  // (6[4-9]|[7-9][0-9]|[1-8][0-9]{2}|9[0-8][0-9]|99[0-9]|1[0-3][0-9]{2}|1400)|^$
@@ -35,8 +39,6 @@ type SettingUsg struct {
 	DHCPRelayServer3               string `json:"dhcp_relay_server_3"`            // ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$
 	DHCPRelayServer4               string `json:"dhcp_relay_server_4"`            // ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$
 	DHCPRelayServer5               string `json:"dhcp_relay_server_5"`            // ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$
-	DHCPDHostfileUpdate            bool   `json:"dhcpd_hostfile_update"`
-	DHCPDUseDNSmasq                bool   `json:"dhcpd_use_dnsmasq"`
 	DNSmasqAllServers              bool   `json:"dnsmasq_all_servers"`
 	EchoServer                     string `json:"echo_server,omitempty"` // [^\"\' ]{1,255}
 	FirewallGuestDefaultLog        bool   `json:"firewall_guest_default_log"`
@@ -78,4 +80,43 @@ type SettingUsg struct {
 	UpnpNATPmpEnabled              bool   `json:"upnp_nat_pmp_enabled"`
 	UpnpSecureMode                 bool   `json:"upnp_secure_mode"`
 	UpnpWANInterface               string `json:"upnp_wan_interface,omitempty"` // WAN|WAN2
+}
+
+func (c *Client) getSettingUsg(ctx context.Context, site string) (*SettingUsg, error) {
+	var respBody struct {
+		Meta meta         `json:"meta"`
+		Data []SettingUsg `json:"data"`
+	}
+
+	err := c.do(ctx, "GET", fmt.Sprintf("s/%s/get/setting/usg", site), nil, &respBody)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(respBody.Data) != 1 {
+		return nil, &NotFoundError{}
+	}
+
+	d := respBody.Data[0]
+	return &d, nil
+}
+
+func (c *Client) updateSettingUsg(ctx context.Context, site string, d *SettingUsg) (*SettingUsg, error) {
+	var respBody struct {
+		Meta meta         `json:"meta"`
+		Data []SettingUsg `json:"data"`
+	}
+
+	err := c.do(ctx, "PUT", fmt.Sprintf("s/%s/set/setting/usg", site), d, &respBody)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(respBody.Data) != 1 {
+		return nil, &NotFoundError{}
+	}
+
+	new := respBody.Data[0]
+
+	return &new, nil
 }

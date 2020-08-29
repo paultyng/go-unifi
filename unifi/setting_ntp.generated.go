@@ -23,8 +23,49 @@ type SettingNtp struct {
 	NoDelete bool   `json:"attr_no_delete,omitempty"`
 	NoEdit   bool   `json:"attr_no_edit,omitempty"`
 
+	Key string `json:"key"`
+
 	NtpServer1 string `json:"ntp_server_1,omitempty"`
 	NtpServer2 string `json:"ntp_server_2,omitempty"`
 	NtpServer3 string `json:"ntp_server_3,omitempty"`
 	NtpServer4 string `json:"ntp_server_4,omitempty"`
+}
+
+func (c *Client) getSettingNtp(ctx context.Context, site string) (*SettingNtp, error) {
+	var respBody struct {
+		Meta meta         `json:"meta"`
+		Data []SettingNtp `json:"data"`
+	}
+
+	err := c.do(ctx, "GET", fmt.Sprintf("s/%s/get/setting/ntp", site), nil, &respBody)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(respBody.Data) != 1 {
+		return nil, &NotFoundError{}
+	}
+
+	d := respBody.Data[0]
+	return &d, nil
+}
+
+func (c *Client) updateSettingNtp(ctx context.Context, site string, d *SettingNtp) (*SettingNtp, error) {
+	var respBody struct {
+		Meta meta         `json:"meta"`
+		Data []SettingNtp `json:"data"`
+	}
+
+	err := c.do(ctx, "PUT", fmt.Sprintf("s/%s/set/setting/ntp", site), d, &respBody)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(respBody.Data) != 1 {
+		return nil, &NotFoundError{}
+	}
+
+	new := respBody.Data[0]
+
+	return &new, nil
 }

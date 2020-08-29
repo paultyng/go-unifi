@@ -23,6 +23,8 @@ type User struct {
 	NoDelete bool   `json:"attr_no_delete,omitempty"`
 	NoEdit   bool   `json:"attr_no_edit,omitempty"`
 
+	IP string `json:"ip,omitempty"` // non-generated field
+
 	Blocked     bool   `json:"blocked,omitempty"`
 	FixedIP     string `json:"fixed_ip,omitempty"`
 	Hostname    string `json:"hostname,omitempty"`
@@ -33,8 +35,6 @@ type User struct {
 	Note        string `json:"note,omitempty"`
 	UseFixedIP  bool   `json:"use_fixedip"`
 	UserGroupID string `json:"usergroup_id"`
-	// non-generated fields
-	IP string `json:"ip,omitempty"`
 }
 
 func (c *Client) listUser(ctx context.Context, site string) ([]User, error) {

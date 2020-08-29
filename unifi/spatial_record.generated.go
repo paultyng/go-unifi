@@ -29,8 +29,7 @@ type SpatialRecord struct {
 			X float64 `json:"x,omitempty"` // (^([-]?[\d]+)$)|(^([-]?[\d]+[.]?[\d]+)$)
 			Y float64 `json:"y,omitempty"` // (^([-]?[\d]+)$)|(^([-]?[\d]+[.]?[\d]+)$)
 			Z float64 `json:"z,omitempty"` // (^([-]?[\d]+)$)|(^([-]?[\d]+[.]?[\d]+)$)
-
-		} `json:"position"`
+		} `json:"position,omitempty"`
 	} `json:"devices,omitempty"`
 	Name string `json:"name,omitempty"` // .{1,128}
 }

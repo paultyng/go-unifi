@@ -23,6 +23,8 @@ type SettingSuperSmtp struct {
 	NoDelete bool   `json:"attr_no_delete,omitempty"`
 	NoEdit   bool   `json:"attr_no_edit,omitempty"`
 
+	Key string `json:"key"`
+
 	Enabled   bool   `json:"enabled"`
 	Host      string `json:"host,omitempty"`
 	Port      int    `json:"port,omitempty"` // [1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5]|^$
@@ -32,4 +34,43 @@ type SettingSuperSmtp struct {
 	UseSsl    bool   `json:"use_ssl"`
 	Username  string `json:"username,omitempty"`
 	XPassword string `json:"x_password,omitempty"`
+}
+
+func (c *Client) getSettingSuperSmtp(ctx context.Context, site string) (*SettingSuperSmtp, error) {
+	var respBody struct {
+		Meta meta               `json:"meta"`
+		Data []SettingSuperSmtp `json:"data"`
+	}
+
+	err := c.do(ctx, "GET", fmt.Sprintf("s/%s/get/setting/super_smtp", site), nil, &respBody)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(respBody.Data) != 1 {
+		return nil, &NotFoundError{}
+	}
+
+	d := respBody.Data[0]
+	return &d, nil
+}
+
+func (c *Client) updateSettingSuperSmtp(ctx context.Context, site string, d *SettingSuperSmtp) (*SettingSuperSmtp, error) {
+	var respBody struct {
+		Meta meta               `json:"meta"`
+		Data []SettingSuperSmtp `json:"data"`
+	}
+
+	err := c.do(ctx, "PUT", fmt.Sprintf("s/%s/set/setting/super_smtp", site), d, &respBody)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(respBody.Data) != 1 {
+		return nil, &NotFoundError{}
+	}
+
+	new := respBody.Data[0]
+
+	return &new, nil
 }

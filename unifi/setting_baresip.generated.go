@@ -23,8 +23,49 @@ type SettingBaresip struct {
 	NoDelete bool   `json:"attr_no_delete,omitempty"`
 	NoEdit   bool   `json:"attr_no_edit,omitempty"`
 
+	Key string `json:"key"`
+
 	Enabled       bool   `json:"enabled"`
 	OutboundProxy string `json:"outbound_proxy,omitempty"`
 	PackageUrl    string `json:"package_url,omitempty"`
 	Server        string `json:"server,omitempty"`
+}
+
+func (c *Client) getSettingBaresip(ctx context.Context, site string) (*SettingBaresip, error) {
+	var respBody struct {
+		Meta meta             `json:"meta"`
+		Data []SettingBaresip `json:"data"`
+	}
+
+	err := c.do(ctx, "GET", fmt.Sprintf("s/%s/get/setting/baresip", site), nil, &respBody)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(respBody.Data) != 1 {
+		return nil, &NotFoundError{}
+	}
+
+	d := respBody.Data[0]
+	return &d, nil
+}
+
+func (c *Client) updateSettingBaresip(ctx context.Context, site string, d *SettingBaresip) (*SettingBaresip, error) {
+	var respBody struct {
+		Meta meta             `json:"meta"`
+		Data []SettingBaresip `json:"data"`
+	}
+
+	err := c.do(ctx, "PUT", fmt.Sprintf("s/%s/set/setting/baresip", site), d, &respBody)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(respBody.Data) != 1 {
+		return nil, &NotFoundError{}
+	}
+
+	new := respBody.Data[0]
+
+	return &new, nil
 }

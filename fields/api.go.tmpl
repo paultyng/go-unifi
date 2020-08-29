@@ -1,0 +1,131 @@
+{{- $structName := .StructName }}
+
+{{ define "field" }}
+	{{ .FieldName }} {{ if .IsArray }}[]{{end}}{{ .FieldType }} `json:"{{ .JSONName }}{{ if .OmitEmpty }},omitempty{{ end }}"` {{ if .FieldValidation }}// {{ .FieldValidation }}{{ end }} {{- end }}
+{{ define "field-embed" }}
+	{{ .FieldName }} {{ if .IsArray }}[]{{end}}{{ if not .Fields }}{{ .FieldType }}{{ else }}struct {
+	{{ range $fk, $fv := .Fields }}{{ if not $fv }}
+	{{ else }}{{- template "field-embed" $fv }}{{ end }}{{ end }}
+}{{ end }} `json:"{{ .JSONName }}{{ if .OmitEmpty }},omitempty{{ end }}"` {{ if .FieldValidation }}// {{ .FieldValidation }}{{ end }} {{- end }}
+// Code generated from ace.jar fields *.json files
+// DO NOT EDIT.
+
+package unifi
+
+import (
+	"context"
+	"fmt"
+)
+
+// just to fix compile issues with the import
+var (
+	_ fmt.Formatter
+	_ context.Context
+)
+
+{{ if embedTypes -}}
+{{- $k := .StructName -}}
+{{- $v :=index .Types .StructName -}}
+type {{ $k }} struct {
+	{{ range $fk, $fv := $v.Fields }}{{ if not $fv }}
+	{{ else }}{{- template "field-embed" $fv }}{{ end }}{{ end }}
+}
+{{- else -}}
+{{ range $k, $v := .Types }}
+type {{ $k }} struct {
+	{{ range $fk, $fv := $v.Fields }}{{ if not $fv }}
+	{{ else }}{{- template "field" $fv }}{{ end }}{{ end }}
+}
+{{ end }}
+{{- end -}}
+
+{{ if not .IsSetting }}
+func (c *Client) list{{ .StructName }}(ctx context.Context, site string) ([]{{ .StructName }}, error) {
+	var respBody struct {
+		Meta meta `json:"meta"`
+		Data []{{ .StructName }} `json:"data"`
+	}
+
+	err := c.do(ctx, "GET", fmt.Sprintf("s/%s/{{ if eq .StructName "Device" }}stat{{ else }}rest{{ end }}/{{ .ResourcePath }}", site), nil, &respBody)
+	if err != nil {
+		return nil, err
+	}
+
+	return respBody.Data, nil
+}
+{{- end }}
+
+func (c *Client) get{{ .StructName }}(ctx context.Context, site{{ if not .IsSetting }}, id{{ end }} string) (*{{ .StructName }}, error) {
+	var respBody struct {
+		Meta meta `json:"meta"`
+		Data []{{ .StructName }} `json:"data"`
+	}
+{{ if .IsSetting }}
+	err := c.do(ctx, "GET", fmt.Sprintf("s/%s/get/setting/{{ .ResourcePath }}", site), nil, &respBody)
+{{- else }}
+	err := c.do(ctx, "GET", fmt.Sprintf("s/%s/{{ if eq .StructName "Device" }}stat{{ else }}rest{{ end }}/{{ .ResourcePath }}/%s", site, id), nil, &respBody)
+{{- end }}
+	if err != nil {
+		return nil, err
+	}
+
+	if len(respBody.Data) != 1 {
+		return nil, &NotFoundError{}
+	}
+
+	d := respBody.Data[0]
+	return &d, nil
+}
+
+{{ if not .IsSetting }}
+func (c *Client) delete{{ .StructName }}(ctx context.Context, site, id string) error {
+	err := c.do(ctx, "DELETE", fmt.Sprintf("s/%s/rest/{{ .ResourcePath }}/%s", site, id), struct{}{}, nil)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (c *Client) create{{ .StructName }}(ctx context.Context, site string, d *{{ .StructName }}) (*{{ .StructName }}, error) {
+	var respBody struct {
+		Meta meta      `json:"meta"`
+		Data []{{ .StructName }} `json:"data"`
+	}
+
+	err := c.do(ctx, "POST", fmt.Sprintf("s/%s/rest/{{ .ResourcePath }}", site), d, &respBody)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(respBody.Data) != 1 {
+		return nil, &NotFoundError{}
+	}
+
+	new := respBody.Data[0]
+
+	return &new, nil
+}
+{{- end }}
+
+func (c *Client) update{{ .StructName }}(ctx context.Context, site string, d *{{ .StructName }}) (*{{ .StructName }}, error) {
+	var respBody struct {
+		Meta meta      `json:"meta"`
+		Data []{{ .StructName }} `json:"data"`
+	}
+{{ if .IsSetting }}
+	err := c.do(ctx, "PUT", fmt.Sprintf("s/%s/set/setting/{{ .ResourcePath }}", site), d, &respBody)
+{{- else }}
+	err := c.do(ctx, "PUT", fmt.Sprintf("s/%s/rest/{{ .ResourcePath }}/%s", site, d.ID), d, &respBody)
+{{- end }}
+	if err != nil {
+		return nil, err
+	}
+
+	if len(respBody.Data) != 1 {
+		return nil, &NotFoundError{}
+	}
+
+	new := respBody.Data[0]
+
+	return &new, nil
+}

@@ -23,6 +23,8 @@ type SettingSuperMgmt struct {
 	NoDelete bool   `json:"attr_no_delete,omitempty"`
 	NoEdit   bool   `json:"attr_no_edit,omitempty"`
 
+	Key string `json:"key"`
+
 	AutoUpgrade                              bool     `json:"auto_upgrade"`
 	AutobackupCronExpr                       string   `json:"autobackup_cron_expr,omitempty"`
 	AutobackupDays                           int      `json:"autobackup_days,omitempty"`
@@ -68,4 +70,43 @@ type SettingSuperMgmt struct {
 	UploadDebuggingInfoEnabled               bool     `json:"upload_debugging_info_enabled"`
 	XSshPassword                             string   `json:"x_ssh_password,omitempty"`
 	XSshUsername                             string   `json:"x_ssh_username,omitempty"`
+}
+
+func (c *Client) getSettingSuperMgmt(ctx context.Context, site string) (*SettingSuperMgmt, error) {
+	var respBody struct {
+		Meta meta               `json:"meta"`
+		Data []SettingSuperMgmt `json:"data"`
+	}
+
+	err := c.do(ctx, "GET", fmt.Sprintf("s/%s/get/setting/super_mgmt", site), nil, &respBody)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(respBody.Data) != 1 {
+		return nil, &NotFoundError{}
+	}
+
+	d := respBody.Data[0]
+	return &d, nil
+}
+
+func (c *Client) updateSettingSuperMgmt(ctx context.Context, site string, d *SettingSuperMgmt) (*SettingSuperMgmt, error) {
+	var respBody struct {
+		Meta meta               `json:"meta"`
+		Data []SettingSuperMgmt `json:"data"`
+	}
+
+	err := c.do(ctx, "PUT", fmt.Sprintf("s/%s/set/setting/super_mgmt", site), d, &respBody)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(respBody.Data) != 1 {
+		return nil, &NotFoundError{}
+	}
+
+	new := respBody.Data[0]
+
+	return &new, nil
 }

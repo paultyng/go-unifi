@@ -1,15 +1,19 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
+	"flag"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
+	"path"
 	"path/filepath"
 	"regexp"
-	"sort"
 	"strconv"
 	"strings"
+	"text/template"
 
 	"github.com/iancoleman/strcase"
 )
@@ -79,6 +83,76 @@ var fileReps = []replacement{
 	{"RadiusProfile", "RADIUSProfile"},
 }
 
+var embedTypes bool
+
+type Resource struct {
+	StructName   string
+	ResourcePath string
+	Types        map[string]*FieldInfo
+}
+
+type FieldInfo struct {
+	FieldName       string
+	JSONName        string
+	FieldType       string
+	FieldValidation string
+	OmitEmpty       bool
+	IsArray         bool
+	Fields          map[string]*FieldInfo
+}
+
+func NewResource(structName string, resourcePath string) *Resource {
+	baseType := NewFieldInfo(structName, resourcePath, "struct", "", false, false)
+	resource := &Resource{
+		StructName:   structName,
+		ResourcePath: resourcePath,
+		Types: map[string]*FieldInfo{
+			structName: baseType,
+		},
+	}
+
+	// Since template files iterate through map keys in sorted order, these initial fields
+	// are named such that they stay at the top for consistency. The spacer items create a
+	// blank line in the resulting generated file.
+	//
+	// This hack is here for stability of the generatd code, but can be removed if desired.
+	baseType.Fields = map[string]*FieldInfo{
+		"   ID":      NewFieldInfo("ID", "_id", "string", "", true, false),
+		"   SiteID":  NewFieldInfo("SiteID", "site_id", "string", "", true, false),
+		"   _Spacer": nil,
+
+		"  Hidden":   NewFieldInfo("Hidden", "attr_hidden", "bool", "", true, false),
+		"  HiddenID": NewFieldInfo("HiddenID", "attr_hidden_id", "string", "", true, false),
+		"  NoDelete": NewFieldInfo("NoDelete", "attr_no_delete", "bool", "", true, false),
+		"  NoEdit":   NewFieldInfo("NoEdit", "attr_no_edit", "bool", "", true, false),
+		"  _Spacer":  nil,
+
+		" _Spacer": nil,
+	}
+
+	if resource.IsSetting() {
+		resource.ResourcePath = strcase.ToSnake(strings.TrimPrefix(structName, "Setting"))
+		baseType.Fields[" Key"] = NewFieldInfo("Key", "key", "string", "", false, false)
+	}
+
+	if resource.StructName == "User" {
+		baseType.Fields[" IP"] = NewFieldInfo("IP", "ip", "string", "non-generated field", true, false)
+	}
+
+	return resource
+}
+
+func NewFieldInfo(fieldName string, jsonName string, fieldType string, fieldValidation string, omitempty bool, isArray bool) *FieldInfo {
+	return &FieldInfo{
+		FieldName:       fieldName,
+		JSONName:        jsonName,
+		FieldType:       fieldType,
+		FieldValidation: fieldValidation,
+		OmitEmpty:       omitempty,
+		IsArray:         isArray,
+	}
+}
+
 func cleanName(name string, reps []replacement) string {
 	for _, rep := range reps {
 		name = strings.ReplaceAll(name, rep.Old, rep.New)
@@ -87,16 +161,41 @@ func cleanName(name string, reps []replacement) string {
 	return name
 }
 
+func usage() {
+	fmt.Printf("Usage: %s [OPTIONS] versionDir outputDir\n", path.Base(os.Args[0]))
+	flag.PrintDefaults()
+}
+
 func main() {
-	version := os.Args[1]
-	out := os.Args[2]
+
+	flag.Usage = usage
+
+	noEmbeddedTypes := flag.Bool("no-embedded-types", false, "Whether to generate top-level type definitions for embedded type definitions")
+	flag.Parse()
+
+	versionDir := flag.Arg(0)
+	outputDir := flag.Arg(1)
+	embedTypes = !*noEmbeddedTypes
+
+	if versionDir == "" {
+		fmt.Print("error: no version directory specified\n\n")
+		usage()
+		os.Exit(1)
+	}
+
+	if outputDir == "" {
+		fmt.Print("error: no output directory specified\n\n")
+		usage()
+		os.Exit(1)
+	}
+
 	wd, err := os.Getwd()
 	if err != nil {
 		panic(err)
 	}
 
-	fieldsDir := filepath.Join(wd, version)
-	outDir := filepath.Join(wd, out)
+	fieldsDir := filepath.Join(wd, versionDir)
+	outDir := filepath.Join(wd, outputDir)
 
 	fieldsFiles, err := ioutil.ReadDir(fieldsDir)
 	if err != nil {
@@ -105,22 +204,14 @@ func main() {
 
 	for _, fieldsFile := range fieldsFiles {
 		name := fieldsFile.Name()
-
-		// if name != "WlanConf.json" {
-		// 	continue
-		// }
-
 		ext := filepath.Ext(name)
 
+		switch name {
+		case "AuthenticationRequest.json", "Setting.json", "Wall.json":
+			continue
+		}
+
 		if filepath.Ext(name) != ".json" {
-			continue
-		}
-
-		if name == "Setting.json" {
-			continue
-		}
-
-		if name == "Wall.json" {
 			continue
 		}
 
@@ -130,12 +221,21 @@ func main() {
 		structName := cleanName(name, fileReps)
 
 		goFile := strcase.ToSnake(structName) + ".generated.go"
-		code, err := generateCode(filepath.Join(fieldsDir, fieldsFile.Name()), structName, urlPath)
+		fieldsFilePath := filepath.Join(fieldsDir, fieldsFile.Name())
+		b, err := ioutil.ReadFile(fieldsFilePath)
 		if err != nil {
 			fmt.Printf("skipping file %s: %s", fieldsFile.Name(), err)
 			continue
-			// panic(err)
 		}
+
+		resource := NewResource(structName, urlPath)
+		err = resource.processJSON(b)
+		if err != nil {
+			fmt.Printf("skipping file %s: %s", fieldsFile.Name(), err)
+			continue
+		}
+
+		code, _ := resource.generateCode()
 
 		_ = os.Remove(filepath.Join(outDir, goFile))
 		ioutil.WriteFile(filepath.Join(outDir, goFile), ([]byte)(code), 0644)
@@ -144,174 +244,144 @@ func main() {
 	fmt.Printf("%s\n", outDir)
 }
 
-func generateCode(fieldsFile string, structName string, urlPath string) (string, error) {
-	b, err := ioutil.ReadFile(fieldsFile)
-	if err != nil {
-		return "", err
-	}
+func (r *Resource) IsSetting() bool {
+	return strings.HasPrefix(r.StructName, "Setting")
+}
 
-	var fields map[string]interface{}
-	err = json.Unmarshal(b, &fields)
-	if err != nil {
-		return "", err
-	}
-
-	code := fmt.Sprintf(`// Code generated from ace.jar fields *.json files
-// DO NOT EDIT.
-
-package unifi
-
-import (
-	"context"
-	"fmt"
-)
-
-// just to fix compile issues with the import
-var (
-	_ fmt.Formatter
-	_ context.Context
-)
-
-type %s struct {
-	ID     string `+"`json:\"_id,omitempty\"`"+`
-	SiteID string `+"`json:\"site_id,omitempty\"`"+`
-
-	Hidden   bool   `+"`json:\"attr_hidden,omitempty\"`"+`
-	HiddenID string `+"`json:\"attr_hidden_id,omitempty\"`"+`
-	NoDelete bool   `+"`json:\"attr_no_delete,omitempty\"`"+`
-	NoEdit   bool   `+"`json:\"attr_no_edit,omitempty\"`"+`
-
-`, structName)
-
-	fieldNames := []string{}
-	for name := range fields {
-		fieldNames = append(fieldNames, name)
-	}
-
-	// TODO: sort by normalized name, not this name
-	sort.Strings(fieldNames)
-
-	for _, name := range fieldNames {
-		switch {
-		case structName == "Account" && name == "ip":
-			code += "\tIP string `json:\"ip,omitempty\"`\n"
-			continue
-		case structName == "SettingUsg" && strings.HasSuffix(name, "_timeout"):
-			field := strcase.ToCamel(name)
-			field = cleanName(field, fieldReps)
-			code += fmt.Sprintf("\t%s int `json:\"%s,omitempty\"`\n", field, name)
-			continue
-		case structName == "User" && name == "blocked":
-			code += "\tBlocked bool `json:\"blocked,omitempty\"`\n"
-			continue
-		case structName == "User" && name == "last_seen":
-			code += "\tLastSeen int `json:\"last_seen,omitempty\"`\n"
-			continue
-		}
-
-		validation := fields[name]
-		fieldCode, err := generateField(name, validation)
+func (r *Resource) processFields(fields map[string]interface{}) {
+	t := r.Types[r.StructName]
+	for name, validation := range fields {
+		fieldInfo, err := r.fieldInfoFromValidation(name, validation)
 		if err != nil {
-			return "", err
+			continue
 		}
-		code += fieldCode + "\n"
+
+		switch {
+		case r.StructName == "Account" && name == "ip":
+			fieldInfo.OmitEmpty = true
+		case r.StructName == "Device" && name == "stp_priority":
+			fieldInfo.OmitEmpty = true
+			fieldInfo.FieldType = "string"
+		case r.StructName == "Device" && (name == "x" || name == "y"):
+			fieldInfo.OmitEmpty = true
+			fieldInfo.FieldType = "int"
+		case r.StructName == "Device":
+			fieldInfo.OmitEmpty = true
+		case r.StructName == "SettingUsg" && strings.HasSuffix(name, "_timeout") && name != "arp_cache_timeout":
+			fieldInfo.FieldType = "int"
+		case r.StructName == "User" && name == "blocked":
+			fieldInfo.FieldType = "bool"
+		case r.StructName == "User" && name == "last_seen":
+			fieldInfo.FieldType = "int"
+		}
+
+		t.Fields[fieldInfo.FieldName] = fieldInfo
 	}
-
-	switch structName {
-	case "User":
-		code += "\t// non-generated fields\n\tIP string `json:\"ip,omitempty\"`\n"
-	}
-
-	code = code + "}\n"
-
-	if strings.HasPrefix(structName, "Setting") {
-		return code, nil
-	}
-
-	code = code + fmt.Sprintf(`
-func (c *Client) list%[1]s(ctx context.Context, site string) ([]%[1]s, error) {
-	var respBody struct {
-		Meta meta `+"`"+`json:"meta"`+"`"+`
-		Data []%[1]s `+"`"+`json:"data"`+"`"+`
-	}
-
-	err := c.do(ctx, "GET", fmt.Sprintf("s/%%s/rest/%[2]s", site), nil, &respBody)
-	if err != nil {
-		return nil, err
-	}
-
-	return respBody.Data, nil
 }
 
-func (c *Client) get%[1]s(ctx context.Context, site, id string) (*%[1]s, error) {
-	var respBody struct {
-		Meta meta `+"`"+`json:"meta"`+"`"+`
-		Data []%[1]s `+"`"+`json:"data"`+"`"+`
+func (r *Resource) fieldInfoFromValidation(name string, validation interface{}) (f *FieldInfo, err error) {
+	fieldName := strcase.ToCamel(name)
+	fieldName = cleanName(fieldName, fieldReps)
+
+	empty := &FieldInfo{}
+
+	switch validation := validation.(type) {
+	case []interface{}:
+		if len(validation) == 0 {
+			return NewFieldInfo(fieldName, name, "string", "", false, true), nil
+		}
+		if len(validation) > 1 {
+			return empty, fmt.Errorf("unknown validation %#v", validation)
+		}
+
+		fieldInfo, err := r.fieldInfoFromValidation(name, validation[0])
+		if err != nil {
+			return empty, err
+		}
+
+		fieldInfo.OmitEmpty = true
+		fieldInfo.IsArray = true
+
+		return fieldInfo, nil
+	case map[string]interface{}:
+		typeName := r.StructName + "_" + fieldName
+
+		result := NewFieldInfo(fieldName, name, typeName, "", true, false)
+		result.Fields = make(map[string]*FieldInfo)
+
+		for name, fv := range validation {
+			child, err := r.fieldInfoFromValidation(name, fv)
+			if err != nil {
+				return empty, err
+			}
+
+			result.Fields[child.FieldName] = child
+		}
+
+		r.Types[typeName] = result
+		return result, nil
+
+	case string:
+		fieldValidation := validation
+		normalized := normalizeValidation(validation)
+
+		omitEmpty := r.StructName == "Device"
+
+		switch {
+		case normalized == "falsetrue" || normalized == "truefalse":
+			return NewFieldInfo(fieldName, name, "bool", "", omitEmpty, false), nil
+		default:
+			if _, err := strconv.ParseFloat(normalized, 64); err == nil {
+				if normalized == "09" || normalized == "09.09" {
+					fieldValidation = ""
+				}
+
+				if strings.Contains(normalized, ".") {
+					if strings.Contains(validation, "\\.){3}") {
+						break
+					}
+
+					return NewFieldInfo(fieldName, name, "float64", fieldValidation, true, false), nil
+				}
+
+				return NewFieldInfo(fieldName, name, "int", fieldValidation, true, false), nil
+			}
+		}
+		if validation != "" && normalized != "" {
+			fmt.Printf("normalize %q to %q\n", validation, normalized)
+		}
+
+		omitEmpty = omitEmpty || (!strings.Contains(validation, "^$") && !strings.HasSuffix(fieldName, "ID"))
+		return NewFieldInfo(fieldName, name, "string", fieldValidation, omitEmpty, false), nil
 	}
 
-	err := c.do(ctx, "GET", fmt.Sprintf("s/%%s/rest/%[2]s/%%s", site, id), nil, &respBody)
-	if err != nil {
-		return nil, err
-	}
-
-	if len(respBody.Data) != 1 {
-		return nil, &NotFoundError{}
-	}
-
-	d := respBody.Data[0]
-	return &d, nil
+	return empty, fmt.Errorf("unable to determine type from validation %q", validation)
 }
 
-func (c *Client) delete%[1]s(ctx context.Context, site, id string) error {
-	err := c.do(ctx, "DELETE", fmt.Sprintf("s/%%s/rest/%[2]s/%%s", site, id), struct{}{}, nil)
+func (r *Resource) processJSON(b []byte) error {
+	var fields map[string]interface{}
+	err := json.Unmarshal(b, &fields)
 	if err != nil {
 		return err
 	}
+
+	r.processFields(fields)
+
 	return nil
 }
 
-func (c *Client) create%[1]s(ctx context.Context, site string, d *%[1]s) (*%[1]s, error) {
-	var respBody struct {
-		Meta meta `+"`"+`json:"meta"`+"`"+`
-		Data []%[1]s `+"`"+`json:"data"`+"`"+`
-	}
+func (r *Resource) generateCode() (string, error) {
+	var err error
+	var buf bytes.Buffer
+	writer := io.Writer(&buf)
 
-	err := c.do(ctx, "POST", fmt.Sprintf("s/%%s/rest/%[2]s", site), d, &respBody)
-	if err != nil {
-		return nil, err
-	}
+	tpl := template.Must(template.New("api.go.tmpl").Funcs(template.FuncMap{
+		"embedTypes": func() bool { return embedTypes },
+	}).ParseFiles("api.go.tmpl"))
 
-	if len(respBody.Data) != 1 {
-		return nil, &NotFoundError{}
-	}
+	tpl.Execute(writer, r)
 
-	new := respBody.Data[0]
-
-	return &new, nil
-}
-
-func (c *Client) update%[1]s(ctx context.Context, site string, d *%[1]s) (*%[1]s, error) {
-	var respBody struct {
-		Meta meta `+"`"+`json:"meta"`+"`"+`
-		Data []%[1]s `+"`"+`json:"data"`+"`"+`
-	}
-
-	err := c.do(ctx, "PUT", fmt.Sprintf("s/%%s/rest/%[2]s/%%s", site, d.ID), d, &respBody)
-	if err != nil {
-		return nil, err
-	}
-
-	if len(respBody.Data) != 1 {
-		return nil, &NotFoundError{}
-	}
-
-	new := respBody.Data[0]
-
-	return &new, nil
-}
-`, structName, urlPath)
-
-	return code, nil
+	return buf.String(), err
 }
 
 func normalizeValidation(re string) string {
@@ -332,97 +402,4 @@ func normalizeValidation(re string) string {
 	re = strings.TrimSuffix(re, "$")
 
 	return re
-}
-
-func typeFromValidation(validation interface{}) (ty string, comment string, omitempty bool, err error) {
-	switch validation := validation.(type) {
-	case []interface{}:
-		if len(validation) == 0 {
-			return "[]string", "", false, nil
-		}
-		if len(validation) > 1 {
-			return "", "", false, fmt.Errorf("unknown validation %#v", validation)
-		}
-		elementType, elementComment, _, err := typeFromValidation(validation[0])
-		if err != nil {
-			return "", "", false, err
-		}
-		return fmt.Sprintf("[]%s", elementType), elementComment, true, nil
-	case map[string]interface{}:
-		fieldNames := []string{}
-		fieldCodes := map[string]string{}
-		for name, fv := range validation {
-			fieldNames = append(fieldNames, name)
-			fieldCode, err := generateField(name, fv)
-			if err != nil {
-				return "", "", false, err
-			}
-			fieldCodes[name] = fieldCode
-		}
-
-		// TODO: sort by normalized name, not this name
-		sort.Strings(fieldNames)
-
-		code := "struct {\n"
-		for _, name := range fieldNames {
-			code += fieldCodes[name] + "\n"
-		}
-		code += "\n}"
-
-		return code, "", false, nil
-	case string:
-		comment := validation
-		normalized := normalizeValidation(validation)
-		allowEmpty := strings.HasSuffix(validation, "|^$") || strings.HasPrefix(validation, "^$|")
-		switch {
-		case normalized == "falsetrue" || normalized == "truefalse":
-			return "bool", "", false, nil
-		default:
-			if _, err := strconv.ParseFloat(normalized, 64); err == nil {
-				if normalized == "09" || normalized == "09.09" {
-					comment = ""
-				}
-
-				if strings.Contains(normalized, ".") {
-					if strings.Contains(validation, "\\.){3}") {
-						break
-					}
-
-					return "float64", comment, true, nil
-				}
-
-				return "int", comment, true, nil
-			}
-		}
-		if validation != "" && normalized != "" {
-			fmt.Printf("normalize %q to %q\n", validation, normalized)
-		}
-		return "string", validation, !allowEmpty, nil
-	}
-	return "", "", false, fmt.Errorf("unable to determine type from validation %q", validation)
-}
-
-func generateField(name string, validation interface{}) (string, error) {
-	field := strcase.ToCamel(name)
-	field = cleanName(field, fieldReps)
-	fieldType, comment, omitempty, err := typeFromValidation(validation)
-	if err != nil {
-		return "", err
-	}
-
-	comment = strings.TrimSpace(fmt.Sprintf("// %s", comment))
-	if comment == "//" {
-		comment = ""
-	}
-
-	if fieldType == "string" && strings.HasSuffix(field, "ID") {
-		omitempty = false
-	}
-
-	omitemptyCode := ""
-	if omitempty {
-		omitemptyCode = ",omitempty"
-	}
-
-	return fmt.Sprintf("\t%s %s `json:\"%s%s\"` %s", field, fieldType, name, omitemptyCode, comment), nil
 }

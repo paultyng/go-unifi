@@ -23,5 +23,46 @@ type SettingCountry struct {
 	NoDelete bool   `json:"attr_no_delete,omitempty"`
 	NoEdit   bool   `json:"attr_no_edit,omitempty"`
 
+	Key string `json:"key"`
+
 	Code int `json:"code,omitempty"`
+}
+
+func (c *Client) getSettingCountry(ctx context.Context, site string) (*SettingCountry, error) {
+	var respBody struct {
+		Meta meta             `json:"meta"`
+		Data []SettingCountry `json:"data"`
+	}
+
+	err := c.do(ctx, "GET", fmt.Sprintf("s/%s/get/setting/country", site), nil, &respBody)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(respBody.Data) != 1 {
+		return nil, &NotFoundError{}
+	}
+
+	d := respBody.Data[0]
+	return &d, nil
+}
+
+func (c *Client) updateSettingCountry(ctx context.Context, site string, d *SettingCountry) (*SettingCountry, error) {
+	var respBody struct {
+		Meta meta             `json:"meta"`
+		Data []SettingCountry `json:"data"`
+	}
+
+	err := c.do(ctx, "PUT", fmt.Sprintf("s/%s/set/setting/country", site), d, &respBody)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(respBody.Data) != 1 {
+		return nil, &NotFoundError{}
+	}
+
+	new := respBody.Data[0]
+
+	return &new, nil
 }

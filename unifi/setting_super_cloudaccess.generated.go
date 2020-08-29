@@ -23,6 +23,8 @@ type SettingSuperCloudaccess struct {
 	NoDelete bool   `json:"attr_no_delete,omitempty"`
 	NoEdit   bool   `json:"attr_no_edit,omitempty"`
 
+	Key string `json:"key"`
+
 	DeviceAuth      string `json:"device_auth,omitempty"`
 	DeviceID        string `json:"device_id"`
 	Enabled         bool   `json:"enabled"`
@@ -30,4 +32,43 @@ type SettingSuperCloudaccess struct {
 	XCertificateArn string `json:"x_certificate_arn,omitempty"`
 	XCertificatePem string `json:"x_certificate_pem,omitempty"`
 	XPrivateKey     string `json:"x_private_key,omitempty"`
+}
+
+func (c *Client) getSettingSuperCloudaccess(ctx context.Context, site string) (*SettingSuperCloudaccess, error) {
+	var respBody struct {
+		Meta meta                      `json:"meta"`
+		Data []SettingSuperCloudaccess `json:"data"`
+	}
+
+	err := c.do(ctx, "GET", fmt.Sprintf("s/%s/get/setting/super_cloudaccess", site), nil, &respBody)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(respBody.Data) != 1 {
+		return nil, &NotFoundError{}
+	}
+
+	d := respBody.Data[0]
+	return &d, nil
+}
+
+func (c *Client) updateSettingSuperCloudaccess(ctx context.Context, site string, d *SettingSuperCloudaccess) (*SettingSuperCloudaccess, error) {
+	var respBody struct {
+		Meta meta                      `json:"meta"`
+		Data []SettingSuperCloudaccess `json:"data"`
+	}
+
+	err := c.do(ctx, "PUT", fmt.Sprintf("s/%s/set/setting/super_cloudaccess", site), d, &respBody)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(respBody.Data) != 1 {
+		return nil, &NotFoundError{}
+	}
+
+	new := respBody.Data[0]
+
+	return &new, nil
 }

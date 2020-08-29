@@ -23,7 +23,7 @@ type Account struct {
 	NoDelete bool   `json:"attr_no_delete,omitempty"`
 	NoEdit   bool   `json:"attr_no_edit,omitempty"`
 
-	IP               string `json:"ip,omitempty"`
+	IP               string `json:"ip,omitempty"`                 // ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$
 	Name             string `json:"name,omitempty"`               // ^[^"' ]+$
 	TunnelConfigType string `json:"tunnel_config_type,omitempty"` // vpn|802.1x|custom
 	TunnelMediumType int    `json:"tunnel_medium_type,omitempty"` // [1-9]|1[0-5]|^$
