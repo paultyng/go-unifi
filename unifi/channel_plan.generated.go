@@ -27,14 +27,12 @@ type ChannelPlan struct {
 		Channel   int    `json:"channel,omitempty"`   // 36|38|40|42|44|46|48|52|56|60|64|100|104|108|112|116|120|124|128|132|136|140|144|149|153|157|161|165|183|184|185|187|188|189|192|196
 		MAC       string `json:"mac,omitempty"`       // ^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$
 		Timestamp int    `json:"timestamp,omitempty"` // [1-9][0-9]{12}
-
 	} `json:"ap_blacklisted_channels,omitempty"`
 	ConfSource string `json:"conf_source,omitempty"` // manual|radio-ai
 	Coupling   []struct {
 		Rssi   int    `json:"rssi,omitempty"`
 		Source string `json:"source,omitempty"` // ^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2}).*$
 		Target string `json:"target,omitempty"` // ^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2}).*$
-
 	} `json:"coupling,omitempty"`
 	Date       string  `json:"date"` // ^$|^(20[0-9]{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9])Z?$
 	Fitness    float64 `json:"fitness,omitempty"`
@@ -48,7 +46,6 @@ type ChannelPlan struct {
 		TxPower       string `json:"tx_power,omitempty"`       // [\d]+|auto
 		TxPowerMode   string `json:"tx_power_mode,omitempty"`  // auto|medium|high|low|custom
 		Width         int    `json:"width,omitempty"`          // 20|40|80|160
-
 	} `json:"radio_table,omitempty"`
 	Satisfaction      float64 `json:"satisfaction,omitempty"`
 	SatisfactionTable []struct {
@@ -58,7 +55,6 @@ type ChannelPlan struct {
 	SiteBlacklistedChannels []struct {
 		Channel   int `json:"channel,omitempty"`   // 36|38|40|42|44|46|48|52|56|60|64|100|104|108|112|116|120|124|128|132|136|140|144|149|153|157|161|165|183|184|185|187|188|189|192|196
 		Timestamp int `json:"timestamp,omitempty"` // [1-9][0-9]{12}
-
 	} `json:"site_blacklisted_channels,omitempty"`
 }
 

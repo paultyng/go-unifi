@@ -28,13 +28,11 @@ type Hotspot2Conf struct {
 		Port     string `json:"port,omitempty"`     // (([1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5])|([1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5])-([1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5]))+(,([1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5])|,([1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5])-([1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5])){0,14}
 		Protocol string `json:"protocol,omitempty"` // icmp|tcp_udp|tcp|udp
 		Status   string `json:"status,omitempty"`   // closed|open|unknown
-
 	} `json:"capab,omitempty"`
 	CellularNetworkList []struct {
 		Mcc  int    `json:"mcc,omitempty"`
 		Mnc  int    `json:"mnc,omitempty"`
 		Name string `json:"name,omitempty"` // .{1,128}
-
 	} `json:"cellular_network_list,omitempty"`
 	DeauthReqTimeout int      `json:"deauth_req_timeout,omitempty"` // [1-9][0-9]|[1-9][0-9][0-9]|[1-2][0-9][0-9][0-9]|3[0-5][0-9][0-9]|3600
 	DisableDgaf      bool     `json:"disable_dgaf"`
@@ -42,7 +40,6 @@ type Hotspot2Conf struct {
 	FriendlyName     []struct {
 		Language string `json:"language,omitempty"` // [a-z]{3}
 		Text     string `json:"text,omitempty"`     // .{1,128}
-
 	} `json:"friendly_name,omitempty"`
 	GasComebackDelay int    `json:"gas_comeback_delay,omitempty"` // [1-9][0-9]|[1-9][0-9][0-9]|[1-2][0-9][0-9][0-9]|3[0-5][0-9][0-9]|300
 	Hessid           string `json:"hessid"`                       // ^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$|^$
@@ -81,16 +78,13 @@ type Hotspot2Conf struct {
 		Description []struct {
 			Language string `json:"language,omitempty"` // [a-z]{3}
 			Text     string `json:"text,omitempty"`     // .{1,128}
-
 		} `json:"description,omitempty"`
 		FriendlyName []struct {
 			Language string `json:"language,omitempty"` // [a-z]{3}
 			Text     string `json:"text,omitempty"`     // .{1,128}
-
 		} `json:"friendly_name,omitempty"`
 		Icon []struct {
 			Name string `json:"name,omitempty"` // .{1,128}
-
 		} `json:"icon,omitempty"`
 		MethodOmaDm      bool   `json:"method_oma_dm"`
 		MethodSoapXmlSpp bool   `json:"method_soap_xml_spp"`
@@ -109,13 +103,11 @@ type Hotspot2Conf struct {
 	QOSMapExceptions []struct {
 		Dcsp int `json:"dcsp,omitempty"`
 		Up   int `json:"up,omitempty"` // [0-7]
-
 	} `json:"qos_map_exceptions,omitempty"`
 	QOSMapStatus          bool `json:"qos_map_status"`
 	RoamingConsortiumList []struct {
 		Name string `json:"name,omitempty"` // .{1,128}
 		Oid  string `json:"oid,omitempty"`  // .{1,128}
-
 	} `json:"roaming_consortium_list,omitempty"`
 	TCFilename  string `json:"t_c_filename,omitempty"` // .{1,256}
 	TCTimestamp int    `json:"t_c_timestamp,omitempty"`
@@ -123,7 +115,6 @@ type Hotspot2Conf struct {
 	VenueName   []struct {
 		Language string `json:"language,omitempty"` // [a-z]{3}
 		Name     string `json:"name,omitempty"`     // .{1,128}
-
 	} `json:"venue_name,omitempty"`
 	VenueType int `json:"venue_type,omitempty"` // 0|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15
 }

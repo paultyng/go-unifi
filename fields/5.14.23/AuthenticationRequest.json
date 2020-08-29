@@ -1,0 +1,12 @@
+{
+  "username": ".{1,256}",
+  "password": ".{1,256}",
+  "remember": "true|false",
+  "strict": "true|false",
+  "site_name": ".{0,256}",
+  "sso_token": ".{0,256}",
+  "for_hotspot": "true|false",
+  "for_sso": "true|false",
+  "ubic_2fa_token": ".{0,256}",
+  "ubic_uuid": ".{0,256}"
+}

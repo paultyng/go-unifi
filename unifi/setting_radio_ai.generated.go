@@ -23,6 +23,8 @@ type SettingRadioAi struct {
 	NoDelete bool   `json:"attr_no_delete,omitempty"`
 	NoEdit   bool   `json:"attr_no_edit,omitempty"`
 
+	Key string `json:"key"`
+
 	ChannelsNa     []int    `json:"channels_na,omitempty"` // 36|40|44|48|52|56|60|64|100|104|108|112|116|120|124|128|132|136|140|144|149|153|157|161|165
 	ChannelsNg     []int    `json:"channels_ng,omitempty"` // 1|2|3|4|5|6|7|8|9|10|11|12|13|14
 	CronExpr       string   `json:"cron_expr,omitempty"`
@@ -34,4 +36,43 @@ type SettingRadioAi struct {
 	Optimize       []string `json:"optimize,omitempty"`        // channel|power
 	Radios         []string `json:"radios,omitempty"`          // na|ng
 	UseXY          bool     `json:"useXY"`
+}
+
+func (c *Client) getSettingRadioAi(ctx context.Context, site string) (*SettingRadioAi, error) {
+	var respBody struct {
+		Meta meta             `json:"meta"`
+		Data []SettingRadioAi `json:"data"`
+	}
+
+	err := c.do(ctx, "GET", fmt.Sprintf("s/%s/get/setting/radio_ai", site), nil, &respBody)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(respBody.Data) != 1 {
+		return nil, &NotFoundError{}
+	}
+
+	d := respBody.Data[0]
+	return &d, nil
+}
+
+func (c *Client) updateSettingRadioAi(ctx context.Context, site string, d *SettingRadioAi) (*SettingRadioAi, error) {
+	var respBody struct {
+		Meta meta             `json:"meta"`
+		Data []SettingRadioAi `json:"data"`
+	}
+
+	err := c.do(ctx, "PUT", fmt.Sprintf("s/%s/set/setting/radio_ai", site), d, &respBody)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(respBody.Data) != 1 {
+		return nil, &NotFoundError{}
+	}
+
+	new := respBody.Data[0]
+
+	return &new, nil
 }

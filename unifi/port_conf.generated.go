@@ -32,8 +32,8 @@ type PortConf struct {
 	Isolation                    bool     `json:"isolation"`
 	LldpmedEnabled               bool     `json:"lldpmed_enabled"`
 	LldpmedNotifyEnabled         bool     `json:"lldpmed_notify_enabled"`
-	Name                         string   `json:"name,omitempty"`
 	NATiveNetworkID              string   `json:"native_networkconf_id"`
+	Name                         string   `json:"name,omitempty"`
 	OpMode                       string   `json:"op_mode,omitempty"`  // switch
 	PoeMode                      string   `json:"poe_mode,omitempty"` // auto|pasv24|passthrough|off
 	PortSecurityEnabled          bool     `json:"port_security_enabled"`

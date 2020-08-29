@@ -23,6 +23,8 @@ type SettingGuestAccess struct {
 	NoDelete bool   `json:"attr_no_delete,omitempty"`
 	NoEdit   bool   `json:"attr_no_edit,omitempty"`
 
+	Key string `json:"key"`
+
 	AllowedSubnet                          string   `json:"allowed_subnet_,omitempty"`
 	Auth                                   string   `json:"auth,omitempty"` // none|password|hotspot|facebook_wifi|custom
 	AuthorizeUseSandbox                    bool     `json:"authorize_use_sandbox"`
@@ -111,4 +113,43 @@ type SettingGuestAccess struct {
 	XStripeApiKey                          string   `json:"x_stripe_api_key,omitempty"`
 	XWechatAppSecret                       string   `json:"x_wechat_app_secret,omitempty"`
 	XWechatSecretKey                       string   `json:"x_wechat_secret_key,omitempty"`
+}
+
+func (c *Client) getSettingGuestAccess(ctx context.Context, site string) (*SettingGuestAccess, error) {
+	var respBody struct {
+		Meta meta                 `json:"meta"`
+		Data []SettingGuestAccess `json:"data"`
+	}
+
+	err := c.do(ctx, "GET", fmt.Sprintf("s/%s/get/setting/guest_access", site), nil, &respBody)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(respBody.Data) != 1 {
+		return nil, &NotFoundError{}
+	}
+
+	d := respBody.Data[0]
+	return &d, nil
+}
+
+func (c *Client) updateSettingGuestAccess(ctx context.Context, site string, d *SettingGuestAccess) (*SettingGuestAccess, error) {
+	var respBody struct {
+		Meta meta                 `json:"meta"`
+		Data []SettingGuestAccess `json:"data"`
+	}
+
+	err := c.do(ctx, "PUT", fmt.Sprintf("s/%s/set/setting/guest_access", site), d, &respBody)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(respBody.Data) != 1 {
+		return nil, &NotFoundError{}
+	}
+
+	new := respBody.Data[0]
+
+	return &new, nil
 }

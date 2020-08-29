@@ -43,7 +43,6 @@ type WLAN struct {
 	MACFilterEnabled          bool     `json:"mac_filter_enabled"`
 	MACFilterList             []string `json:"mac_filter_list,omitempty"`   // ^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$
 	MACFilterPolicy           string   `json:"mac_filter_policy,omitempty"` // allow|deny
-	MulticastEnhanceEnabled   bool     `json:"mcastenhance_enabled"`
 	MinrateNaAdvertisingRates bool     `json:"minrate_na_advertising_rates"`
 	MinrateNaBeaconRateKbps   int      `json:"minrate_na_beacon_rate_kbps,omitempty"`
 	MinrateNaDataRateKbps     int      `json:"minrate_na_data_rate_kbps,omitempty"`
@@ -55,6 +54,7 @@ type WLAN struct {
 	MinrateNgDataRateKbps     int      `json:"minrate_ng_data_rate_kbps,omitempty"`
 	MinrateNgEnabled          bool     `json:"minrate_ng_enabled"`
 	MinrateNgMgmtRateKbps     int      `json:"minrate_ng_mgmt_rate_kbps,omitempty"`
+	MulticastEnhanceEnabled   bool     `json:"mcastenhance_enabled"`
 	Name                      string   `json:"name,omitempty"` // .{1,32}
 	NameCombineEnabled        bool     `json:"name_combine_enabled"`
 	NameCombineSuffix         string   `json:"name_combine_suffix,omitempty"` // .{0,8}
