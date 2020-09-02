@@ -47,15 +47,17 @@ type Device struct {
 	LedOverrideColor           string                     `json:"led_override_color,omitempty"`            // ^#(?:[0-9a-fA-F]{3}){1,2}$
 	LedOverrideColorBrightness int                        `json:"led_override_color_brightness,omitempty"` // ^[0-9][0-9]?$|^100$
 	Locked                     bool                       `json:"locked,omitempty"`
+	LteApn                     string                     `json:"lte_apn,omitempty"` // .{1,128}
 	LteExtAnt                  bool                       `json:"lte_ext_ant,omitempty"`
 	LtePoe                     bool                       `json:"lte_poe,omitempty"`
+	LteSimPin                  int                        `json:"lte_sim_pin,omitempty"`
 	LteSoftLimit               int                        `json:"lte_soft_limit,omitempty"`
 	MapID                      string                     `json:"map_id,omitempty"`
 	MeshStaVapEnabled          bool                       `json:"mesh_sta_vap_enabled,omitempty"`
 	MgmtNetworkID              string                     `json:"mgmt_network_id,omitempty"`       // [\d\w]+
 	Name                       string                     `json:"name,omitempty"`                  // .{1,128}
 	OutdoorModeOverride        string                     `json:"outdoor_mode_override,omitempty"` // default|on|off
-	OutletCycleEnabled         bool                       `json:"outlet_cycle_enabled,omitempty"`
+	OutletEnabled              bool                       `json:"outlet_enabled,omitempty"`
 	OutletOverrides            []Device_OutletOverrides   `json:"outlet_overrides,omitempty"`
 	PortOverrides              []Device_PortOverrides     `json:"port_overrides,omitempty"`
 	PowerSourceCtrl            string                     `json:"power_source_ctrl,omitempty"` // auto|8023af|8023at|8023bt-type3|8023bt-type4|pasv24|poe-injector|ac|adapter|dc|rps
@@ -94,14 +96,17 @@ type Device_EthernetOverrides struct {
 }
 
 type Device_OutletOverrides struct {
-	Index      int  `json:"index,omitempty"`
-	RelayState bool `json:"relay_state,omitempty"`
+	CycleEnabled bool   `json:"cycle_enabled,omitempty"`
+	Index        int    `json:"index,omitempty"`
+	Name         string `json:"name,omitempty"` // .{0,128}
+	RelayState   bool   `json:"relay_state,omitempty"`
 }
 
 type Device_PortOverrides struct {
 	AggregateNumPorts            int      `json:"aggregate_num_ports,omitempty"` // [2-6]
 	Autoneg                      bool     `json:"autoneg,omitempty"`
 	Dot1XCtrl                    string   `json:"dot1x_ctrl,omitempty"`             // auto|force_authorized|force_unauthorized|mac_based|multi_host
+	Dot1XIDleTimeout             int      `json:"dot1x_idle_timeout,omitempty"`     // [0-9]|[1-9][0-9]{1,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5]
 	EgressRateLimitKbps          int      `json:"egress_rate_limit_kbps,omitempty"` // 6[4-9]|[7-9][0-9]|[1-9][0-9]{2,6}
 	EgressRateLimitKbpsEnabled   bool     `json:"egress_rate_limit_kbps_enabled,omitempty"`
 	FullDuplex                   bool     `json:"full_duplex,omitempty"`

@@ -25,6 +25,7 @@ type PortConf struct {
 
 	Autoneg                      bool     `json:"autoneg"`
 	Dot1XCtrl                    string   `json:"dot1x_ctrl,omitempty"`             // auto|force_authorized|force_unauthorized|mac_based|multi_host
+	Dot1XIDleTimeout             int      `json:"dot1x_idle_timeout,omitempty"`     // [0-9]|[1-9][0-9]{1,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5]
 	EgressRateLimitKbps          int      `json:"egress_rate_limit_kbps,omitempty"` // 6[4-9]|[7-9][0-9]|[1-9][0-9]{2,6}
 	EgressRateLimitKbpsEnabled   bool     `json:"egress_rate_limit_kbps_enabled"`
 	Forward                      string   `json:"forward,omitempty"` // all|native|customize|disabled
