@@ -23,24 +23,28 @@ type RADIUSProfile struct {
 	NoDelete bool   `json:"attr_no_delete,omitempty"`
 	NoEdit   bool   `json:"attr_no_edit,omitempty"`
 
-	AccountingEnabled bool `json:"accounting_enabled"`
-	AcctServers       []struct {
-		IP      string `json:"ip,omitempty"`   // ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$
-		Port    int    `json:"port,omitempty"` // ^([1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5])$|^$
-		XSecret string `json:"x_secret,omitempty"`
-	} `json:"acct_servers,omitempty"`
-	AuthServers []struct {
-		IP      string `json:"ip,omitempty"`   // ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$
-		Port    int    `json:"port,omitempty"` // ^([1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5])$|^$
-		XSecret string `json:"x_secret,omitempty"`
-	} `json:"auth_servers,omitempty"`
-	InterimUpdateEnabled  bool   `json:"interim_update_enabled"`
-	InterimUpdateInterval int    `json:"interim_update_interval,omitempty"` // ^([6-9][0-9]|[1-9][0-9]{2,3}|[1-7][0-9]{4}|8[0-5][0-9]{3}|86[0-3][0-9][0-9]|86400)$
-	Name                  string `json:"name,omitempty"`                    // .{1,128}
-	UseUsgAcctServer      bool   `json:"use_usg_acct_server"`
-	UseUsgAuthServer      bool   `json:"use_usg_auth_server"`
-	VLANEnabled           bool   `json:"vlan_enabled"`
-	VLANWLANMode          string `json:"vlan_wlan_mode,omitempty"` // disabled|optional|required
+	AccountingEnabled     bool                        `json:"accounting_enabled"`
+	AcctServers           []RADIUSProfile_AcctServers `json:"acct_servers,omitempty"`
+	AuthServers           []RADIUSProfile_AuthServers `json:"auth_servers,omitempty"`
+	InterimUpdateEnabled  bool                        `json:"interim_update_enabled"`
+	InterimUpdateInterval int                         `json:"interim_update_interval,omitempty"` // ^([6-9][0-9]|[1-9][0-9]{2,3}|[1-7][0-9]{4}|8[0-5][0-9]{3}|86[0-3][0-9][0-9]|86400)$
+	Name                  string                      `json:"name,omitempty"`                    // .{1,128}
+	UseUsgAcctServer      bool                        `json:"use_usg_acct_server"`
+	UseUsgAuthServer      bool                        `json:"use_usg_auth_server"`
+	VLANEnabled           bool                        `json:"vlan_enabled"`
+	VLANWLANMode          string                      `json:"vlan_wlan_mode,omitempty"` // disabled|optional|required
+}
+
+type RADIUSProfile_AcctServers struct {
+	IP      string `json:"ip,omitempty"`   // ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$
+	Port    int    `json:"port,omitempty"` // ^([1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5])$|^$
+	XSecret string `json:"x_secret,omitempty"`
+}
+
+type RADIUSProfile_AuthServers struct {
+	IP      string `json:"ip,omitempty"`   // ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$
+	Port    int    `json:"port,omitempty"` // ^([1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5])$|^$
+	XSecret string `json:"x_secret,omitempty"`
 }
 
 func (c *Client) listRADIUSProfile(ctx context.Context, site string) ([]RADIUSProfile, error) {

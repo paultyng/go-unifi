@@ -23,16 +23,18 @@ type Dashboard struct {
 	NoDelete bool   `json:"attr_no_delete,omitempty"`
 	NoEdit   bool   `json:"attr_no_edit,omitempty"`
 
-	ControllerVersion string `json:"controller_version,omitempty"`
-	Desc              string `json:"desc,omitempty"`
-	IsPublic          bool   `json:"is_public"`
-	Modules           []struct {
-		Config       string `json:"config,omitempty"`
-		ID           string `json:"id"`
-		ModuleID     string `json:"module_id"`
-		Restrictions string `json:"restrictions,omitempty"`
-	} `json:"modules,omitempty"`
-	Name string `json:"name,omitempty"`
+	ControllerVersion string              `json:"controller_version,omitempty"`
+	Desc              string              `json:"desc,omitempty"`
+	IsPublic          bool                `json:"is_public"`
+	Modules           []Dashboard_Modules `json:"modules,omitempty"`
+	Name              string              `json:"name,omitempty"`
+}
+
+type Dashboard_Modules struct {
+	Config       string `json:"config,omitempty"`
+	ID           string `json:"id"`
+	ModuleID     string `json:"module_id"`
+	Restrictions string `json:"restrictions,omitempty"`
 }
 
 func (c *Client) listDashboard(ctx context.Context, site string) ([]Dashboard, error) {
