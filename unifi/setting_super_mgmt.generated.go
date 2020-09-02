@@ -25,6 +25,7 @@ type SettingSuperMgmt struct {
 
 	Key string `json:"key"`
 
+	AnalyticsDisapprovedFor                  string   `json:"analytics_disapproved_for,omitempty"`
 	AutoUpgrade                              bool     `json:"auto_upgrade"`
 	AutobackupCronExpr                       string   `json:"autobackup_cron_expr,omitempty"`
 	AutobackupDays                           int      `json:"autobackup_days,omitempty"`
@@ -67,7 +68,6 @@ type SettingSuperMgmt struct {
 	OverrideInformHost                       bool     `json:"override_inform_host"`
 	StoreEnabled                             string   `json:"store_enabled,omitempty"` // disabled|super-only|everyone
 	TimeSeriesPerClientStatsEnabled          bool     `json:"time_series_per_client_stats_enabled"`
-	UploadDebuggingInfoEnabled               bool     `json:"upload_debugging_info_enabled"`
 	XSshPassword                             string   `json:"x_ssh_password,omitempty"`
 	XSshUsername                             string   `json:"x_ssh_username,omitempty"`
 }

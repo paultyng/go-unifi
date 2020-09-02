@@ -48,9 +48,14 @@ type SettingIps_Alerts struct {
 }
 
 type SettingIps_DNSFilters struct {
-	Filter    string `json:"filter,omitempty"` // security|adult|family
-	NetworkID string `json:"network_id"`
-	Version   string `json:"version,omitempty"` // v4|v6
+	AllowedSites []string `json:"allowed_sites,omitempty"` // ^[a-zA-Z0-9.-]+$|^$
+	BlockedSites []string `json:"blocked_sites,omitempty"` // ^[a-zA-Z0-9.-]+$|^$
+	BlockedTld   []string `json:"blocked_tld,omitempty"`   // ^[a-zA-Z0-9.-]+$|^$
+	Description  string   `json:"description,omitempty"`
+	Filter       string   `json:"filter,omitempty"` // none|security|adult|family
+	Name         string   `json:"name,omitempty"`
+	NetworkID    string   `json:"network_id"`
+	Version      string   `json:"version,omitempty"` // v4|v6
 }
 
 type SettingIps_Honeypot struct {

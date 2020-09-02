@@ -23,8 +23,10 @@ type WLAN struct {
 	NoDelete bool   `json:"attr_no_delete,omitempty"`
 	NoEdit   bool   `json:"attr_no_edit,omitempty"`
 
+	AuthCache                 bool     `json:"auth_cache"`
 	BroadcastFilterEnabled    bool     `json:"bc_filter_enabled"`
 	BroadcastFilterList       []string `json:"bc_filter_list,omitempty"` // ^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$
+	BssTransition             bool     `json:"bss_transition"`
 	CountryBeacon             bool     `json:"country_beacon"`
 	DPIEnabled                bool     `json:"dpi_enabled"`
 	DPIgroupID                string   `json:"dpigroup_id"`         // [\d\w]+|^$
@@ -40,6 +42,7 @@ type WLAN struct {
 	Hotspot2ConfID            string   `json:"hotspot2conf_id"`
 	IappEnabled               bool     `json:"iapp_enabled"`
 	IsGuest                   bool     `json:"is_guest"`
+	L2Isolation               bool     `json:"l2_isolation"`
 	MACFilterEnabled          bool     `json:"mac_filter_enabled"`
 	MACFilterList             []string `json:"mac_filter_list,omitempty"`   // ^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$
 	MACFilterPolicy           string   `json:"mac_filter_policy,omitempty"` // allow|deny
@@ -59,7 +62,10 @@ type WLAN struct {
 	NameCombineEnabled        bool     `json:"name_combine_enabled"`
 	NameCombineSuffix         string   `json:"name_combine_suffix,omitempty"` // .{0,8}
 	No2GhzOui                 bool     `json:"no2ghz_oui"`
+	P2P                       bool     `json:"p2p"`
+	P2PCrossConnect           bool     `json:"p2p_cross_connect"`
 	Priority                  string   `json:"priority,omitempty"` // medium|high|low
+	ProxyArp                  bool     `json:"proxy_arp"`
 	RADIUSDasEnabled          bool     `json:"radius_das_enabled"`
 	RADIUSMACAuthEnabled      bool     `json:"radius_mac_auth_enabled"`
 	RADIUSMACaclEmptyPassword bool     `json:"radius_macacl_empty_password"`
@@ -70,7 +76,8 @@ type WLAN struct {
 	Schedule                  []string `json:"schedule,omitempty"` // (sun|mon|tue|wed|thu|fri|sat)(\-(sun|mon|tue|wed|thu|fri|sat))?\|([0-2][0-9][0-5][0-9])\-([0-2][0-9][0-5][0-9])
 	ScheduleEnabled           bool     `json:"schedule_enabled"`
 	ScheduleReversed          bool     `json:"schedule_reversed"`
-	Security                  string   `json:"security,omitempty"` // open|wpapsk|wep|wpaeap
+	Security                  string   `json:"security,omitempty"` // open|wpapsk|wep|wpaeap|osen
+	TdlsProhibit              bool     `json:"tdls_prohibit"`
 	UapsdEnabled              bool     `json:"uapsd_enabled"`
 	UserGroupID               string   `json:"usergroup_id"`
 	VLAN                      int      `json:"vlan,omitempty"` // [2-9]|[1-9][0-9]{1,2}|[1-3][0-9]{3}|40[0-8][0-9]|409[0-5]|^$
