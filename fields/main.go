@@ -86,9 +86,10 @@ var fileReps = []replacement{
 var embedTypes bool
 
 type Resource struct {
-	StructName   string
-	ResourcePath string
-	Types        map[string]*FieldInfo
+	StructName     string
+	ResourcePath   string
+	Types          map[string]*FieldInfo
+	FieldProcessor func(name string, f *FieldInfo) error
 }
 
 type FieldInfo struct {
@@ -109,6 +110,7 @@ func NewResource(structName string, resourcePath string) *Resource {
 		Types: map[string]*FieldInfo{
 			structName: baseType,
 		},
+		FieldProcessor: func(name string, f *FieldInfo) error { return nil },
 	}
 
 	// Since template files iterate through map keys in sorted order, these initial fields
@@ -133,6 +135,10 @@ func NewResource(structName string, resourcePath string) *Resource {
 	if resource.IsSetting() {
 		resource.ResourcePath = strcase.ToSnake(strings.TrimPrefix(structName, "Setting"))
 		baseType.Fields[" Key"] = NewFieldInfo("Key", "key", "string", "", false, false)
+	}
+
+	if resource.StructName == "Device" {
+		baseType.Fields[" MAC"] = NewFieldInfo("MAC", "mac", "string", "", false, false)
 	}
 
 	if resource.StructName == "User" {
@@ -229,6 +235,48 @@ func main() {
 		}
 
 		resource := NewResource(structName, urlPath)
+
+		switch resource.StructName {
+		case "Account":
+			resource.FieldProcessor = func(name string, f *FieldInfo) error {
+				if name == "IP" {
+					f.OmitEmpty = true
+				}
+				return nil
+			}
+		case "Device":
+			resource.FieldProcessor = func(name string, f *FieldInfo) error {
+				switch name {
+				case "X", "Y":
+					f.FieldType = "float64"
+				case "Channel", "BackupChannel", "TxPower":
+					f.FieldType = "int"
+				case "StpPriority", "Ht":
+					f.FieldType = "string"
+				}
+
+				f.OmitEmpty = true
+				return nil
+			}
+		case "SettingUsg":
+			resource.FieldProcessor = func(name string, f *FieldInfo) error {
+				if strings.HasSuffix(name, "Timeout") && name != "ArpCacheTimeout" {
+					f.FieldType = "int"
+				}
+				return nil
+			}
+		case "User":
+			resource.FieldProcessor = func(name string, f *FieldInfo) error {
+				switch name {
+				case "Blocked":
+					f.FieldType = "bool"
+				case "LastSeen":
+					f.FieldType = "int"
+				}
+				return nil
+			}
+		}
+
 		err = resource.processJSON(b)
 		if err != nil {
 			fmt.Printf("skipping file %s: %s", fieldsFile.Name(), err)
@@ -256,30 +304,11 @@ func (r *Resource) processFields(fields map[string]interface{}) {
 			continue
 		}
 
-		switch {
-		case r.StructName == "Account" && name == "ip":
-			fieldInfo.OmitEmpty = true
-		case r.StructName == "Device" && name == "stp_priority":
-			fieldInfo.OmitEmpty = true
-			fieldInfo.FieldType = "string"
-		case r.StructName == "Device" && (name == "x" || name == "y"):
-			fieldInfo.OmitEmpty = true
-			fieldInfo.FieldType = "int"
-		case r.StructName == "Device":
-			fieldInfo.OmitEmpty = true
-		case r.StructName == "SettingUsg" && strings.HasSuffix(name, "_timeout") && name != "arp_cache_timeout":
-			fieldInfo.FieldType = "int"
-		case r.StructName == "User" && name == "blocked":
-			fieldInfo.FieldType = "bool"
-		case r.StructName == "User" && name == "last_seen":
-			fieldInfo.FieldType = "int"
-		}
-
 		t.Fields[fieldInfo.FieldName] = fieldInfo
 	}
 }
 
-func (r *Resource) fieldInfoFromValidation(name string, validation interface{}) (f *FieldInfo, err error) {
+func (r *Resource) fieldInfoFromValidation(name string, validation interface{}) (fieldInfo *FieldInfo, err error) {
 	fieldName := strcase.ToCamel(name)
 	fieldName = cleanName(fieldName, fieldReps)
 
@@ -288,7 +317,9 @@ func (r *Resource) fieldInfoFromValidation(name string, validation interface{}) 
 	switch validation := validation.(type) {
 	case []interface{}:
 		if len(validation) == 0 {
-			return NewFieldInfo(fieldName, name, "string", "", false, true), nil
+			fieldInfo, err = NewFieldInfo(fieldName, name, "string", "", false, true), nil
+			err = r.FieldProcessor(fieldName, fieldInfo)
+			return fieldInfo, err
 		}
 		if len(validation) > 1 {
 			return empty, fmt.Errorf("unknown validation %#v", validation)
@@ -302,9 +333,11 @@ func (r *Resource) fieldInfoFromValidation(name string, validation interface{}) 
 		fieldInfo.OmitEmpty = true
 		fieldInfo.IsArray = true
 
-		return fieldInfo, nil
+		err = r.FieldProcessor(fieldName, fieldInfo)
+		return fieldInfo, err
+
 	case map[string]interface{}:
-		typeName := r.StructName + "_" + fieldName
+		typeName := r.StructName + fieldName
 
 		result := NewFieldInfo(fieldName, name, typeName, "", true, false)
 		result.Fields = make(map[string]*FieldInfo)
@@ -318,20 +351,23 @@ func (r *Resource) fieldInfoFromValidation(name string, validation interface{}) 
 			result.Fields[child.FieldName] = child
 		}
 
+		err = r.FieldProcessor(fieldName, result)
 		r.Types[typeName] = result
-		return result, nil
+		return result, err
 
 	case string:
 		fieldValidation := validation
 		normalized := normalizeValidation(validation)
 
-		omitEmpty := r.StructName == "Device"
+		omitEmpty := false
 
 		switch {
 		case normalized == "falsetrue" || normalized == "truefalse":
-			return NewFieldInfo(fieldName, name, "bool", "", omitEmpty, false), nil
+			fieldInfo, err = NewFieldInfo(fieldName, name, "bool", "", omitEmpty, false), nil
+			return fieldInfo, r.FieldProcessor(fieldName, fieldInfo)
 		default:
 			if _, err := strconv.ParseFloat(normalized, 64); err == nil {
+
 				if normalized == "09" || normalized == "09.09" {
 					fieldValidation = ""
 				}
@@ -341,10 +377,14 @@ func (r *Resource) fieldInfoFromValidation(name string, validation interface{}) 
 						break
 					}
 
-					return NewFieldInfo(fieldName, name, "float64", fieldValidation, true, false), nil
+					omitEmpty = true
+					fieldInfo, err = NewFieldInfo(fieldName, name, "float64", fieldValidation, omitEmpty, false), nil
+					return fieldInfo, r.FieldProcessor(fieldName, fieldInfo)
 				}
 
-				return NewFieldInfo(fieldName, name, "int", fieldValidation, true, false), nil
+				omitEmpty = true
+				fieldInfo, err = NewFieldInfo(fieldName, name, "int", fieldValidation, omitEmpty, false), nil
+				return fieldInfo, r.FieldProcessor(fieldName, fieldInfo)
 			}
 		}
 		if validation != "" && normalized != "" {
@@ -352,7 +392,8 @@ func (r *Resource) fieldInfoFromValidation(name string, validation interface{}) 
 		}
 
 		omitEmpty = omitEmpty || (!strings.Contains(validation, "^$") && !strings.HasSuffix(fieldName, "ID"))
-		return NewFieldInfo(fieldName, name, "string", fieldValidation, omitEmpty, false), nil
+		fieldInfo, err = NewFieldInfo(fieldName, name, "string", fieldValidation, omitEmpty, false), nil
+		return fieldInfo, r.FieldProcessor(fieldName, fieldInfo)
 	}
 
 	return empty, fmt.Errorf("unable to determine type from validation %q", validation)

@@ -30,7 +30,12 @@ func TestFieldInfoFromValidation(t *testing.T) {
 		{"bool", "", false, "true|false"},
 	} {
 		t.Run(fmt.Sprintf("%d %s %s", i, c.expectedType, c.validation), func(t *testing.T) {
-			resource := &Resource{StructName: "TestType", Types: make(map[string]*FieldInfo)}
+			resource := &Resource{
+				StructName:     "TestType",
+				Types:          make(map[string]*FieldInfo),
+				FieldProcessor: func(name string, f *FieldInfo) error { return nil },
+			}
+
 			fieldInfo, err := resource.fieldInfoFromValidation("fieldName", c.validation)
 			//actualType, actualComment, actualOmitEmpty, err := fieldInfoFromValidation(c.validation)
 			if err != nil {
@@ -74,23 +79,23 @@ func TestResourceTypes(t *testing.T) {
 		"NestedType": &FieldInfo{
 			FieldName:       "NestedType",
 			JSONName:        "nested_type",
-			FieldType:       "Struct_NestedType",
+			FieldType:       "StructNestedType",
 			FieldValidation: "",
 			OmitEmpty:       true,
 			IsArray:         false,
 			Fields: map[string]*FieldInfo{
-				"NestedField": NewFieldInfo("NestedField", "nested_field", "string", "^$", false, false),
+				"NestedFieldModified": NewFieldInfo("NestedFieldModified", "nested_field", "string", "^$", false, false),
 			},
 		},
 		"NestedTypeArray": &FieldInfo{
 			FieldName:       "NestedTypeArray",
 			JSONName:        "nested_type_array",
-			FieldType:       "Struct_NestedTypeArray",
+			FieldType:       "StructNestedTypeArray",
 			FieldValidation: "",
 			OmitEmpty:       true,
 			IsArray:         true,
 			Fields: map[string]*FieldInfo{
-				"NestedField": NewFieldInfo("NestedField", "nested_field", "string", "^$", false, false),
+				"NestedFieldModified": NewFieldInfo("NestedFieldModified", "nested_field", "string", "^$", false, false),
 			},
 		},
 	}
@@ -126,17 +131,28 @@ func TestResourceTypes(t *testing.T) {
 		ResourcePath: "path",
 
 		Types: map[string]*FieldInfo{
-			"Struct":                 expectedStruct["Struct"],
-			"Struct_NestedType":      expectedStruct["Struct"].Fields["NestedType"],
-			"Struct_NestedTypeArray": expectedStruct["Struct"].Fields["NestedTypeArray"],
+			"Struct":                expectedStruct["Struct"],
+			"StructNestedType":      expectedStruct["Struct"].Fields["NestedType"],
+			"StructNestedTypeArray": expectedStruct["Struct"].Fields["NestedTypeArray"],
+		},
+
+		FieldProcessor: func(name string, f *FieldInfo) error {
+			if name == "NestedField" {
+				f.FieldName = "NestedFieldModified"
+			}
+			return nil
 		},
 	}
 
 	t.Run("structural test", func(t *testing.T) {
 		resource := NewResource("Struct", "path")
+		resource.FieldProcessor = expectation.FieldProcessor
+
 		err := resource.processJSON(([]byte)(testData))
 
 		assert.Empty(t, err, "No error processing JSON")
-		assert.Equal(t, expectation, resource)
+		assert.Equal(t, expectation.StructName, resource.StructName)
+		assert.Equal(t, expectation.ResourcePath, resource.ResourcePath)
+		assert.Equal(t, expectation.Types, resource.Types)
 	})
 }

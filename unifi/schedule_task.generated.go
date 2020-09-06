@@ -23,19 +23,19 @@ type ScheduleTask struct {
 	NoDelete bool   `json:"attr_no_delete,omitempty"`
 	NoEdit   bool   `json:"attr_no_edit,omitempty"`
 
-	Action                  string                        `json:"action,omitempty"` // stream|upgrade
-	AdditionalSoundsEnabled bool                          `json:"additional_sounds_enabled"`
-	BroadcastgroupID        string                        `json:"broadcastgroup_id"`
-	CronExpr                string                        `json:"cron_expr,omitempty"`
-	ExecuteOnlyOnce         bool                          `json:"execute_only_once"`
-	MediafileID             string                        `json:"mediafile_id"`
-	Name                    string                        `json:"name,omitempty"`
-	SampleFilename          string                        `json:"sample_filename,omitempty"`
-	StreamType              string                        `json:"stream_type,omitempty"` // media|sample
-	UpgradeTargets          []ScheduleTask_UpgradeTargets `json:"upgrade_targets,omitempty"`
+	Action                  string                       `json:"action,omitempty"` // stream|upgrade
+	AdditionalSoundsEnabled bool                         `json:"additional_sounds_enabled"`
+	BroadcastgroupID        string                       `json:"broadcastgroup_id"`
+	CronExpr                string                       `json:"cron_expr,omitempty"`
+	ExecuteOnlyOnce         bool                         `json:"execute_only_once"`
+	MediafileID             string                       `json:"mediafile_id"`
+	Name                    string                       `json:"name,omitempty"`
+	SampleFilename          string                       `json:"sample_filename,omitempty"`
+	StreamType              string                       `json:"stream_type,omitempty"` // media|sample
+	UpgradeTargets          []ScheduleTaskUpgradeTargets `json:"upgrade_targets,omitempty"`
 }
 
-type ScheduleTask_UpgradeTargets struct {
+type ScheduleTaskUpgradeTargets struct {
 	MAC string `json:"mac,omitempty"` // ^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$
 }
 

@@ -23,16 +23,16 @@ type SpatialRecord struct {
 	NoDelete bool   `json:"attr_no_delete,omitempty"`
 	NoEdit   bool   `json:"attr_no_edit,omitempty"`
 
-	Devices []SpatialRecord_Devices `json:"devices,omitempty"`
-	Name    string                  `json:"name,omitempty"` // .{1,128}
+	Devices []SpatialRecordDevices `json:"devices,omitempty"`
+	Name    string                 `json:"name,omitempty"` // .{1,128}
 }
 
-type SpatialRecord_Devices struct {
-	MAC      string                 `json:"mac,omitempty"` // ^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$
-	Position SpatialRecord_Position `json:"position,omitempty"`
+type SpatialRecordDevices struct {
+	MAC      string                `json:"mac,omitempty"` // ^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$
+	Position SpatialRecordPosition `json:"position,omitempty"`
 }
 
-type SpatialRecord_Position struct {
+type SpatialRecordPosition struct {
 	X float64 `json:"x,omitempty"` // (^([-]?[\d]+)$)|(^([-]?[\d]+[.]?[\d]+)$)
 	Y float64 `json:"y,omitempty"` // (^([-]?[\d]+)$)|(^([-]?[\d]+[.]?[\d]+)$)
 	Z float64 `json:"z,omitempty"` // (^([-]?[\d]+)$)|(^([-]?[\d]+[.]?[\d]+)$)

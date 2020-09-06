@@ -23,32 +23,32 @@ type ChannelPlan struct {
 	NoDelete bool   `json:"attr_no_delete,omitempty"`
 	NoEdit   bool   `json:"attr_no_edit,omitempty"`
 
-	ApBlacklistedChannels   []ChannelPlan_ApBlacklistedChannels   `json:"ap_blacklisted_channels,omitempty"`
-	ConfSource              string                                `json:"conf_source,omitempty"` // manual|radio-ai
-	Coupling                []ChannelPlan_Coupling                `json:"coupling,omitempty"`
-	Date                    string                                `json:"date"` // ^$|^(20[0-9]{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9])Z?$
-	Fitness                 float64                               `json:"fitness,omitempty"`
-	Note                    string                                `json:"note,omitempty"`  // .{0,1024}
-	Radio                   string                                `json:"radio,omitempty"` // na|ng|ng\+na
-	RadioTable              []ChannelPlan_RadioTable              `json:"radio_table,omitempty"`
-	Satisfaction            float64                               `json:"satisfaction,omitempty"`
-	SatisfactionTable       []ChannelPlan_SatisfactionTable       `json:"satisfaction_table,omitempty"`
-	SiteBlacklistedChannels []ChannelPlan_SiteBlacklistedChannels `json:"site_blacklisted_channels,omitempty"`
+	ApBlacklistedChannels   []ChannelPlanApBlacklistedChannels   `json:"ap_blacklisted_channels,omitempty"`
+	ConfSource              string                               `json:"conf_source,omitempty"` // manual|radio-ai
+	Coupling                []ChannelPlanCoupling                `json:"coupling,omitempty"`
+	Date                    string                               `json:"date"` // ^$|^(20[0-9]{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9])Z?$
+	Fitness                 float64                              `json:"fitness,omitempty"`
+	Note                    string                               `json:"note,omitempty"`  // .{0,1024}
+	Radio                   string                               `json:"radio,omitempty"` // na|ng|ng\+na
+	RadioTable              []ChannelPlanRadioTable              `json:"radio_table,omitempty"`
+	Satisfaction            float64                              `json:"satisfaction,omitempty"`
+	SatisfactionTable       []ChannelPlanSatisfactionTable       `json:"satisfaction_table,omitempty"`
+	SiteBlacklistedChannels []ChannelPlanSiteBlacklistedChannels `json:"site_blacklisted_channels,omitempty"`
 }
 
-type ChannelPlan_ApBlacklistedChannels struct {
+type ChannelPlanApBlacklistedChannels struct {
 	Channel   int    `json:"channel,omitempty"`   // 36|38|40|42|44|46|48|52|56|60|64|100|104|108|112|116|120|124|128|132|136|140|144|149|153|157|161|165|183|184|185|187|188|189|192|196
 	MAC       string `json:"mac,omitempty"`       // ^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$
 	Timestamp int    `json:"timestamp,omitempty"` // [1-9][0-9]{12}
 }
 
-type ChannelPlan_Coupling struct {
+type ChannelPlanCoupling struct {
 	Rssi   int    `json:"rssi,omitempty"`
 	Source string `json:"source,omitempty"` // ^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2}).*$
 	Target string `json:"target,omitempty"` // ^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2}).*$
 }
 
-type ChannelPlan_RadioTable struct {
+type ChannelPlanRadioTable struct {
 	BackupChannel string `json:"backup_channel,omitempty"` // [0-9]|[1][0-4]|16|34|36|38|40|42|44|46|48|52|56|60|64|100|104|108|112|116|120|124|128|132|136|140|144|149|153|157|161|165|183|184|185|187|188|189|192|196|auto
 	Channel       string `json:"channel,omitempty"`        // [0-9]|[1][0-4]|16|34|36|38|40|42|44|46|48|52|56|60|64|100|104|108|112|116|120|124|128|132|136|140|144|149|153|157|161|165|183|184|185|187|188|189|192|196|auto
 	DeviceMAC     string `json:"device_mac,omitempty"`     // ^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$
@@ -58,12 +58,12 @@ type ChannelPlan_RadioTable struct {
 	Width         int    `json:"width,omitempty"`          // 20|40|80|160
 }
 
-type ChannelPlan_SatisfactionTable struct {
+type ChannelPlanSatisfactionTable struct {
 	DeviceMAC    string  `json:"device_mac,omitempty"` // ^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$
 	Satisfaction float64 `json:"satisfaction,omitempty"`
 }
 
-type ChannelPlan_SiteBlacklistedChannels struct {
+type ChannelPlanSiteBlacklistedChannels struct {
 	Channel   int `json:"channel,omitempty"`   // 36|38|40|42|44|46|48|52|56|60|64|100|104|108|112|116|120|124|128|132|136|140|144|149|153|157|161|165|183|184|185|187|188|189|192|196
 	Timestamp int `json:"timestamp,omitempty"` // [1-9][0-9]{12}
 }
