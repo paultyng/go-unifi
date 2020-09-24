@@ -76,7 +76,7 @@ func TestResourceTypes(t *testing.T) {
 		"MAC":     NewFieldInfo("MAC", "mac", "string", "^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$", true, false),
 		"Number":  NewFieldInfo("Number", "number", "int", "", true, false),
 		"Boolean": NewFieldInfo("Boolean", "boolean", "bool", "", false, false),
-		"NestedType": &FieldInfo{
+		"NestedType": {
 			FieldName:       "NestedType",
 			JSONName:        "nested_type",
 			FieldType:       "StructNestedType",
@@ -87,7 +87,7 @@ func TestResourceTypes(t *testing.T) {
 				"NestedFieldModified": NewFieldInfo("NestedFieldModified", "nested_field", "string", "^$", false, false),
 			},
 		},
-		"NestedTypeArray": &FieldInfo{
+		"NestedTypeArray": {
 			FieldName:       "NestedTypeArray",
 			JSONName:        "nested_type_array",
 			FieldType:       "StructNestedTypeArray",
@@ -101,7 +101,7 @@ func TestResourceTypes(t *testing.T) {
 	}
 
 	expectedStruct := map[string]*FieldInfo{
-		"Struct": &FieldInfo{
+		"Struct": {
 			FieldName:       "Struct",
 			JSONName:        "path",
 			FieldType:       "struct",
