@@ -6,9 +6,20 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
+	"path"
+	"strings"
+)
+
+const (
+	apiPath    = "/api"
+	apiPathNew = "/proxy/network/api"
+
+	loginPath    = "/api/login"
+	loginPathNew = "/api/auth/login"
 )
 
 type NotFoundError struct{}
@@ -29,6 +40,9 @@ func (err *APIError) Error() string {
 type Client struct {
 	c       *http.Client
 	baseURL *url.URL
+
+	apiPath   string
+	loginPath string
 }
 
 func (c *Client) SetBaseURL(base string) error {
@@ -37,11 +51,57 @@ func (c *Client) SetBaseURL(base string) error {
 	if err != nil {
 		return err
 	}
+
+	// error for people who are still passing hard coded old paths
+	if path := strings.TrimSuffix(c.baseURL.Path, "/"); path == apiPath {
+		return fmt.Errorf("expected a base URL without the `/api`, got: %q", c.baseURL)
+	}
+
 	return nil
 }
 
 func (c *Client) SetHTTPClient(hc *http.Client) error {
 	c.c = hc
+	return nil
+}
+
+func (c *Client) setAPIUrlStyle(ctx context.Context) error {
+	// check if new style API
+	// this is modified from the unifi-poller (https://github.com/unifi-poller/unifi) implementation.
+	// see https://github.com/unifi-poller/unifi/blob/4dc44f11f61a2e08bf7ec5b20c71d5bced837b5d/unifi.go#L101-L104
+	// and https://github.com/unifi-poller/unifi/commit/43a6b225031a28f2b358f52d03a7217c7b524143
+
+	req, err := http.NewRequestWithContext(ctx, "GET", c.baseURL.String(), nil)
+	if err != nil {
+		return err
+	}
+
+	// We can't share these cookies with other requests, so make a new client.
+	// Checking the return code on the first request so don't follow a redirect.
+	client := &http.Client{
+		CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			return http.ErrUseLastResponse
+		},
+		Transport: c.c.Transport,
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	_, _ = io.Copy(ioutil.Discard, resp.Body)
+
+	if resp.StatusCode == http.StatusOK {
+		// the new API returns a 200 for a / request
+		c.apiPath = apiPathNew
+		c.loginPath = loginPathNew
+		return nil
+	}
+
+	// The old version returns a "302" (to /manage) for a / request
+	c.apiPath = apiPath
+	c.loginPath = loginPath
 	return nil
 }
 
@@ -53,7 +113,12 @@ func (c *Client) Login(ctx context.Context, user, pass string) error {
 		c.c.Jar = jar
 	}
 
-	err := c.do(ctx, "POST", "login", &struct {
+	err := c.setAPIUrlStyle(ctx)
+	if err != nil {
+		return fmt.Errorf("unable to determine API URL style: %w", err)
+	}
+
+	err = c.do(ctx, "POST", c.loginPath, &struct {
 		Username string `json:"username"`
 		Password string `json:"password"`
 	}{
@@ -74,7 +139,6 @@ func (c *Client) do(ctx context.Context, method, relativeURL string, reqBody int
 		reqBytes  []byte
 	)
 	if reqBody != nil {
-
 		reqBytes, err = json.Marshal(reqBody)
 		if err != nil {
 			return fmt.Errorf("unable to marshal JSON: %s %s %w", method, relativeURL, err)
@@ -86,9 +150,11 @@ func (c *Client) do(ctx context.Context, method, relativeURL string, reqBody int
 	if err != nil {
 		return fmt.Errorf("unable to parse URL: %s %s %w", method, relativeURL, err)
 	}
+	if !strings.HasPrefix(relativeURL, "/") && !reqURL.IsAbs() {
+		reqURL.Path = path.Join(c.apiPath, reqURL.Path)
+	}
 
 	url := c.baseURL.ResolveReference(reqURL)
-
 	req, err := http.NewRequestWithContext(ctx, method, url.String(), reqReader)
 	if err != nil {
 		return fmt.Errorf("unable to create request: %s %s %w", method, relativeURL, err)
