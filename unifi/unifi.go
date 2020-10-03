@@ -12,6 +12,7 @@ import (
 	"net/url"
 	"path"
 	"strings"
+	"sync"
 )
 
 const (
@@ -38,11 +39,20 @@ func (err *APIError) Error() string {
 }
 
 type Client struct {
+	// single thread client calls for CSRF, etc.
+	sync.Mutex
+
 	c       *http.Client
 	baseURL *url.URL
 
 	apiPath   string
 	loginPath string
+
+	csrf string
+}
+
+func (c *Client) CSRFToken() string {
+	return c.csrf
 }
 
 func (c *Client) SetBaseURL(base string) error {
@@ -133,6 +143,10 @@ func (c *Client) Login(ctx context.Context, user, pass string) error {
 }
 
 func (c *Client) do(ctx context.Context, method, relativeURL string, reqBody interface{}, respBody interface{}) error {
+	// single threading requests, this is mostly to assist in CSRF token propagation
+	c.Lock()
+	defer c.Unlock()
+
 	var (
 		reqReader io.Reader
 		err       error
@@ -161,6 +175,11 @@ func (c *Client) do(ctx context.Context, method, relativeURL string, reqBody int
 	}
 
 	req.Header.Set("User-Agent", "terraform-provider-unifi/0.1")
+	req.Header.Add("Content-Type", "application/json; charset=utf-8")
+
+	if c.csrf != "" {
+		req.Header.Set("X-CSRF-Token", c.csrf)
+	}
 
 	resp, err := c.c.Do(req)
 	if err != nil {
@@ -170,6 +189,10 @@ func (c *Client) do(ctx context.Context, method, relativeURL string, reqBody int
 
 	if resp.StatusCode == http.StatusNotFound {
 		return &NotFoundError{}
+	}
+
+	if csrf := resp.Header.Get("x-csrf-token"); csrf != "" {
+		c.csrf = resp.Header.Get("x-csrf-token")
 	}
 
 	if resp.StatusCode != 200 {
