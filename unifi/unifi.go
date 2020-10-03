@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
@@ -43,6 +44,7 @@ type Client struct {
 
 	apiPath   string
 	loginPath string
+	csrf      string
 }
 
 func (c *Client) SetBaseURL(base string) error {
@@ -161,6 +163,12 @@ func (c *Client) do(ctx context.Context, method, relativeURL string, reqBody int
 	}
 
 	req.Header.Set("User-Agent", "terraform-provider-unifi/0.1")
+	req.Header.Add("Content-Type", "application/json; charset=utf-8")
+
+	if c.csrf != "" {
+		log.Printf("[DEBUG] setting CSRF token to %s", c.csrf)
+		req.Header.Set("X-CSRF-Token", c.csrf)
+	}
 
 	resp, err := c.c.Do(req)
 	if err != nil {
@@ -170,6 +178,11 @@ func (c *Client) do(ctx context.Context, method, relativeURL string, reqBody int
 
 	if resp.StatusCode == http.StatusNotFound {
 		return &NotFoundError{}
+	}
+
+	if csrf := resp.Header.Get("x-csrf-token"); csrf != "" {
+		log.Print("[DEBUG] Got CSRF Token")
+		c.csrf = resp.Header.Get("x-csrf-token")
 	}
 
 	if resp.StatusCode != 200 {
