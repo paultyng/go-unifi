@@ -14,7 +14,7 @@ var (
 	_ context.Context
 )
 
-type PortConf struct {
+type PortProfile struct {
 	ID     string `json:"_id,omitempty"`
 	SiteID string `json:"site_id,omitempty"`
 
@@ -59,10 +59,10 @@ type PortConf struct {
 	VoiceNetworkID               string   `json:"voice_networkconf_id"`
 }
 
-func (c *Client) listPortConf(ctx context.Context, site string) ([]PortConf, error) {
+func (c *Client) listPortProfile(ctx context.Context, site string) ([]PortProfile, error) {
 	var respBody struct {
-		Meta meta       `json:"meta"`
-		Data []PortConf `json:"data"`
+		Meta meta          `json:"meta"`
+		Data []PortProfile `json:"data"`
 	}
 
 	err := c.do(ctx, "GET", fmt.Sprintf("s/%s/rest/portconf", site), nil, &respBody)
@@ -73,10 +73,10 @@ func (c *Client) listPortConf(ctx context.Context, site string) ([]PortConf, err
 	return respBody.Data, nil
 }
 
-func (c *Client) getPortConf(ctx context.Context, site, id string) (*PortConf, error) {
+func (c *Client) getPortProfile(ctx context.Context, site, id string) (*PortProfile, error) {
 	var respBody struct {
-		Meta meta       `json:"meta"`
-		Data []PortConf `json:"data"`
+		Meta meta          `json:"meta"`
+		Data []PortProfile `json:"data"`
 	}
 
 	err := c.do(ctx, "GET", fmt.Sprintf("s/%s/rest/portconf/%s", site, id), nil, &respBody)
@@ -92,7 +92,7 @@ func (c *Client) getPortConf(ctx context.Context, site, id string) (*PortConf, e
 	return &d, nil
 }
 
-func (c *Client) deletePortConf(ctx context.Context, site, id string) error {
+func (c *Client) deletePortProfile(ctx context.Context, site, id string) error {
 	err := c.do(ctx, "DELETE", fmt.Sprintf("s/%s/rest/portconf/%s", site, id), struct{}{}, nil)
 	if err != nil {
 		return err
@@ -100,10 +100,10 @@ func (c *Client) deletePortConf(ctx context.Context, site, id string) error {
 	return nil
 }
 
-func (c *Client) createPortConf(ctx context.Context, site string, d *PortConf) (*PortConf, error) {
+func (c *Client) createPortProfile(ctx context.Context, site string, d *PortProfile) (*PortProfile, error) {
 	var respBody struct {
-		Meta meta       `json:"meta"`
-		Data []PortConf `json:"data"`
+		Meta meta          `json:"meta"`
+		Data []PortProfile `json:"data"`
 	}
 
 	err := c.do(ctx, "POST", fmt.Sprintf("s/%s/rest/portconf", site), d, &respBody)
@@ -120,10 +120,10 @@ func (c *Client) createPortConf(ctx context.Context, site string, d *PortConf) (
 	return &new, nil
 }
 
-func (c *Client) updatePortConf(ctx context.Context, site string, d *PortConf) (*PortConf, error) {
+func (c *Client) updatePortProfile(ctx context.Context, site string, d *PortProfile) (*PortProfile, error) {
 	var respBody struct {
-		Meta meta       `json:"meta"`
-		Data []PortConf `json:"data"`
+		Meta meta          `json:"meta"`
+		Data []PortProfile `json:"data"`
 	}
 
 	err := c.do(ctx, "PUT", fmt.Sprintf("s/%s/rest/portconf/%s", site, d.ID), d, &respBody)

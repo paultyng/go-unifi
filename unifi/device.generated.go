@@ -120,9 +120,9 @@ type DevicePortOverrides struct {
 	OpMode                       string   `json:"op_mode,omitempty"`         // switch|mirror|aggregate
 	PoeMode                      string   `json:"poe_mode,omitempty"`        // auto|pasv24|passthrough|off
 	PortIDX                      int      `json:"port_idx,omitempty"`        // [1-9]|[1-4][0-9]|5[0-2]
+	PortProfileID                string   `json:"portconf_id,omitempty"`     // [\d\w]+
 	PortSecurityEnabled          bool     `json:"port_security_enabled,omitempty"`
 	PortSecurityMACAddress       []string `json:"port_security_mac_address,omitempty"` // ^([0-9A-Fa-f]{2}[:]){5}([0-9A-Fa-f]{2})$
-	PortconfID                   string   `json:"portconf_id,omitempty"`               // [\d\w]+
 	PriorityQueue1Level          int      `json:"priority_queue1_level,omitempty"`     // [0-9]|[1-9][0-9]|100
 	PriorityQueue2Level          int      `json:"priority_queue2_level,omitempty"`     // [0-9]|[1-9][0-9]|100
 	PriorityQueue3Level          int      `json:"priority_queue3_level,omitempty"`     // [0-9]|[1-9][0-9]|100

@@ -55,6 +55,7 @@ var fieldReps = []replacement{
 	{"Networkgroup", "NetworkGroup"},
 	{"Pd", "PD"},
 	{"Pmf", "PMF"},
+	{"Portconf", "PortProfile"},
 	{"Qos", "QOS"},
 	{"Radiusprofile", "RADIUSProfile"},
 	{"Radius", "RADIUS"},
@@ -80,6 +81,7 @@ var fileReps = []replacement{
 	{"Dhcp", "DHCP"},
 	{"Wlan", "WLAN"},
 	{"NetworkConf", "Network"},
+	{"PortConf", "PortProfile"},
 	{"RadiusProfile", "RADIUSProfile"},
 }
 
