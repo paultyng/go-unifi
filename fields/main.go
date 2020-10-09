@@ -258,14 +258,6 @@ func main() {
 				f.OmitEmpty = true
 				return nil
 			}
-		case "NetworkConf":
-			resource.FieldProcessor = func(name string, f *FieldInfo) error {
-				switch name {
-				case "WANEgressQOS":
-					f.FieldType = "string"
-				}
-				return nil
-			}
 		case "SettingUsg":
 			resource.FieldProcessor = func(name string, f *FieldInfo) error {
 				if strings.HasSuffix(name, "Timeout") && name != "ArpCacheTimeout" {

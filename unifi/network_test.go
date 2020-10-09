@@ -38,6 +38,19 @@ func TestNetworkUnmarshalJSON(t *testing.T) {
 			expected: unifi.Network{DHCPDLeaseTime: 0},
 			json:     `{ "dhcpd_leasetime": "" }`,
 		},
+
+		"int wan_egress_qos": {
+			expected: unifi.Network{WANEgressQOS: 1},
+			json:     `{ "wan_egress_qos": 1 }`,
+		},
+		"string wan_egress_qos": {
+			expected: unifi.Network{WANEgressQOS: 1},
+			json:     `{ "wan_egress_qos": "1" }`,
+		},
+		"empty string wan_egress_qos": {
+			expected: unifi.Network{WANEgressQOS: 0},
+			json:     `{ "wan_egress_qos": "" }`,
+		},
 	} {
 		t.Run(n, func(t *testing.T) {
 			var actual unifi.Network

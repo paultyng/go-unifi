@@ -11,6 +11,7 @@ func (dst *Network) UnmarshalJSON(b []byte) error {
 	aux := &struct {
 		VLAN           emptyStringInt `json:"vlan"`
 		DHCPDLeaseTime emptyStringInt `json:"dhcpd_leasetime"`
+		WANEgressQOS   emptyStringInt `json:"wan_egress_qos"`
 
 		*Alias
 	}{
@@ -24,6 +25,7 @@ func (dst *Network) UnmarshalJSON(b []byte) error {
 
 	dst.VLAN = int(aux.VLAN)
 	dst.DHCPDLeaseTime = int(aux.DHCPDLeaseTime)
+	dst.WANEgressQOS = int(aux.WANEgressQOS)
 
 	return nil
 }
