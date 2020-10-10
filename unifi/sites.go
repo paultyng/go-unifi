@@ -51,3 +51,25 @@ func (c *Client) CreateSite(ctx context.Context, Description string) ([]Site, er
 
 	return respBody.Data, nil
 }
+
+func (c *Client) DeleteSite(ctx context.Context, ID string) ([]Site, error) {
+	reqBody := struct {
+		Cmd  string `json:"cmd"`
+		Site string `json:"site"`
+	}{
+		Cmd:  "delete-site",
+		Site: ID,
+	}
+
+	var respBody struct {
+		Meta meta   `json:"meta"`
+		Data []Site `json:"data"`
+	}
+
+	err := c.do(ctx, "POST", "s/default/cmd/sitemgr", reqBody, &respBody)
+	if err != nil {
+		return nil, err
+	}
+
+	return respBody.Data, nil
+}
