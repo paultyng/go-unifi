@@ -1,6 +1,9 @@
 package unifi
 
-import "context"
+import (
+	"context"
+	"fmt"
+)
 
 type Site struct {
 	ID string `json:"_id,omitempty"`
@@ -30,13 +33,13 @@ func (c *Client) ListSites(ctx context.Context) ([]Site, error) {
 	return respBody.Data, nil
 }
 
-func (c *Client) CreateSite(ctx context.Context, Description string) ([]Site, error) {
+func (c *Client) CreateSite(ctx context.Context, description string) ([]Site, error) {
 	reqBody := struct {
 		Cmd  string `json:"cmd"`
 		Desc string `json:"desc"`
 	}{
 		Cmd:  "add-site",
-		Desc: Description,
+		Desc: description,
 	}
 
 	var respBody struct {
@@ -52,13 +55,13 @@ func (c *Client) CreateSite(ctx context.Context, Description string) ([]Site, er
 	return respBody.Data, nil
 }
 
-func (c *Client) DeleteSite(ctx context.Context, ID string) ([]Site, error) {
+func (c *Client) DeleteSite(ctx context.Context, id string) ([]Site, error) {
 	reqBody := struct {
 		Cmd  string `json:"cmd"`
 		Site string `json:"site"`
 	}{
 		Cmd:  "delete-site",
-		Site: ID,
+		Site: id,
 	}
 
 	var respBody struct {
@@ -67,6 +70,28 @@ func (c *Client) DeleteSite(ctx context.Context, ID string) ([]Site, error) {
 	}
 
 	err := c.do(ctx, "POST", "s/default/cmd/sitemgr", reqBody, &respBody)
+	if err != nil {
+		return nil, err
+	}
+
+	return respBody.Data, nil
+}
+
+func (c *Client) UpdateSite(ctx context.Context, name, description string) ([]Site, error) {
+	reqBody := struct {
+		Cmd  string `json:"cmd"`
+		Desc string `json:"desc"`
+	}{
+		Cmd:  "update-site",
+		Desc: description,
+	}
+
+	var respBody struct {
+		Meta meta   `json:"meta"`
+		Data []Site `json:"data"`
+	}
+
+	err := c.do(ctx, "POST", fmt.Sprintf("s/%s/cmd/sitemgr", name), reqBody, &respBody)
 	if err != nil {
 		return nil, err
 	}
