@@ -29,3 +29,25 @@ func (c *Client) ListSites(ctx context.Context) ([]Site, error) {
 
 	return respBody.Data, nil
 }
+
+func (c *Client) CreateSite(ctx context.Context, Description string) ([]Site, error) {
+	reqBody := struct {
+		Cmd  string `json:"cmd"`
+		Desc string `json:"desc"`
+	}{
+		Cmd:  "add-site",
+		Desc: Description,
+	}
+
+	var respBody struct {
+		Meta meta   `json:"meta"`
+		Data []Site `json:"data"`
+	}
+
+	err := c.do(ctx, "POST", "s/default/cmd/sitemgr", reqBody, &respBody)
+	if err != nil {
+		return nil, err
+	}
+
+	return respBody.Data, nil
+}
