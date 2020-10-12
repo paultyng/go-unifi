@@ -33,6 +33,22 @@ func (c *Client) ListSites(ctx context.Context) ([]Site, error) {
 	return respBody.Data, nil
 }
 
+func (c *Client) GetSite(ctx context.Context, id string) (*Site, error) {
+	sites, err := c.ListSites(ctx)
+
+	if err != nil {
+		return nil, err
+	}
+
+	for _, s := range sites {
+		if s.ID == id {
+			return &s, nil
+		}
+	}
+
+	return nil, &NotFoundError{}
+}
+
 func (c *Client) CreateSite(ctx context.Context, description string) ([]Site, error) {
 	reqBody := struct {
 		Cmd  string `json:"cmd"`
