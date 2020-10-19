@@ -147,7 +147,9 @@ type DeviceRadioTable struct {
 	BackupChannel         int    `json:"backup_channel,omitempty"` // [0-9]|[1][0-4]|16|34|36|38|40|42|44|46|48|52|56|60|64|100|104|108|112|116|120|124|128|132|136|140|144|149|153|157|161|165|183|184|185|187|188|189|192|196|auto
 	Channel               int    `json:"channel,omitempty"`        // [0-9]|[1][0-4]|4.5|16|34|36|38|40|42|44|46|48|52|56|60|64|100|104|108|112|116|120|124|128|132|136|140|144|149|153|157|161|165|183|184|185|187|188|189|192|196|auto
 	HardNoiseFloorEnabled bool   `json:"hard_noise_floor_enabled,omitempty"`
-	Ht                    string `json:"ht,omitempty"`       // 20|40|80|160|1080|2160
+	Ht                    string `json:"ht,omitempty"` // 20|40|80|160|1080|2160
+	LoadbalanceEnabled    bool   `json:"loadbalance_enabled,omitempty"`
+	Maxsta                int    `json:"maxsta,omitempty"`   // [1-9]|[1-9][0-9]|1[0-9]{2}|200|^$
 	MinRssi               int    `json:"min_rssi,omitempty"` // ^-([1-9]|[1-8][0-9]|9[0-4])$
 	MinRssiEnabled        bool   `json:"min_rssi_enabled,omitempty"`
 	Name                  string `json:"name,omitempty"`
@@ -157,7 +159,6 @@ type DeviceRadioTable struct {
 	TxPower               int    `json:"tx_power,omitempty"`      // [\d]+|auto
 	TxPowerMode           string `json:"tx_power_mode,omitempty"` // auto|medium|high|low|custom
 	VwireEnabled          bool   `json:"vwire_enabled,omitempty"`
-	WLANGroupID           string `json:"wlangroup_id,omitempty"` // [\d\w]+
 }
 
 type DeviceRpsOverride struct {

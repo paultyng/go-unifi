@@ -38,7 +38,6 @@ type HotspotPackage struct {
 	PaymentFieldsAddressRequired   bool    `json:"payment_fields_address_required"`
 	PaymentFieldsCityEnabled       bool    `json:"payment_fields_city_enabled"`
 	PaymentFieldsCityRequired      bool    `json:"payment_fields_city_required"`
-	PaymentFieldsCountryDefault    string  `json:"payment_fields_country_default,omitempty"`
 	PaymentFieldsCountryEnabled    bool    `json:"payment_fields_country_enabled"`
 	PaymentFieldsCountryRequired   bool    `json:"payment_fields_country_required"`
 	PaymentFieldsEmailEnabled      bool    `json:"payment_fields_email_enabled"`
@@ -51,6 +50,7 @@ type HotspotPackage struct {
 	PaymentFieldsStateRequired     bool    `json:"payment_fields_state_required"`
 	PaymentFieldsZipEnabled        bool    `json:"payment_fields_zip_enabled"`
 	PaymentFieldsZipRequired       bool    `json:"payment_fields_zip_required"`
+	TrialDurationMinutes           int     `json:"trial_duration_minutes,omitempty"`
 	TrialReset                     float64 `json:"trial_reset,omitempty"`
 }
 

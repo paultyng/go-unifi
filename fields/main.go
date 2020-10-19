@@ -83,6 +83,7 @@ var fileReps = []replacement{
 	{"NetworkConf", "Network"},
 	{"PortConf", "PortProfile"},
 	{"RadiusProfile", "RADIUSProfile"},
+	{"ApGroups", "APGroup"},
 }
 
 var embedTypes bool
@@ -134,17 +135,17 @@ func NewResource(structName string, resourcePath string) *Resource {
 		" _Spacer": nil,
 	}
 
-	if resource.IsSetting() {
+	switch {
+	case resource.IsSetting():
 		resource.ResourcePath = strcase.ToSnake(strings.TrimPrefix(structName, "Setting"))
 		baseType.Fields[" Key"] = NewFieldInfo("Key", "key", "string", "", false, false)
-	}
-
-	if resource.StructName == "Device" {
+	case resource.StructName == "Device":
 		baseType.Fields[" MAC"] = NewFieldInfo("MAC", "mac", "string", "", true, false)
-	}
-
-	if resource.StructName == "User" {
+	case resource.StructName == "User":
 		baseType.Fields[" IP"] = NewFieldInfo("IP", "ip", "string", "non-generated field", true, false)
+	case resource.StructName == "WLAN":
+		// this field removed in v6, retaining for backwards compatibility
+		baseType.Fields["WLANGroupID"] = NewFieldInfo("WLANGroupID", "wlangroup_id", "string", "", false, false)
 	}
 
 	return resource
@@ -178,7 +179,7 @@ func main() {
 
 	flag.Usage = usage
 
-	noEmbeddedTypes := flag.Bool("no-embedded-types", false, "Whether to generate top-level type definitions for embedded type definitions")
+	noEmbeddedTypes := flag.Bool("no-embedded-types", true, "Whether to generate top-level type definitions for embedded type definitions")
 	flag.Parse()
 
 	versionDir := flag.Arg(0)

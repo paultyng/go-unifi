@@ -26,7 +26,7 @@ type SettingGuestAccess struct {
 	Key string `json:"key"`
 
 	AllowedSubnet                          string   `json:"allowed_subnet_,omitempty"`
-	Auth                                   string   `json:"auth,omitempty"` // none|password|hotspot|facebook_wifi|custom
+	Auth                                   string   `json:"auth,omitempty"` // none|hotspot|facebook_wifi|custom
 	AuthorizeUseSandbox                    bool     `json:"authorize_use_sandbox"`
 	CustomIP                               string   `json:"custom_ip"` // ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$
 	EcEnabled                              bool     `json:"ec_enabled"`
@@ -46,6 +46,7 @@ type SettingGuestAccess struct {
 	GoogleScopeEmail                       bool     `json:"google_scope_email"`
 	IPpayUseSandbox                        bool     `json:"ippay_use_sandbox"`
 	MerchantwarriorUseSandbox              bool     `json:"merchantwarrior_use_sandbox"`
+	PasswordEnabled                        bool     `json:"password_enabled"`
 	PaymentEnabled                         bool     `json:"payment_enabled"`
 	PaypalUseSandbox                       bool     `json:"paypal_use_sandbox"`
 	PortalCustomized                       bool     `json:"portal_customized"`

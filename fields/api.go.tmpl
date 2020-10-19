@@ -46,7 +46,7 @@ func (c *Client) list{{ .StructName }}(ctx context.Context, site string) ([]{{ .
 		Data []{{ .StructName }} `json:"data"`
 	}
 
-	err := c.do(ctx, "GET", fmt.Sprintf("s/%s/{{ if eq .StructName "Device" }}stat{{ else }}rest{{ end }}/{{ .ResourcePath }}", site), nil, &respBody)
+	err := c.do(ctx, "GET", fmt.Sprintf("s/%s/{{ if eq .StructName "Device" }}stat/{{else if eq .StructName "APGroup" }}{{ else }}rest/{{ end }}{{ .ResourcePath }}", site), nil, &respBody)
 	if err != nil {
 		return nil, err
 	}
