@@ -32,6 +32,7 @@ type SettingMgmt struct {
 	LedEnabled              bool     `json:"led_enabled"`
 	OutdoorModeEnabled      bool     `json:"outdoor_mode_enabled"`
 	UnifiIDpEnabled         bool     `json:"unifi_idp_enabled"`
+	WifimanEnabled          bool     `json:"wifiman_enabled"`
 	XMgmtKey                string   `json:"x_mgmt_key,omitempty"` // [0-9a-f]{32}
 	XSshAuthPasswordEnabled bool     `json:"x_ssh_auth_password_enabled"`
 	XSshBindWildcard        bool     `json:"x_ssh_bind_wildcard"`

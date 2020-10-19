@@ -49,10 +49,16 @@ type Client struct {
 	loginPath string
 
 	csrf string
+
+	version string
 }
 
 func (c *Client) CSRFToken() string {
 	return c.csrf
+}
+
+func (c *Client) Version() string {
+	return c.version
 }
 
 func (c *Client) SetBaseURL(base string) error {
@@ -127,6 +133,18 @@ func (c *Client) Login(ctx context.Context, user, pass string) error {
 	if err != nil {
 		return fmt.Errorf("unable to determine API URL style: %w", err)
 	}
+
+	var status struct {
+		Meta struct {
+			ServerVersion string `json:"server_version"`
+			UUID          string `json:"uuid"`
+		} `json:"meta"`
+	}
+	err = c.do(ctx, "GET", "/status", nil, &status)
+	if err != nil {
+		return err
+	}
+	c.version = status.Meta.ServerVersion
 
 	err = c.do(ctx, "POST", c.loginPath, &struct {
 		Username string `json:"username"`

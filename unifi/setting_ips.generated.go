@@ -27,7 +27,7 @@ type SettingIps struct {
 
 	DNSFiltering        bool                   `json:"dns_filtering"`
 	DNSFilters          []SettingIpsDNSFilters `json:"dns_filters,omitempty"`
-	EnabledCategories   []string               `json:"enabled_categories,omitempty"` // emerging-activex|emerging-attackresponse|botcc|emerging-chat|ciarmy|compromised|emerging-dns|emerging-dos|dshield|emerging-exploit|emerging-ftp|emerging-games|emerging-icmp|emerging-icmpinfo|emerging-imap|emerging-inappropriate|emerging-info|emerging-malware|emerging-misc|emerging-mobile|emerging-netbios|emerging-p2p|emerging-policy|emerging-pop3|emerging-rpc|emerging-scada|emerging-scan|emerging-shellcode|emerging-smtp|emerging-snmp|spamhaus|emerging-sql|emerging-telnet|emerging-tftp|tor|emerging-trojan|emerging-useragent|emerging-voip|emerging-webapps|emerging-webclient|emerging-webserver|emerging-worm
+	EnabledCategories   []string               `json:"enabled_categories,omitempty"` // emerging-activex|emerging-attackresponse|botcc|emerging-chat|ciarmy|compromised|emerging-dns|emerging-dos|dshield|emerging-exploit|emerging-ftp|emerging-games|emerging-icmp|emerging-icmpinfo|emerging-imap|emerging-inappropriate|emerging-info|emerging-malware|emerging-misc|emerging-mobile|emerging-netbios|emerging-p2p|emerging-policy|emerging-pop3|emerging-rpc|emerging-scada|emerging-scan|emerging-shellcode|emerging-smtp|emerging-snmp|emerging-sql|emerging-telnet|emerging-tftp|tor|emerging-trojan|emerging-useragent|emerging-voip|emerging-webapps|emerging-webclient|emerging-webserver|emerging-worm
 	EndpointScanning    bool                   `json:"endpoint_scanning"`
 	Honeypot            []SettingIpsHoneypot   `json:"honeypot,omitempty"`
 	HoneypotEnabled     bool                   `json:"honeypot_enabled"`
@@ -52,7 +52,7 @@ type SettingIpsDNSFilters struct {
 	BlockedSites []string `json:"blocked_sites,omitempty"` // ^[a-zA-Z0-9.-]+$|^$
 	BlockedTld   []string `json:"blocked_tld,omitempty"`   // ^[a-zA-Z0-9.-]+$|^$
 	Description  string   `json:"description,omitempty"`
-	Filter       string   `json:"filter,omitempty"` // none|security|adult|family
+	Filter       string   `json:"filter,omitempty"` // none|work|family
 	Name         string   `json:"name,omitempty"`
 	NetworkID    string   `json:"network_id"`
 	Version      string   `json:"version,omitempty"` // v4|v6

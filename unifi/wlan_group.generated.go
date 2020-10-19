@@ -23,13 +23,7 @@ type WLANGroup struct {
 	NoDelete bool   `json:"attr_no_delete,omitempty"`
 	NoEdit   bool   `json:"attr_no_edit,omitempty"`
 
-	BSupported         bool   `json:"b_supported"`
-	LoadbalanceEnabled bool   `json:"loadbalance_enabled"`
-	Maxsta             int    `json:"maxsta,omitempty"` // [1-9]|[1-9][0-9]|1[0-9]{2}|200|^$
-	MinRSSI            string `json:"minrssi,omitempty"`
-	MinRSSIEnabled     bool   `json:"minrssi_enabled"`
-	Name               string `json:"name,omitempty"`     // .{1,128}
-	PMFMode            string `json:"pmf_mode,omitempty"` // disabled|optional|required
+	Name string `json:"name,omitempty"` // .{1,128}
 }
 
 func (c *Client) listWLANGroup(ctx context.Context, site string) ([]WLANGroup, error) {

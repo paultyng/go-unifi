@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/usr/bin/env bash
 
 deburl="https://dl.ui.com/unifi/$1/unifi_sysvinit_all.deb"
 wkdir="$(mktemp -d)"
@@ -16,7 +16,7 @@ mkdir -p "$1"
 
 cp ./ace/api/fields/*.json "./$1/"
 
-./settings.sh "$1"
+./cleanupjson.sh "$1"
 
 rm -rf ace ace.jar
 

@@ -2,27 +2,7 @@ package unifi
 
 import (
 	"context"
-	"encoding/json"
 )
-
-func (n *WLANGroup) UnmarshalJSON(b []byte) error {
-	type Alias WLANGroup
-	aux := &struct {
-		Maxsta emptyStringInt `json:"maxsta"`
-		*Alias
-	}{
-		Alias: (*Alias)(n),
-	}
-
-	err := json.Unmarshal(b, &aux)
-	if err != nil {
-		return err
-	}
-
-	n.Maxsta = int(aux.Maxsta)
-
-	return nil
-}
 
 func (c *Client) ListWLANGroup(ctx context.Context, site string) ([]WLANGroup, error) {
 	return c.listWLANGroup(ctx, site)
