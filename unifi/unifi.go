@@ -16,14 +16,14 @@ import (
 )
 
 const (
-	apiRoot = ""
-	apiRootNew = "/proxy/network"
-
 	apiPath    = "/api"
-	apiPathNew = "/api"
+	apiPathNew = "/proxy/network/api"
 
 	loginPath    = "/api/login"
 	loginPathNew = "/api/auth/login"
+
+	statusPath    = "/status"
+	statusPathNew = "/proxy/network/status"
 )
 
 type NotFoundError struct{}
@@ -48,9 +48,9 @@ type Client struct {
 	c       *http.Client
 	baseURL *url.URL
 
-	apiRoot   string
-	apiPath   string
-	loginPath string
+	apiPath    string
+	loginPath  string
+	statusPath string
 
 	csrf string
 
@@ -114,16 +114,16 @@ func (c *Client) setAPIUrlStyle(ctx context.Context) error {
 
 	if resp.StatusCode == http.StatusOK {
 		// the new API returns a 200 for a / request
-		c.apiRoot = apiRootNew
 		c.apiPath = apiPathNew
 		c.loginPath = loginPathNew
+		c.loginPath = statusPathNew
 		return nil
 	}
 
 	// The old version returns a "302" (to /manage) for a / request
-	c.apiRoot = apiRoot
 	c.apiPath = apiPath
 	c.loginPath = loginPath
+	c.statusPath = statusPath
 	return nil
 }
 
@@ -147,7 +147,7 @@ func (c *Client) Login(ctx context.Context, user, pass string) error {
 		} `json:"meta"`
 	}
 
-	err = c.do(ctx, "GET", path.Join(c.apiRoot, "status"), nil, &status)
+	err = c.do(ctx, "GET", c.statusPath, nil, &status)
 	if err != nil {
 		return err
 	}
@@ -190,7 +190,7 @@ func (c *Client) do(ctx context.Context, method, relativeURL string, reqBody int
 		return fmt.Errorf("unable to parse URL: %s %s %w", method, relativeURL, err)
 	}
 	if !strings.HasPrefix(relativeURL, "/") && !reqURL.IsAbs() {
-		reqURL.Path = path.Join(c.apiRoot, c.apiPath, reqURL.Path)
+		reqURL.Path = path.Join(c.apiPath, reqURL.Path)
 	}
 
 	url := c.baseURL.ResolveReference(reqURL)
