@@ -116,7 +116,7 @@ func (c *Client) setAPIUrlStyle(ctx context.Context) error {
 		// the new API returns a 200 for a / request
 		c.apiPath = apiPathNew
 		c.loginPath = loginPathNew
-		c.loginPath = statusPathNew
+		c.statusPath = statusPathNew
 		return nil
 	}
 
