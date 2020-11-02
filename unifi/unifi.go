@@ -21,6 +21,9 @@ const (
 
 	loginPath    = "/api/login"
 	loginPathNew = "/api/auth/login"
+
+	statusPath    = "/status"
+	statusPathNew = "/proxy/network/status"
 )
 
 type NotFoundError struct{}
@@ -45,8 +48,9 @@ type Client struct {
 	c       *http.Client
 	baseURL *url.URL
 
-	apiPath   string
-	loginPath string
+	apiPath    string
+	loginPath  string
+	statusPath string
 
 	csrf string
 
@@ -112,12 +116,14 @@ func (c *Client) setAPIUrlStyle(ctx context.Context) error {
 		// the new API returns a 200 for a / request
 		c.apiPath = apiPathNew
 		c.loginPath = loginPathNew
+		c.statusPath = statusPathNew
 		return nil
 	}
 
 	// The old version returns a "302" (to /manage) for a / request
 	c.apiPath = apiPath
 	c.loginPath = loginPath
+	c.statusPath = statusPath
 	return nil
 }
 
@@ -140,7 +146,8 @@ func (c *Client) Login(ctx context.Context, user, pass string) error {
 			UUID          string `json:"uuid"`
 		} `json:"meta"`
 	}
-	err = c.do(ctx, "GET", "/status", nil, &status)
+
+	err = c.do(ctx, "GET", c.statusPath, nil, &status)
 	if err != nil {
 		return err
 	}
