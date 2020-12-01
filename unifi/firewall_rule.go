@@ -1,6 +1,30 @@
 package unifi
 
-import "context"
+import (
+	"context"
+	"encoding/json"
+	"fmt"
+)
+
+func (dst *FirewallRule) UnmarshalJSON(b []byte) error {
+	type Alias FirewallRule
+	aux := &struct {
+		RuleIndex emptyStringInt `json:"rule_index"`
+
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+
+	dst.RuleIndex = int(aux.RuleIndex)
+
+	return nil
+}
 
 func (c *Client) ListFirewallRule(ctx context.Context, site string) ([]FirewallRule, error) {
 	return c.listFirewallRule(ctx, site)
