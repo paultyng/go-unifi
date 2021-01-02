@@ -5,13 +5,15 @@ package unifi
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 )
 
 // just to fix compile issues with the import
 var (
-	_ fmt.Formatter
 	_ context.Context
+	_ fmt.Formatter
+	_ json.Marshaler
 )
 
 type SettingSnmp struct {
@@ -30,6 +32,22 @@ type SettingSnmp struct {
 	EnabledV3 bool   `json:"enabledV3"`
 	Username  string `json:"username,omitempty"`   // [a-zA-Z0-9_-]{1,30}
 	XPassword string `json:"x_password,omitempty"` // [^'"]{8,32}
+}
+
+func (dst *SettingSnmp) UnmarshalJSON(b []byte) error {
+	type Alias SettingSnmp
+	aux := &struct {
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+
+	return nil
 }
 
 func (c *Client) getSettingSnmp(ctx context.Context, site string) (*SettingSnmp, error) {

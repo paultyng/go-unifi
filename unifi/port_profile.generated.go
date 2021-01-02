@@ -5,13 +5,15 @@ package unifi
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 )
 
 // just to fix compile issues with the import
 var (
-	_ fmt.Formatter
 	_ context.Context
+	_ fmt.Formatter
+	_ json.Marshaler
 )
 
 type PortProfile struct {
@@ -57,6 +59,49 @@ type PortProfile struct {
 	StpPortMode                  bool     `json:"stp_port_mode"`
 	TaggedNetworkIDs             []string `json:"tagged_networkconf_ids,omitempty"`
 	VoiceNetworkID               string   `json:"voice_networkconf_id"`
+}
+
+func (dst *PortProfile) UnmarshalJSON(b []byte) error {
+	type Alias PortProfile
+	aux := &struct {
+		Dot1XIDleTimeout           emptyStringInt `json:"dot1x_idle_timeout"`
+		EgressRateLimitKbps        emptyStringInt `json:"egress_rate_limit_kbps"`
+		PriorityQueue1Level        emptyStringInt `json:"priority_queue1_level"`
+		PriorityQueue2Level        emptyStringInt `json:"priority_queue2_level"`
+		PriorityQueue3Level        emptyStringInt `json:"priority_queue3_level"`
+		PriorityQueue4Level        emptyStringInt `json:"priority_queue4_level"`
+		Speed                      emptyStringInt `json:"speed"`
+		StormctrlBroadcastastLevel emptyStringInt `json:"stormctrl_bcast_level"`
+		StormctrlBroadcastastRate  emptyStringInt `json:"stormctrl_bcast_rate"`
+		StormctrlMcastLevel        emptyStringInt `json:"stormctrl_mcast_level"`
+		StormctrlMcastRate         emptyStringInt `json:"stormctrl_mcast_rate"`
+		StormctrlUcastLevel        emptyStringInt `json:"stormctrl_ucast_level"`
+		StormctrlUcastRate         emptyStringInt `json:"stormctrl_ucast_rate"`
+
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+	dst.Dot1XIDleTimeout = int(aux.Dot1XIDleTimeout)
+	dst.EgressRateLimitKbps = int(aux.EgressRateLimitKbps)
+	dst.PriorityQueue1Level = int(aux.PriorityQueue1Level)
+	dst.PriorityQueue2Level = int(aux.PriorityQueue2Level)
+	dst.PriorityQueue3Level = int(aux.PriorityQueue3Level)
+	dst.PriorityQueue4Level = int(aux.PriorityQueue4Level)
+	dst.Speed = int(aux.Speed)
+	dst.StormctrlBroadcastastLevel = int(aux.StormctrlBroadcastastLevel)
+	dst.StormctrlBroadcastastRate = int(aux.StormctrlBroadcastastRate)
+	dst.StormctrlMcastLevel = int(aux.StormctrlMcastLevel)
+	dst.StormctrlMcastRate = int(aux.StormctrlMcastRate)
+	dst.StormctrlUcastLevel = int(aux.StormctrlUcastLevel)
+	dst.StormctrlUcastRate = int(aux.StormctrlUcastRate)
+
+	return nil
 }
 
 func (c *Client) listPortProfile(ctx context.Context, site string) ([]PortProfile, error) {

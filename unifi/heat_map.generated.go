@@ -5,13 +5,15 @@ package unifi
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 )
 
 // just to fix compile issues with the import
 var (
-	_ fmt.Formatter
 	_ context.Context
+	_ fmt.Formatter
+	_ json.Marshaler
 )
 
 type HeatMap struct {
@@ -27,6 +29,22 @@ type HeatMap struct {
 	MapID       string `json:"map_id"`
 	Name        string `json:"name,omitempty"` // .*[^\s]+.*
 	Type        string `json:"type,omitempty"` // download|upload
+}
+
+func (dst *HeatMap) UnmarshalJSON(b []byte) error {
+	type Alias HeatMap
+	aux := &struct {
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+
+	return nil
 }
 
 func (c *Client) listHeatMap(ctx context.Context, site string) ([]HeatMap, error) {

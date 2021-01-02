@@ -2,33 +2,8 @@ package unifi
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 )
-
-func (dst *Network) UnmarshalJSON(b []byte) error {
-	type Alias Network
-	aux := &struct {
-		VLAN           emptyStringInt `json:"vlan"`
-		DHCPDLeaseTime emptyStringInt `json:"dhcpd_leasetime"`
-		WANEgressQOS   emptyStringInt `json:"wan_egress_qos"`
-
-		*Alias
-	}{
-		Alias: (*Alias)(dst),
-	}
-
-	err := json.Unmarshal(b, &aux)
-	if err != nil {
-		return fmt.Errorf("unable to unmarshal alias: %w", err)
-	}
-
-	dst.VLAN = int(aux.VLAN)
-	dst.DHCPDLeaseTime = int(aux.DHCPDLeaseTime)
-	dst.WANEgressQOS = int(aux.WANEgressQOS)
-
-	return nil
-}
 
 func (c *Client) DeleteNetwork(ctx context.Context, site, id, name string) error {
 	err := c.do(ctx, "DELETE", fmt.Sprintf("s/%s/rest/networkconf/%s", site, id), struct {

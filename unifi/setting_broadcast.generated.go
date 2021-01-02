@@ -5,13 +5,15 @@ package unifi
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 )
 
 // just to fix compile issues with the import
 var (
-	_ fmt.Formatter
 	_ context.Context
+	_ fmt.Formatter
+	_ json.Marshaler
 )
 
 type SettingBroadcast struct {
@@ -31,6 +33,22 @@ type SettingBroadcast struct {
 	SoundBeforeEnabled  bool   `json:"sound_before_enabled"`
 	SoundBeforeResource string `json:"sound_before_resource,omitempty"`
 	SoundBeforeType     string `json:"sound_before_type,omitempty"` // sample|media
+}
+
+func (dst *SettingBroadcast) UnmarshalJSON(b []byte) error {
+	type Alias SettingBroadcast
+	aux := &struct {
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+
+	return nil
 }
 
 func (c *Client) getSettingBroadcast(ctx context.Context, site string) (*SettingBroadcast, error) {

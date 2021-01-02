@@ -5,13 +5,15 @@ package unifi
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 )
 
 // just to fix compile issues with the import
 var (
-	_ fmt.Formatter
 	_ context.Context
+	_ fmt.Formatter
+	_ json.Marshaler
 )
 
 type Map struct {
@@ -36,6 +38,27 @@ type Map struct {
 	Unit       string  `json:"unit,omitempty"` // m|f
 	Upp        float64 `json:"upp,omitempty"`
 	Zoom       int     `json:"zoom,omitempty"`
+}
+
+func (dst *Map) UnmarshalJSON(b []byte) error {
+	type Alias Map
+	aux := &struct {
+		Tilt emptyStringInt `json:"tilt"`
+		Zoom emptyStringInt `json:"zoom"`
+
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+	dst.Tilt = int(aux.Tilt)
+	dst.Zoom = int(aux.Zoom)
+
+	return nil
 }
 
 func (c *Client) listMap(ctx context.Context, site string) ([]Map, error) {

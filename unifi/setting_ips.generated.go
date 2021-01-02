@@ -5,13 +5,15 @@ package unifi
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 )
 
 // just to fix compile issues with the import
 var (
-	_ fmt.Formatter
 	_ context.Context
+	_ fmt.Formatter
+	_ json.Marshaler
 )
 
 type SettingIps struct {
@@ -38,6 +40,22 @@ type SettingIps struct {
 	Suppression         SettingIpsSuppression  `json:"suppression,omitempty"`
 }
 
+func (dst *SettingIps) UnmarshalJSON(b []byte) error {
+	type Alias SettingIps
+	aux := &struct {
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+
+	return nil
+}
+
 type SettingIpsAlerts struct {
 	Category  string               `json:"category,omitempty"`
 	Gid       int                  `json:"gid,omitempty"`
@@ -45,6 +63,27 @@ type SettingIpsAlerts struct {
 	Signature string               `json:"signature,omitempty"`
 	Tracking  []SettingIpsTracking `json:"tracking,omitempty"`
 	Type      string               `json:"type,omitempty"` // all|track
+}
+
+func (dst *SettingIpsAlerts) UnmarshalJSON(b []byte) error {
+	type Alias SettingIpsAlerts
+	aux := &struct {
+		Gid emptyStringInt `json:"gid"`
+		ID  emptyStringInt `json:"id"`
+
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+	dst.Gid = int(aux.Gid)
+	dst.ID = int(aux.ID)
+
+	return nil
 }
 
 type SettingIpsDNSFilters struct {
@@ -58,15 +97,63 @@ type SettingIpsDNSFilters struct {
 	Version      string   `json:"version,omitempty"` // v4|v6
 }
 
+func (dst *SettingIpsDNSFilters) UnmarshalJSON(b []byte) error {
+	type Alias SettingIpsDNSFilters
+	aux := &struct {
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+
+	return nil
+}
+
 type SettingIpsHoneypot struct {
 	IPAddress string `json:"ip_address,omitempty"`
 	NetworkID string `json:"network_id"`
 	Version   string `json:"version,omitempty"` // v4|v6
 }
 
+func (dst *SettingIpsHoneypot) UnmarshalJSON(b []byte) error {
+	type Alias SettingIpsHoneypot
+	aux := &struct {
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+
+	return nil
+}
+
 type SettingIpsSuppression struct {
 	Alerts    []SettingIpsAlerts    `json:"alerts,omitempty"`
 	Whitelist []SettingIpsWhitelist `json:"whitelist,omitempty"`
+}
+
+func (dst *SettingIpsSuppression) UnmarshalJSON(b []byte) error {
+	type Alias SettingIpsSuppression
+	aux := &struct {
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+
+	return nil
 }
 
 type SettingIpsTracking struct {
@@ -75,10 +162,42 @@ type SettingIpsTracking struct {
 	Value     string `json:"value,omitempty"`
 }
 
+func (dst *SettingIpsTracking) UnmarshalJSON(b []byte) error {
+	type Alias SettingIpsTracking
+	aux := &struct {
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+
+	return nil
+}
+
 type SettingIpsWhitelist struct {
 	Direction string `json:"direction,omitempty"` // both|src|dest
 	Mode      string `json:"mode,omitempty"`      // ip|subnet|network
 	Value     string `json:"value,omitempty"`
+}
+
+func (dst *SettingIpsWhitelist) UnmarshalJSON(b []byte) error {
+	type Alias SettingIpsWhitelist
+	aux := &struct {
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+
+	return nil
 }
 
 func (c *Client) getSettingIps(ctx context.Context, site string) (*SettingIps, error) {

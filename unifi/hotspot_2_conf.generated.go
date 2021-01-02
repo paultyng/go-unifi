@@ -5,13 +5,15 @@ package unifi
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 )
 
 // just to fix compile issues with the import
 var (
-	_ fmt.Formatter
 	_ context.Context
+	_ fmt.Formatter
+	_ json.Marshaler
 )
 
 type Hotspot2Conf struct {
@@ -75,10 +77,78 @@ type Hotspot2Conf struct {
 	VenueType               int                                 `json:"venue_type,omitempty"` // 0|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15
 }
 
+func (dst *Hotspot2Conf) UnmarshalJSON(b []byte) error {
+	type Alias Hotspot2Conf
+	aux := &struct {
+		AnqpDomainID         emptyStringInt `json:"anqp_domain_id"`
+		DeauthReqTimeout     emptyStringInt `json:"deauth_req_timeout"`
+		GasComebackDelay     emptyStringInt `json:"gas_comeback_delay"`
+		GasFragLimit         emptyStringInt `json:"gas_frag_limit"`
+		IPaddrTypeAvailV4    emptyStringInt `json:"ipaddr_type_avail_v4"`
+		IPaddrTypeAvailV6    emptyStringInt `json:"ipaddr_type_avail_v6"`
+		MetricsDownlinkLoad  emptyStringInt `json:"metrics_downlink_load"`
+		MetricsDownlinkSpeed emptyStringInt `json:"metrics_downlink_speed"`
+		MetricsMeasurement   emptyStringInt `json:"metrics_measurement"`
+		MetricsUplinkLoad    emptyStringInt `json:"metrics_uplink_load"`
+		MetricsUplinkSpeed   emptyStringInt `json:"metrics_uplink_speed"`
+		NetworkAuthType      emptyStringInt `json:"network_auth_type"`
+		NetworkType          emptyStringInt `json:"network_type"`
+		TCTimestamp          emptyStringInt `json:"t_c_timestamp"`
+		VenueGroup           emptyStringInt `json:"venue_group"`
+		VenueType            emptyStringInt `json:"venue_type"`
+
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+	dst.AnqpDomainID = int(aux.AnqpDomainID)
+	dst.DeauthReqTimeout = int(aux.DeauthReqTimeout)
+	dst.GasComebackDelay = int(aux.GasComebackDelay)
+	dst.GasFragLimit = int(aux.GasFragLimit)
+	dst.IPaddrTypeAvailV4 = int(aux.IPaddrTypeAvailV4)
+	dst.IPaddrTypeAvailV6 = int(aux.IPaddrTypeAvailV6)
+	dst.MetricsDownlinkLoad = int(aux.MetricsDownlinkLoad)
+	dst.MetricsDownlinkSpeed = int(aux.MetricsDownlinkSpeed)
+	dst.MetricsMeasurement = int(aux.MetricsMeasurement)
+	dst.MetricsUplinkLoad = int(aux.MetricsUplinkLoad)
+	dst.MetricsUplinkSpeed = int(aux.MetricsUplinkSpeed)
+	dst.NetworkAuthType = int(aux.NetworkAuthType)
+	dst.NetworkType = int(aux.NetworkType)
+	dst.TCTimestamp = int(aux.TCTimestamp)
+	dst.VenueGroup = int(aux.VenueGroup)
+	dst.VenueType = int(aux.VenueType)
+
+	return nil
+}
+
 type Hotspot2ConfCapab struct {
 	Port     int    `json:"port,omitempty"`     // ^(0|[1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])|$
 	Protocol string `json:"protocol,omitempty"` // icmp|tcp_udp|tcp|udp|esp
 	Status   string `json:"status,omitempty"`   // closed|open|unknown
+}
+
+func (dst *Hotspot2ConfCapab) UnmarshalJSON(b []byte) error {
+	type Alias Hotspot2ConfCapab
+	aux := &struct {
+		Port emptyStringInt `json:"port"`
+
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+	dst.Port = int(aux.Port)
+
+	return nil
 }
 
 type Hotspot2ConfCellularNetworkList struct {
@@ -87,9 +157,46 @@ type Hotspot2ConfCellularNetworkList struct {
 	Name string `json:"name,omitempty"` // .{1,128}
 }
 
+func (dst *Hotspot2ConfCellularNetworkList) UnmarshalJSON(b []byte) error {
+	type Alias Hotspot2ConfCellularNetworkList
+	aux := &struct {
+		Mcc emptyStringInt `json:"mcc"`
+		Mnc emptyStringInt `json:"mnc"`
+
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+	dst.Mcc = int(aux.Mcc)
+	dst.Mnc = int(aux.Mnc)
+
+	return nil
+}
+
 type Hotspot2ConfDescription struct {
 	Language string `json:"language,omitempty"` // [a-z]{3}
 	Text     string `json:"text,omitempty"`     // .{1,128}
+}
+
+func (dst *Hotspot2ConfDescription) UnmarshalJSON(b []byte) error {
+	type Alias Hotspot2ConfDescription
+	aux := &struct {
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+
+	return nil
 }
 
 type Hotspot2ConfFriendlyName struct {
@@ -97,8 +204,40 @@ type Hotspot2ConfFriendlyName struct {
 	Text     string `json:"text,omitempty"`     // .{1,128}
 }
 
+func (dst *Hotspot2ConfFriendlyName) UnmarshalJSON(b []byte) error {
+	type Alias Hotspot2ConfFriendlyName
+	aux := &struct {
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+
+	return nil
+}
+
 type Hotspot2ConfIcon struct {
 	Name string `json:"name,omitempty"` // .{1,128}
+}
+
+func (dst *Hotspot2ConfIcon) UnmarshalJSON(b []byte) error {
+	type Alias Hotspot2ConfIcon
+	aux := &struct {
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+
+	return nil
 }
 
 type Hotspot2ConfIcons struct {
@@ -112,6 +251,29 @@ type Hotspot2ConfIcons struct {
 	Width    int    `json:"width,omitempty"`
 }
 
+func (dst *Hotspot2ConfIcons) UnmarshalJSON(b []byte) error {
+	type Alias Hotspot2ConfIcons
+	aux := &struct {
+		Height emptyStringInt `json:"height"`
+		Size   emptyStringInt `json:"size"`
+		Width  emptyStringInt `json:"width"`
+
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+	dst.Height = int(aux.Height)
+	dst.Size = int(aux.Size)
+	dst.Width = int(aux.Width)
+
+	return nil
+}
+
 type Hotspot2ConfNaiRealmList struct {
 	AuthIDs   string `json:"auth_ids,omitempty"`
 	AuthVals  string `json:"auth_vals,omitempty"`
@@ -119,6 +281,27 @@ type Hotspot2ConfNaiRealmList struct {
 	Encoding  int    `json:"encoding,omitempty"`   // 0|1
 	Name      string `json:"name,omitempty"`       // .{1,128}
 	Status    bool   `json:"status"`
+}
+
+func (dst *Hotspot2ConfNaiRealmList) UnmarshalJSON(b []byte) error {
+	type Alias Hotspot2ConfNaiRealmList
+	aux := &struct {
+		EapMethod emptyStringInt `json:"eap_method"`
+		Encoding  emptyStringInt `json:"encoding"`
+
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+	dst.EapMethod = int(aux.EapMethod)
+	dst.Encoding = int(aux.Encoding)
+
+	return nil
 }
 
 type Hotspot2ConfOsu struct {
@@ -133,9 +316,46 @@ type Hotspot2ConfOsu struct {
 	ServerUri        string                     `json:"server_uri,omitempty"`
 }
 
+func (dst *Hotspot2ConfOsu) UnmarshalJSON(b []byte) error {
+	type Alias Hotspot2ConfOsu
+	aux := &struct {
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+
+	return nil
+}
+
 type Hotspot2ConfQOSMapDcsp struct {
 	High int `json:"high,omitempty"`
 	Low  int `json:"low,omitempty"`
+}
+
+func (dst *Hotspot2ConfQOSMapDcsp) UnmarshalJSON(b []byte) error {
+	type Alias Hotspot2ConfQOSMapDcsp
+	aux := &struct {
+		High emptyStringInt `json:"high"`
+		Low  emptyStringInt `json:"low"`
+
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+	dst.High = int(aux.High)
+	dst.Low = int(aux.Low)
+
+	return nil
 }
 
 type Hotspot2ConfQOSMapExceptions struct {
@@ -143,15 +363,68 @@ type Hotspot2ConfQOSMapExceptions struct {
 	Up   int `json:"up,omitempty"` // [0-7]
 }
 
+func (dst *Hotspot2ConfQOSMapExceptions) UnmarshalJSON(b []byte) error {
+	type Alias Hotspot2ConfQOSMapExceptions
+	aux := &struct {
+		Dcsp emptyStringInt `json:"dcsp"`
+		Up   emptyStringInt `json:"up"`
+
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+	dst.Dcsp = int(aux.Dcsp)
+	dst.Up = int(aux.Up)
+
+	return nil
+}
+
 type Hotspot2ConfRoamingConsortiumList struct {
 	Name string `json:"name,omitempty"` // .{1,128}
 	Oid  string `json:"oid,omitempty"`  // .{1,128}
+}
+
+func (dst *Hotspot2ConfRoamingConsortiumList) UnmarshalJSON(b []byte) error {
+	type Alias Hotspot2ConfRoamingConsortiumList
+	aux := &struct {
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+
+	return nil
 }
 
 type Hotspot2ConfVenueName struct {
 	Language string `json:"language,omitempty"` // [a-z]{3}
 	Name     string `json:"name,omitempty"`
 	Url      string `json:"url,omitempty"`
+}
+
+func (dst *Hotspot2ConfVenueName) UnmarshalJSON(b []byte) error {
+	type Alias Hotspot2ConfVenueName
+	aux := &struct {
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+
+	return nil
 }
 
 func (c *Client) listHotspot2Conf(ctx context.Context, site string) ([]Hotspot2Conf, error) {

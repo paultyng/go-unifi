@@ -5,13 +5,15 @@ package unifi
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 )
 
 // just to fix compile issues with the import
 var (
-	_ fmt.Formatter
 	_ context.Context
+	_ fmt.Formatter
+	_ json.Marshaler
 )
 
 type Account struct {
@@ -30,6 +32,29 @@ type Account struct {
 	TunnelType       int    `json:"tunnel_type,omitempty"`        // [1-9]|1[0-3]|^$
 	VLAN             int    `json:"vlan,omitempty"`               // [2-9]|[1-9][0-9]{1,2}|[1-3][0-9]{3}|400[0-9]|^$
 	XPassword        string `json:"x_password,omitempty"`
+}
+
+func (dst *Account) UnmarshalJSON(b []byte) error {
+	type Alias Account
+	aux := &struct {
+		TunnelMediumType emptyStringInt `json:"tunnel_medium_type"`
+		TunnelType       emptyStringInt `json:"tunnel_type"`
+		VLAN             emptyStringInt `json:"vlan"`
+
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+	dst.TunnelMediumType = int(aux.TunnelMediumType)
+	dst.TunnelType = int(aux.TunnelType)
+	dst.VLAN = int(aux.VLAN)
+
+	return nil
 }
 
 func (c *Client) listAccount(ctx context.Context, site string) ([]Account, error) {

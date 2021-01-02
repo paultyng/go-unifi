@@ -51,6 +51,19 @@ func TestNetworkUnmarshalJSON(t *testing.T) {
 			expected: unifi.Network{WANEgressQOS: 0},
 			json:     `{ "wan_egress_qos": "" }`,
 		},
+
+		"int wan_vlan": {
+			expected: unifi.Network{WANVLAN: 1},
+			json:     `{ "wan_vlan": 1 }`,
+		},
+		"string wan_vlan": {
+			expected: unifi.Network{WANVLAN: 1},
+			json:     `{ "wan_vlan": "1" }`,
+		},
+		"empty wan_vlan vlan": {
+			expected: unifi.Network{WANVLAN: 0},
+			json:     `{ "wan_vlan": "" }`,
+		},
 	} {
 		t.Run(n, func(t *testing.T) {
 			var actual unifi.Network

@@ -5,13 +5,15 @@ package unifi
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 )
 
 // just to fix compile issues with the import
 var (
-	_ fmt.Formatter
 	_ context.Context
+	_ fmt.Formatter
+	_ json.Marshaler
 )
 
 type HotspotPackage struct {
@@ -52,6 +54,35 @@ type HotspotPackage struct {
 	PaymentFieldsZipRequired       bool    `json:"payment_fields_zip_required"`
 	TrialDurationMinutes           int     `json:"trial_duration_minutes,omitempty"`
 	TrialReset                     float64 `json:"trial_reset,omitempty"`
+}
+
+func (dst *HotspotPackage) UnmarshalJSON(b []byte) error {
+	type Alias HotspotPackage
+	aux := &struct {
+		Hours                emptyStringInt `json:"hours"`
+		Index                emptyStringInt `json:"index"`
+		LimitDown            emptyStringInt `json:"limit_down"`
+		LimitQuota           emptyStringInt `json:"limit_quota"`
+		LimitUp              emptyStringInt `json:"limit_up"`
+		TrialDurationMinutes emptyStringInt `json:"trial_duration_minutes"`
+
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+	dst.Hours = int(aux.Hours)
+	dst.Index = int(aux.Index)
+	dst.LimitDown = int(aux.LimitDown)
+	dst.LimitQuota = int(aux.LimitQuota)
+	dst.LimitUp = int(aux.LimitUp)
+	dst.TrialDurationMinutes = int(aux.TrialDurationMinutes)
+
+	return nil
 }
 
 func (c *Client) listHotspotPackage(ctx context.Context, site string) ([]HotspotPackage, error) {

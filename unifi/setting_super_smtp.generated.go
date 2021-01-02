@@ -5,13 +5,15 @@ package unifi
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 )
 
 // just to fix compile issues with the import
 var (
-	_ fmt.Formatter
 	_ context.Context
+	_ fmt.Formatter
+	_ json.Marshaler
 )
 
 type SettingSuperSmtp struct {
@@ -34,6 +36,25 @@ type SettingSuperSmtp struct {
 	UseSsl    bool   `json:"use_ssl"`
 	Username  string `json:"username,omitempty"`
 	XPassword string `json:"x_password,omitempty"`
+}
+
+func (dst *SettingSuperSmtp) UnmarshalJSON(b []byte) error {
+	type Alias SettingSuperSmtp
+	aux := &struct {
+		Port emptyStringInt `json:"port"`
+
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+	dst.Port = int(aux.Port)
+
+	return nil
 }
 
 func (c *Client) getSettingSuperSmtp(ctx context.Context, site string) (*SettingSuperSmtp, error) {

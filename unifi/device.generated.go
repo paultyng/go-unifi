@@ -5,13 +5,15 @@ package unifi
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 )
 
 // just to fix compile issues with the import
 var (
-	_ fmt.Formatter
 	_ context.Context
+	_ fmt.Formatter
+	_ json.Marshaler
 )
 
 type Device struct {
@@ -81,6 +83,35 @@ type Device struct {
 	Y                          float64                   `json:"y,omitempty"`
 }
 
+func (dst *Device) UnmarshalJSON(b []byte) error {
+	type Alias Device
+	aux := &struct {
+		LcmBrightness              emptyStringInt `json:"lcm_brightness"`
+		LcmIDleTimeout             emptyStringInt `json:"lcm_idle_timeout"`
+		LedOverrideColorBrightness emptyStringInt `json:"led_override_color_brightness"`
+		LteSimPin                  emptyStringInt `json:"lte_sim_pin"`
+		LteSoftLimit               emptyStringInt `json:"lte_soft_limit"`
+		Volume                     emptyStringInt `json:"volume"`
+
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+	dst.LcmBrightness = int(aux.LcmBrightness)
+	dst.LcmIDleTimeout = int(aux.LcmIDleTimeout)
+	dst.LedOverrideColorBrightness = int(aux.LedOverrideColorBrightness)
+	dst.LteSimPin = int(aux.LteSimPin)
+	dst.LteSoftLimit = int(aux.LteSoftLimit)
+	dst.Volume = int(aux.Volume)
+
+	return nil
+}
+
 type DeviceConfigNetwork struct {
 	BondingEnabled bool   `json:"bonding_enabled,omitempty"`
 	DNS1           string `json:"dns1,omitempty"` // ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$|^$
@@ -92,9 +123,41 @@ type DeviceConfigNetwork struct {
 	Type           string `json:"type,omitempty"`    // dhcp|static
 }
 
+func (dst *DeviceConfigNetwork) UnmarshalJSON(b []byte) error {
+	type Alias DeviceConfigNetwork
+	aux := &struct {
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+
+	return nil
+}
+
 type DeviceEthernetOverrides struct {
 	Ifname       string `json:"ifname,omitempty"`       // eth[0-9]{1,2}
 	NetworkGroup string `json:"networkgroup,omitempty"` // LAN[2-8]?|WAN[2]?
+}
+
+func (dst *DeviceEthernetOverrides) UnmarshalJSON(b []byte) error {
+	type Alias DeviceEthernetOverrides
+	aux := &struct {
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+
+	return nil
 }
 
 type DeviceOutletOverrides struct {
@@ -102,6 +165,25 @@ type DeviceOutletOverrides struct {
 	Index        int    `json:"index,omitempty"`
 	Name         string `json:"name,omitempty"` // .{0,128}
 	RelayState   bool   `json:"relay_state,omitempty"`
+}
+
+func (dst *DeviceOutletOverrides) UnmarshalJSON(b []byte) error {
+	type Alias DeviceOutletOverrides
+	aux := &struct {
+		Index emptyStringInt `json:"index"`
+
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+	dst.Index = int(aux.Index)
+
+	return nil
 }
 
 type DevicePortOverrides struct {
@@ -141,6 +223,55 @@ type DevicePortOverrides struct {
 	StpPortMode                  bool     `json:"stp_port_mode,omitempty"`
 }
 
+func (dst *DevicePortOverrides) UnmarshalJSON(b []byte) error {
+	type Alias DevicePortOverrides
+	aux := &struct {
+		AggregateNumPorts          emptyStringInt `json:"aggregate_num_ports"`
+		Dot1XIDleTimeout           emptyStringInt `json:"dot1x_idle_timeout"`
+		EgressRateLimitKbps        emptyStringInt `json:"egress_rate_limit_kbps"`
+		MirrorPortIDX              emptyStringInt `json:"mirror_port_idx"`
+		PortIDX                    emptyStringInt `json:"port_idx"`
+		PriorityQueue1Level        emptyStringInt `json:"priority_queue1_level"`
+		PriorityQueue2Level        emptyStringInt `json:"priority_queue2_level"`
+		PriorityQueue3Level        emptyStringInt `json:"priority_queue3_level"`
+		PriorityQueue4Level        emptyStringInt `json:"priority_queue4_level"`
+		Speed                      emptyStringInt `json:"speed"`
+		StormctrlBroadcastastLevel emptyStringInt `json:"stormctrl_bcast_level"`
+		StormctrlBroadcastastRate  emptyStringInt `json:"stormctrl_bcast_rate"`
+		StormctrlMcastLevel        emptyStringInt `json:"stormctrl_mcast_level"`
+		StormctrlMcastRate         emptyStringInt `json:"stormctrl_mcast_rate"`
+		StormctrlUcastLevel        emptyStringInt `json:"stormctrl_ucast_level"`
+		StormctrlUcastRate         emptyStringInt `json:"stormctrl_ucast_rate"`
+
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+	dst.AggregateNumPorts = int(aux.AggregateNumPorts)
+	dst.Dot1XIDleTimeout = int(aux.Dot1XIDleTimeout)
+	dst.EgressRateLimitKbps = int(aux.EgressRateLimitKbps)
+	dst.MirrorPortIDX = int(aux.MirrorPortIDX)
+	dst.PortIDX = int(aux.PortIDX)
+	dst.PriorityQueue1Level = int(aux.PriorityQueue1Level)
+	dst.PriorityQueue2Level = int(aux.PriorityQueue2Level)
+	dst.PriorityQueue3Level = int(aux.PriorityQueue3Level)
+	dst.PriorityQueue4Level = int(aux.PriorityQueue4Level)
+	dst.Speed = int(aux.Speed)
+	dst.StormctrlBroadcastastLevel = int(aux.StormctrlBroadcastastLevel)
+	dst.StormctrlBroadcastastRate = int(aux.StormctrlBroadcastastRate)
+	dst.StormctrlMcastLevel = int(aux.StormctrlMcastLevel)
+	dst.StormctrlMcastRate = int(aux.StormctrlMcastRate)
+	dst.StormctrlUcastLevel = int(aux.StormctrlUcastLevel)
+	dst.StormctrlUcastRate = int(aux.StormctrlUcastRate)
+
+	return nil
+}
+
 type DeviceRadioTable struct {
 	AntennaGain           int    `json:"antenna_gain,omitempty"`   // ^-?([0-9]|[1-9][0-9])
 	AntennaID             int    `json:"antenna_id,omitempty"`     // -1|[0-9]
@@ -161,15 +292,83 @@ type DeviceRadioTable struct {
 	VwireEnabled          bool   `json:"vwire_enabled,omitempty"`
 }
 
+func (dst *DeviceRadioTable) UnmarshalJSON(b []byte) error {
+	type Alias DeviceRadioTable
+	aux := &struct {
+		AntennaGain   emptyStringInt `json:"antenna_gain"`
+		AntennaID     emptyStringInt `json:"antenna_id"`
+		BackupChannel emptyStringInt `json:"backup_channel"`
+		Channel       emptyStringInt `json:"channel"`
+		Maxsta        emptyStringInt `json:"maxsta"`
+		MinRssi       emptyStringInt `json:"min_rssi"`
+		SensLevel     emptyStringInt `json:"sens_level"`
+		TxPower       emptyStringInt `json:"tx_power"`
+
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+	dst.AntennaGain = int(aux.AntennaGain)
+	dst.AntennaID = int(aux.AntennaID)
+	dst.BackupChannel = int(aux.BackupChannel)
+	dst.Channel = int(aux.Channel)
+	dst.Maxsta = int(aux.Maxsta)
+	dst.MinRssi = int(aux.MinRssi)
+	dst.SensLevel = int(aux.SensLevel)
+	dst.TxPower = int(aux.TxPower)
+
+	return nil
+}
+
 type DeviceRpsOverride struct {
 	PowerManagementMode string               `json:"power_management_mode,omitempty"` // dynamic|static
 	RpsPortTable        []DeviceRpsPortTable `json:"rps_port_table,omitempty"`
+}
+
+func (dst *DeviceRpsOverride) UnmarshalJSON(b []byte) error {
+	type Alias DeviceRpsOverride
+	aux := &struct {
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+
+	return nil
 }
 
 type DeviceRpsPortTable struct {
 	Name     string `json:"name,omitempty"`      // .{0,32}
 	PortIDX  int    `json:"port_idx,omitempty"`  // [1-6]
 	PortMode string `json:"port_mode,omitempty"` // auto|force_active|manual|disabled
+}
+
+func (dst *DeviceRpsPortTable) UnmarshalJSON(b []byte) error {
+	type Alias DeviceRpsPortTable
+	aux := &struct {
+		PortIDX emptyStringInt `json:"port_idx"`
+
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+	dst.PortIDX = int(aux.PortIDX)
+
+	return nil
 }
 
 type DeviceWLANOverrides struct {
@@ -183,6 +382,25 @@ type DeviceWLANOverrides struct {
 	VLANEnabled        bool   `json:"vlan_enabled,omitempty"`
 	WLANID             string `json:"wlan_id,omitempty"`      // [\d\w]+
 	XPassphrase        string `json:"x_passphrase,omitempty"` // [\x20-\x7E]{8,63}|[0-9a-fA-F]{64}
+}
+
+func (dst *DeviceWLANOverrides) UnmarshalJSON(b []byte) error {
+	type Alias DeviceWLANOverrides
+	aux := &struct {
+		VLAN emptyStringInt `json:"vlan"`
+
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+	dst.VLAN = int(aux.VLAN)
+
+	return nil
 }
 
 func (c *Client) listDevice(ctx context.Context, site string) ([]Device, error) {

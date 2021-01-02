@@ -5,13 +5,15 @@ package unifi
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 )
 
 // just to fix compile issues with the import
 var (
-	_ fmt.Formatter
 	_ context.Context
+	_ fmt.Formatter
+	_ json.Marshaler
 )
 
 type RADIUSProfile struct {
@@ -35,16 +37,73 @@ type RADIUSProfile struct {
 	VLANWLANMode          string                     `json:"vlan_wlan_mode,omitempty"` // disabled|optional|required
 }
 
+func (dst *RADIUSProfile) UnmarshalJSON(b []byte) error {
+	type Alias RADIUSProfile
+	aux := &struct {
+		InterimUpdateInterval emptyStringInt `json:"interim_update_interval"`
+
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+	dst.InterimUpdateInterval = int(aux.InterimUpdateInterval)
+
+	return nil
+}
+
 type RADIUSProfileAcctServers struct {
 	IP      string `json:"ip,omitempty"`   // ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$
 	Port    int    `json:"port,omitempty"` // ^([1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5])$|^$
 	XSecret string `json:"x_secret,omitempty"`
 }
 
+func (dst *RADIUSProfileAcctServers) UnmarshalJSON(b []byte) error {
+	type Alias RADIUSProfileAcctServers
+	aux := &struct {
+		Port emptyStringInt `json:"port"`
+
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+	dst.Port = int(aux.Port)
+
+	return nil
+}
+
 type RADIUSProfileAuthServers struct {
 	IP      string `json:"ip,omitempty"`   // ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$
 	Port    int    `json:"port,omitempty"` // ^([1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5])$|^$
 	XSecret string `json:"x_secret,omitempty"`
+}
+
+func (dst *RADIUSProfileAuthServers) UnmarshalJSON(b []byte) error {
+	type Alias RADIUSProfileAuthServers
+	aux := &struct {
+		Port emptyStringInt `json:"port"`
+
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+	dst.Port = int(aux.Port)
+
+	return nil
 }
 
 func (c *Client) listRADIUSProfile(ctx context.Context, site string) ([]RADIUSProfile, error) {

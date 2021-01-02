@@ -5,13 +5,15 @@ package unifi
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 )
 
 // just to fix compile issues with the import
 var (
-	_ fmt.Formatter
 	_ context.Context
+	_ fmt.Formatter
+	_ json.Marshaler
 )
 
 type SettingSuperFwupdate struct {
@@ -28,6 +30,22 @@ type SettingSuperFwupdate struct {
 	ControllerChannel string `json:"controller_channel,omitempty"` // internal|alpha|beta|release-candidate|release
 	FirmwareChannel   string `json:"firmware_channel,omitempty"`   // internal|alpha|beta|release-candidate|release
 	SsoEnabled        bool   `json:"sso_enabled"`
+}
+
+func (dst *SettingSuperFwupdate) UnmarshalJSON(b []byte) error {
+	type Alias SettingSuperFwupdate
+	aux := &struct {
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+
+	return nil
 }
 
 func (c *Client) getSettingSuperFwupdate(ctx context.Context, site string) (*SettingSuperFwupdate, error) {
