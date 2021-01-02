@@ -2,6 +2,18 @@
 
 {{ define "field" }}
 	{{ .FieldName }} {{ if .IsArray }}[]{{end}}{{ .FieldType }} `json:"{{ .JSONName }}{{ if .OmitEmpty }},omitempty{{ end }}"` {{ if .FieldValidation }}// {{ .FieldValidation }}{{ end }} {{- end }}
+{{ define "field-emptyStringInt" }}
+	{{- if ne .FieldType "int" }}{{else}}
+	    {{ .FieldName }} {{ if .IsArray }}[]{{end}}emptyStringInt `json:"{{ .JSONName }}{{ if .OmitEmpty }}{{ end }}"`{{ end }} {{- end }}
+{{ define "typecast" }}
+    {{- if eq .FieldType "int" }}{{- if .IsArray }}
+    dst.{{ .FieldName }}= make([]int, len(aux.{{ .FieldName }}))
+    for i, v := range aux.{{ .FieldName }} {
+        dst.{{ .FieldName }}[i] = int(v)
+    }
+    {{- else }}
+    dst.{{ .FieldName }} = int(aux.{{ .FieldName }})
+    {{- end }}{{- end }}{{- end }}
 {{ define "field-embed" }}
 	{{ .FieldName }} {{ if .IsArray }}[]{{end}}{{ if not .Fields }}{{ .FieldType }}{{ else }}struct {
 	{{ range $fk, $fv := .Fields }}{{ if not $fv }}
@@ -14,13 +26,15 @@ package unifi
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 )
 
 // just to fix compile issues with the import
 var (
-	_ fmt.Formatter
 	_ context.Context
+	_ fmt.Formatter
+	_ json.Marshaler
 )
 
 {{ if embedTypes -}}
@@ -35,6 +49,28 @@ type {{ $k }} struct {
 type {{ $k }} struct {
 	{{ range $fk, $fv := $v.Fields }}{{ if not $fv }}
 	{{ else }}{{- template "field" $fv }}{{ end }}{{ end }}
+}
+
+func (dst *{{ $k }}) UnmarshalJSON(b []byte) error {
+	type Alias {{ $k }}
+	aux := &struct {
+	    {{- range $fk, $fv := $v.Fields }}{{ if not $fv }}
+	    {{- else }}{{- template "field-emptyStringInt" $fv }}{{ end }}{{- end }}
+
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+
+    {{- range $fk, $fv := $v.Fields }}{{ if not $fv }}
+    {{- else }}{{- template "typecast" $fv }}{{ end }}{{ end }}
+
+	return nil
 }
 {{ end }}
 {{- end -}}

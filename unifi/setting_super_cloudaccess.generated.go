@@ -5,13 +5,15 @@ package unifi
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 )
 
 // just to fix compile issues with the import
 var (
-	_ fmt.Formatter
 	_ context.Context
+	_ fmt.Formatter
+	_ json.Marshaler
 )
 
 type SettingSuperCloudaccess struct {
@@ -32,6 +34,22 @@ type SettingSuperCloudaccess struct {
 	XCertificateArn string `json:"x_certificate_arn,omitempty"`
 	XCertificatePem string `json:"x_certificate_pem,omitempty"`
 	XPrivateKey     string `json:"x_private_key,omitempty"`
+}
+
+func (dst *SettingSuperCloudaccess) UnmarshalJSON(b []byte) error {
+	type Alias SettingSuperCloudaccess
+	aux := &struct {
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+
+	return nil
 }
 
 func (c *Client) getSettingSuperCloudaccess(ctx context.Context, site string) (*SettingSuperCloudaccess, error) {

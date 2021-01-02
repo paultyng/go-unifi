@@ -5,13 +5,15 @@ package unifi
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 )
 
 // just to fix compile issues with the import
 var (
-	_ fmt.Formatter
 	_ context.Context
+	_ fmt.Formatter
+	_ json.Marshaler
 )
 
 type SettingProviderCapabilities struct {
@@ -28,6 +30,27 @@ type SettingProviderCapabilities struct {
 	Download int  `json:"download,omitempty"` // ^[1-9][0-9]*$
 	Enabled  bool `json:"enabled"`
 	Upload   int  `json:"upload,omitempty"` // ^[1-9][0-9]*$
+}
+
+func (dst *SettingProviderCapabilities) UnmarshalJSON(b []byte) error {
+	type Alias SettingProviderCapabilities
+	aux := &struct {
+		Download emptyStringInt `json:"download"`
+		Upload   emptyStringInt `json:"upload"`
+
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+	dst.Download = int(aux.Download)
+	dst.Upload = int(aux.Upload)
+
+	return nil
 }
 
 func (c *Client) getSettingProviderCapabilities(ctx context.Context, site string) (*SettingProviderCapabilities, error) {

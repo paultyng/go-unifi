@@ -5,13 +5,15 @@ package unifi
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 )
 
 // just to fix compile issues with the import
 var (
-	_ fmt.Formatter
 	_ context.Context
+	_ fmt.Formatter
+	_ json.Marshaler
 )
 
 type FirewallRule struct {
@@ -62,6 +64,25 @@ type FirewallRule struct {
 	UTC                   bool     `json:"utc"`
 	Weekdays              string   `json:"weekdays"` // ^$|^((Mon|Tue|Wed|Thu|Fri|Sat|Sun)(,(Mon|Tue|Wed|Thu|Fri|Sat|Sun)){0,6})$
 	WeekdaysNegate        bool     `json:"weekdays_negate"`
+}
+
+func (dst *FirewallRule) UnmarshalJSON(b []byte) error {
+	type Alias FirewallRule
+	aux := &struct {
+		RuleIndex emptyStringInt `json:"rule_index"`
+
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+	dst.RuleIndex = int(aux.RuleIndex)
+
+	return nil
 }
 
 func (c *Client) listFirewallRule(ctx context.Context, site string) ([]FirewallRule, error) {

@@ -5,13 +5,15 @@ package unifi
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 )
 
 // just to fix compile issues with the import
 var (
-	_ fmt.Formatter
 	_ context.Context
+	_ fmt.Formatter
+	_ json.Marshaler
 )
 
 type SpatialRecord struct {
@@ -27,15 +29,63 @@ type SpatialRecord struct {
 	Name    string                 `json:"name,omitempty"` // .{1,128}
 }
 
+func (dst *SpatialRecord) UnmarshalJSON(b []byte) error {
+	type Alias SpatialRecord
+	aux := &struct {
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+
+	return nil
+}
+
 type SpatialRecordDevices struct {
 	MAC      string                `json:"mac,omitempty"` // ^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$
 	Position SpatialRecordPosition `json:"position,omitempty"`
+}
+
+func (dst *SpatialRecordDevices) UnmarshalJSON(b []byte) error {
+	type Alias SpatialRecordDevices
+	aux := &struct {
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+
+	return nil
 }
 
 type SpatialRecordPosition struct {
 	X float64 `json:"x,omitempty"` // (^([-]?[\d]+)$)|(^([-]?[\d]+[.]?[\d]+)$)
 	Y float64 `json:"y,omitempty"` // (^([-]?[\d]+)$)|(^([-]?[\d]+[.]?[\d]+)$)
 	Z float64 `json:"z,omitempty"` // (^([-]?[\d]+)$)|(^([-]?[\d]+[.]?[\d]+)$)
+}
+
+func (dst *SpatialRecordPosition) UnmarshalJSON(b []byte) error {
+	type Alias SpatialRecordPosition
+	aux := &struct {
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+
+	return nil
 }
 
 func (c *Client) listSpatialRecord(ctx context.Context, site string) ([]SpatialRecord, error) {

@@ -5,13 +5,15 @@ package unifi
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 )
 
 // just to fix compile issues with the import
 var (
-	_ fmt.Formatter
 	_ context.Context
+	_ fmt.Formatter
+	_ json.Marshaler
 )
 
 type SettingRadius struct {
@@ -33,6 +35,29 @@ type SettingRadius struct {
 	InterimUpdateInterval int    `json:"interim_update_interval,omitempty"` // ^([6-9][0-9]|[1-9][0-9]{2,3}|[1-7][0-9]{4}|8[0-5][0-9]{3}|86[0-3][0-9][0-9]|86400)$
 	TunneledReply         bool   `json:"tunneled_reply"`
 	XSecret               string `json:"x_secret,omitempty"` // [^\"\' ]{1,48}
+}
+
+func (dst *SettingRadius) UnmarshalJSON(b []byte) error {
+	type Alias SettingRadius
+	aux := &struct {
+		AcctPort              emptyStringInt `json:"acct_port"`
+		AuthPort              emptyStringInt `json:"auth_port"`
+		InterimUpdateInterval emptyStringInt `json:"interim_update_interval"`
+
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+	dst.AcctPort = int(aux.AcctPort)
+	dst.AuthPort = int(aux.AuthPort)
+	dst.InterimUpdateInterval = int(aux.InterimUpdateInterval)
+
+	return nil
 }
 
 func (c *Client) getSettingRadius(ctx context.Context, site string) (*SettingRadius, error) {

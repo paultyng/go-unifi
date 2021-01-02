@@ -5,13 +5,15 @@ package unifi
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 )
 
 // just to fix compile issues with the import
 var (
-	_ fmt.Formatter
 	_ context.Context
+	_ fmt.Formatter
+	_ json.Marshaler
 )
 
 type SettingLocale struct {
@@ -26,6 +28,22 @@ type SettingLocale struct {
 	Key string `json:"key"`
 
 	Timezone string `json:"timezone,omitempty"`
+}
+
+func (dst *SettingLocale) UnmarshalJSON(b []byte) error {
+	type Alias SettingLocale
+	aux := &struct {
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+
+	return nil
 }
 
 func (c *Client) getSettingLocale(ctx context.Context, site string) (*SettingLocale, error) {

@@ -5,13 +5,15 @@ package unifi
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 )
 
 // just to fix compile issues with the import
 var (
-	_ fmt.Formatter
 	_ context.Context
+	_ fmt.Formatter
+	_ json.Marshaler
 )
 
 type WLAN struct {
@@ -97,11 +99,75 @@ type WLAN struct {
 	XWEP                      string                     `json:"x_wep,omitempty"`
 }
 
+func (dst *WLAN) UnmarshalJSON(b []byte) error {
+	type Alias WLAN
+	aux := &struct {
+		DTIMNa                  emptyStringInt `json:"dtim_na"`
+		DTIMNg                  emptyStringInt `json:"dtim_ng"`
+		GroupRekey              emptyStringInt `json:"group_rekey"`
+		MinrateNaBeaconRateKbps emptyStringInt `json:"minrate_na_beacon_rate_kbps"`
+		MinrateNaDataRateKbps   emptyStringInt `json:"minrate_na_data_rate_kbps"`
+		MinrateNaMgmtRateKbps   emptyStringInt `json:"minrate_na_mgmt_rate_kbps"`
+		MinrateNgBeaconRateKbps emptyStringInt `json:"minrate_ng_beacon_rate_kbps"`
+		MinrateNgDataRateKbps   emptyStringInt `json:"minrate_ng_data_rate_kbps"`
+		MinrateNgMgmtRateKbps   emptyStringInt `json:"minrate_ng_mgmt_rate_kbps"`
+		RoamClusterID           emptyStringInt `json:"roam_cluster_id"`
+		VLAN                    emptyStringInt `json:"vlan"`
+		WEPIDX                  emptyStringInt `json:"wep_idx"`
+
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+	dst.DTIMNa = int(aux.DTIMNa)
+	dst.DTIMNg = int(aux.DTIMNg)
+	dst.GroupRekey = int(aux.GroupRekey)
+	dst.MinrateNaBeaconRateKbps = int(aux.MinrateNaBeaconRateKbps)
+	dst.MinrateNaDataRateKbps = int(aux.MinrateNaDataRateKbps)
+	dst.MinrateNaMgmtRateKbps = int(aux.MinrateNaMgmtRateKbps)
+	dst.MinrateNgBeaconRateKbps = int(aux.MinrateNgBeaconRateKbps)
+	dst.MinrateNgDataRateKbps = int(aux.MinrateNgDataRateKbps)
+	dst.MinrateNgMgmtRateKbps = int(aux.MinrateNgMgmtRateKbps)
+	dst.RoamClusterID = int(aux.RoamClusterID)
+	dst.VLAN = int(aux.VLAN)
+	dst.WEPIDX = int(aux.WEPIDX)
+
+	return nil
+}
+
 type WLANScheduleWithDuration struct {
 	DurationMinutes int      `json:"duration_minutes,omitempty"`   // ^[1-9][0-9]*$
 	StartDaysOfWeek []string `json:"start_days_of_week,omitempty"` // ^(sun|mon|tue|wed|thu|fri|sat)$
 	StartHour       int      `json:"start_hour,omitempty"`         // ^(1?[0-9])|(2[0-3])$
 	StartMinute     int      `json:"start_minute,omitempty"`       // ^[0-5]?[0-9]$
+}
+
+func (dst *WLANScheduleWithDuration) UnmarshalJSON(b []byte) error {
+	type Alias WLANScheduleWithDuration
+	aux := &struct {
+		DurationMinutes emptyStringInt `json:"duration_minutes"`
+		StartHour       emptyStringInt `json:"start_hour"`
+		StartMinute     emptyStringInt `json:"start_minute"`
+
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+	dst.DurationMinutes = int(aux.DurationMinutes)
+	dst.StartHour = int(aux.StartHour)
+	dst.StartMinute = int(aux.StartMinute)
+
+	return nil
 }
 
 func (c *Client) listWLAN(ctx context.Context, site string) ([]WLAN, error) {

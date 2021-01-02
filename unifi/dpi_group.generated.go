@@ -5,13 +5,15 @@ package unifi
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 )
 
 // just to fix compile issues with the import
 var (
-	_ fmt.Formatter
 	_ context.Context
+	_ fmt.Formatter
+	_ json.Marshaler
 )
 
 type DpiGroup struct {
@@ -26,6 +28,22 @@ type DpiGroup struct {
 	DPIappIDs []string `json:"dpiapp_ids,omitempty"` // [\d\w]+
 	Enabled   bool     `json:"enabled"`
 	Name      string   `json:"name,omitempty"` // .{1,128}
+}
+
+func (dst *DpiGroup) UnmarshalJSON(b []byte) error {
+	type Alias DpiGroup
+	aux := &struct {
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+
+	return nil
 }
 
 func (c *Client) listDpiGroup(ctx context.Context, site string) ([]DpiGroup, error) {

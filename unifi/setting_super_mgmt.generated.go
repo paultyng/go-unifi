@@ -5,13 +5,15 @@ package unifi
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 )
 
 // just to fix compile issues with the import
 var (
-	_ fmt.Formatter
 	_ context.Context
+	_ fmt.Formatter
+	_ json.Marshaler
 )
 
 type SettingSuperMgmt struct {
@@ -50,7 +52,7 @@ type SettingSuperMgmt struct {
 	ContactInfoState                         string   `json:"contact_info_state,omitempty"`
 	ContactInfoZip                           string   `json:"contact_info_zip,omitempty"`
 	DataRetentionTimeEnabled                 bool     `json:"data_retention_time_enabled"`
-	DataRetentionTimeInHoursFor5minutesScale int      `json:"data_retention_time_in_hours_for_5minutes_scale,omitempty"`
+	DataRetentionTimeInHoursFor5MinutesScale int      `json:"data_retention_time_in_hours_for_5minutes_scale,omitempty"`
 	DataRetentionTimeInHoursForDailyScale    int      `json:"data_retention_time_in_hours_for_daily_scale,omitempty"`
 	DataRetentionTimeInHoursForHourlyScale   int      `json:"data_retention_time_in_hours_for_hourly_scale,omitempty"`
 	DataRetentionTimeInHoursForMonthlyScale  int      `json:"data_retention_time_in_hours_for_monthly_scale,omitempty"`
@@ -70,6 +72,41 @@ type SettingSuperMgmt struct {
 	TimeSeriesPerClientStatsEnabled          bool     `json:"time_series_per_client_stats_enabled"`
 	XSshPassword                             string   `json:"x_ssh_password,omitempty"`
 	XSshUsername                             string   `json:"x_ssh_username,omitempty"`
+}
+
+func (dst *SettingSuperMgmt) UnmarshalJSON(b []byte) error {
+	type Alias SettingSuperMgmt
+	aux := &struct {
+		AutobackupDays                           emptyStringInt `json:"autobackup_days"`
+		AutobackupMaxFiles                       emptyStringInt `json:"autobackup_max_files"`
+		DataRetentionTimeInHoursFor5MinutesScale emptyStringInt `json:"data_retention_time_in_hours_for_5minutes_scale"`
+		DataRetentionTimeInHoursForDailyScale    emptyStringInt `json:"data_retention_time_in_hours_for_daily_scale"`
+		DataRetentionTimeInHoursForHourlyScale   emptyStringInt `json:"data_retention_time_in_hours_for_hourly_scale"`
+		DataRetentionTimeInHoursForMonthlyScale  emptyStringInt `json:"data_retention_time_in_hours_for_monthly_scale"`
+		DataRetentionTimeInHoursForOthers        emptyStringInt `json:"data_retention_time_in_hours_for_others"`
+		MinimumUsableHdSpace                     emptyStringInt `json:"minimum_usable_hd_space"`
+		MinimumUsableSdSpace                     emptyStringInt `json:"minimum_usable_sd_space"`
+
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+	dst.AutobackupDays = int(aux.AutobackupDays)
+	dst.AutobackupMaxFiles = int(aux.AutobackupMaxFiles)
+	dst.DataRetentionTimeInHoursFor5MinutesScale = int(aux.DataRetentionTimeInHoursFor5MinutesScale)
+	dst.DataRetentionTimeInHoursForDailyScale = int(aux.DataRetentionTimeInHoursForDailyScale)
+	dst.DataRetentionTimeInHoursForHourlyScale = int(aux.DataRetentionTimeInHoursForHourlyScale)
+	dst.DataRetentionTimeInHoursForMonthlyScale = int(aux.DataRetentionTimeInHoursForMonthlyScale)
+	dst.DataRetentionTimeInHoursForOthers = int(aux.DataRetentionTimeInHoursForOthers)
+	dst.MinimumUsableHdSpace = int(aux.MinimumUsableHdSpace)
+	dst.MinimumUsableSdSpace = int(aux.MinimumUsableSdSpace)
+
+	return nil
 }
 
 func (c *Client) getSettingSuperMgmt(ctx context.Context, site string) (*SettingSuperMgmt, error) {

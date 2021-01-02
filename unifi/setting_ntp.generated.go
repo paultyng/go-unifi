@@ -5,13 +5,15 @@ package unifi
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 )
 
 // just to fix compile issues with the import
 var (
-	_ fmt.Formatter
 	_ context.Context
+	_ fmt.Formatter
+	_ json.Marshaler
 )
 
 type SettingNtp struct {
@@ -29,6 +31,22 @@ type SettingNtp struct {
 	NtpServer2 string `json:"ntp_server_2,omitempty"`
 	NtpServer3 string `json:"ntp_server_3,omitempty"`
 	NtpServer4 string `json:"ntp_server_4,omitempty"`
+}
+
+func (dst *SettingNtp) UnmarshalJSON(b []byte) error {
+	type Alias SettingNtp
+	aux := &struct {
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+
+	return nil
 }
 
 func (c *Client) getSettingNtp(ctx context.Context, site string) (*SettingNtp, error) {

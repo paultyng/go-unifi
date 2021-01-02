@@ -5,13 +5,15 @@ package unifi
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 )
 
 // just to fix compile issues with the import
 var (
-	_ fmt.Formatter
 	_ context.Context
+	_ fmt.Formatter
+	_ json.Marshaler
 )
 
 type SettingRadioAi struct {
@@ -36,6 +38,43 @@ type SettingRadioAi struct {
 	Optimize       []string `json:"optimize,omitempty"`        // channel|power
 	Radios         []string `json:"radios,omitempty"`          // na|ng
 	UseXY          bool     `json:"useXY"`
+}
+
+func (dst *SettingRadioAi) UnmarshalJSON(b []byte) error {
+	type Alias SettingRadioAi
+	aux := &struct {
+		ChannelsNa []emptyStringInt `json:"channels_na"`
+		ChannelsNg []emptyStringInt `json:"channels_ng"`
+		HtModesNa  []emptyStringInt `json:"ht_modes_na"`
+		HtModesNg  []emptyStringInt `json:"ht_modes_ng"`
+
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+	dst.ChannelsNa = make([]int, len(aux.ChannelsNa))
+	for i, v := range aux.ChannelsNa {
+		dst.ChannelsNa[i] = int(v)
+	}
+	dst.ChannelsNg = make([]int, len(aux.ChannelsNg))
+	for i, v := range aux.ChannelsNg {
+		dst.ChannelsNg[i] = int(v)
+	}
+	dst.HtModesNa = make([]int, len(aux.HtModesNa))
+	for i, v := range aux.HtModesNa {
+		dst.HtModesNa[i] = int(v)
+	}
+	dst.HtModesNg = make([]int, len(aux.HtModesNg))
+	for i, v := range aux.HtModesNg {
+		dst.HtModesNg[i] = int(v)
+	}
+
+	return nil
 }
 
 func (c *Client) getSettingRadioAi(ctx context.Context, site string) (*SettingRadioAi, error) {

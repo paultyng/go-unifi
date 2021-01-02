@@ -5,13 +5,15 @@ package unifi
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 )
 
 // just to fix compile issues with the import
 var (
-	_ fmt.Formatter
 	_ context.Context
+	_ fmt.Formatter
+	_ json.Marshaler
 )
 
 type SettingSuperSdn struct {
@@ -35,6 +37,22 @@ type SettingSuperSdn struct {
 	SsoLoginEnabled   string   `json:"sso_login_enabled,omitempty"`
 	UbicUuid          string   `json:"ubic_uuid,omitempty"`
 	XOauthAppSecret   string   `json:"x_oauth_app_secret,omitempty"`
+}
+
+func (dst *SettingSuperSdn) UnmarshalJSON(b []byte) error {
+	type Alias SettingSuperSdn
+	aux := &struct {
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+
+	return nil
 }
 
 func (c *Client) getSettingSuperSdn(ctx context.Context, site string) (*SettingSuperSdn, error) {

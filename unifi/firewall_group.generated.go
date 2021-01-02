@@ -5,13 +5,15 @@ package unifi
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 )
 
 // just to fix compile issues with the import
 var (
-	_ fmt.Formatter
 	_ context.Context
+	_ fmt.Formatter
+	_ json.Marshaler
 )
 
 type FirewallGroup struct {
@@ -26,6 +28,22 @@ type FirewallGroup struct {
 	GroupMembers []string `json:"group_members,omitempty"`
 	GroupType    string   `json:"group_type,omitempty"` // address-group|port-group|ipv6-address-group
 	Name         string   `json:"name,omitempty"`       // .{1,64}
+}
+
+func (dst *FirewallGroup) UnmarshalJSON(b []byte) error {
+	type Alias FirewallGroup
+	aux := &struct {
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+
+	return nil
 }
 
 func (c *Client) listFirewallGroup(ctx context.Context, site string) ([]FirewallGroup, error) {

@@ -5,13 +5,15 @@ package unifi
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 )
 
 // just to fix compile issues with the import
 var (
-	_ fmt.Formatter
 	_ context.Context
+	_ fmt.Formatter
+	_ json.Marshaler
 )
 
 type SettingGuestAccess struct {
@@ -114,6 +116,31 @@ type SettingGuestAccess struct {
 	XStripeApiKey                          string   `json:"x_stripe_api_key,omitempty"`
 	XWechatAppSecret                       string   `json:"x_wechat_app_secret,omitempty"`
 	XWechatSecretKey                       string   `json:"x_wechat_secret_key,omitempty"`
+}
+
+func (dst *SettingGuestAccess) UnmarshalJSON(b []byte) error {
+	type Alias SettingGuestAccess
+	aux := &struct {
+		ExpireNumber               emptyStringInt `json:"expire_number"`
+		ExpireUnit                 emptyStringInt `json:"expire_unit"`
+		PortalCustomizedBoxOpacity emptyStringInt `json:"portal_customized_box_opacity"`
+		RADIUSDisconnectPort       emptyStringInt `json:"radius_disconnect_port"`
+
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+	dst.ExpireNumber = int(aux.ExpireNumber)
+	dst.ExpireUnit = int(aux.ExpireUnit)
+	dst.PortalCustomizedBoxOpacity = int(aux.PortalCustomizedBoxOpacity)
+	dst.RADIUSDisconnectPort = int(aux.RADIUSDisconnectPort)
+
+	return nil
 }
 
 func (c *Client) getSettingGuestAccess(ctx context.Context, site string) (*SettingGuestAccess, error) {

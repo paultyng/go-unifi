@@ -5,13 +5,15 @@ package unifi
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 )
 
 // just to fix compile issues with the import
 var (
-	_ fmt.Formatter
 	_ context.Context
+	_ fmt.Formatter
+	_ json.Marshaler
 )
 
 type DpiApp struct {
@@ -31,6 +33,37 @@ type DpiApp struct {
 	Name           string `json:"name,omitempty"`              // .{1,128}
 	QOSRateMaxDown int    `json:"qos_rate_max_down,omitempty"` // -1|[2-9]|[1-9][0-9]{1,4}|100000|10[0-1][0-9]{3}|102[0-3][0-9]{2}|102400
 	QOSRateMaxUp   int    `json:"qos_rate_max_up,omitempty"`   // -1|[2-9]|[1-9][0-9]{1,4}|100000|10[0-1][0-9]{3}|102[0-3][0-9]{2}|102400
+}
+
+func (dst *DpiApp) UnmarshalJSON(b []byte) error {
+	type Alias DpiApp
+	aux := &struct {
+		Apps           []emptyStringInt `json:"apps"`
+		Cats           []emptyStringInt `json:"cats"`
+		QOSRateMaxDown emptyStringInt   `json:"qos_rate_max_down"`
+		QOSRateMaxUp   emptyStringInt   `json:"qos_rate_max_up"`
+
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+	dst.Apps = make([]int, len(aux.Apps))
+	for i, v := range aux.Apps {
+		dst.Apps[i] = int(v)
+	}
+	dst.Cats = make([]int, len(aux.Cats))
+	for i, v := range aux.Cats {
+		dst.Cats[i] = int(v)
+	}
+	dst.QOSRateMaxDown = int(aux.QOSRateMaxDown)
+	dst.QOSRateMaxUp = int(aux.QOSRateMaxUp)
+
+	return nil
 }
 
 func (c *Client) listDpiApp(ctx context.Context, site string) ([]DpiApp, error) {

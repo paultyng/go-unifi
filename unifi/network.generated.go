@@ -5,13 +5,15 @@ package unifi
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 )
 
 // just to fix compile issues with the import
 var (
-	_ fmt.Formatter
 	_ context.Context
+	_ fmt.Formatter
+	_ json.Marshaler
 )
 
 type Network struct {
@@ -166,14 +168,114 @@ type Network struct {
 	XWANPassword            string                          `json:"x_wan_password,omitempty"`              // [^"' ]+
 }
 
+func (dst *Network) UnmarshalJSON(b []byte) error {
+	type Alias Network
+	aux := &struct {
+		DHCPDLeaseTime          emptyStringInt `json:"dhcpd_leasetime"`
+		DHCPDTimeOffset         emptyStringInt `json:"dhcpd_time_offset"`
+		DHCPDV6LeaseTime        emptyStringInt `json:"dhcpdv6_leasetime"`
+		IGMPGroupmembership     emptyStringInt `json:"igmp_groupmembership"`
+		IGMPMaxresponse         emptyStringInt `json:"igmp_maxresponse"`
+		IGMPMcrtrexpiretime     emptyStringInt `json:"igmp_mcrtrexpiretime"`
+		IPSecDhGroup            emptyStringInt `json:"ipsec_dh_group"`
+		IPSecEspDhGroup         emptyStringInt `json:"ipsec_esp_dh_group"`
+		IPSecIkeDhGroup         emptyStringInt `json:"ipsec_ike_dh_group"`
+		IPV6RaPreferredLifetime emptyStringInt `json:"ipv6_ra_preferred_lifetime"`
+		IPV6RaValidLifetime     emptyStringInt `json:"ipv6_ra_valid_lifetime"`
+		OpenVPNLocalPort        emptyStringInt `json:"openvpn_local_port"`
+		OpenVPNRemotePort       emptyStringInt `json:"openvpn_remote_port"`
+		PptpcRouteDistance      emptyStringInt `json:"pptpc_route_distance"`
+		Priority                emptyStringInt `json:"priority"`
+		RouteDistance           emptyStringInt `json:"route_distance"`
+		VLAN                    emptyStringInt `json:"vlan"`
+		WANDHCPv6PDSize         emptyStringInt `json:"wan_dhcpv6_pd_size"`
+		WANEgressQOS            emptyStringInt `json:"wan_egress_qos"`
+		WANLoadBalanceWeight    emptyStringInt `json:"wan_load_balance_weight"`
+		WANPrefixlen            emptyStringInt `json:"wan_prefixlen"`
+		WANSmartqDownRate       emptyStringInt `json:"wan_smartq_down_rate"`
+		WANSmartqUpRate         emptyStringInt `json:"wan_smartq_up_rate"`
+		WANVLAN                 emptyStringInt `json:"wan_vlan"`
+
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+	dst.DHCPDLeaseTime = int(aux.DHCPDLeaseTime)
+	dst.DHCPDTimeOffset = int(aux.DHCPDTimeOffset)
+	dst.DHCPDV6LeaseTime = int(aux.DHCPDV6LeaseTime)
+	dst.IGMPGroupmembership = int(aux.IGMPGroupmembership)
+	dst.IGMPMaxresponse = int(aux.IGMPMaxresponse)
+	dst.IGMPMcrtrexpiretime = int(aux.IGMPMcrtrexpiretime)
+	dst.IPSecDhGroup = int(aux.IPSecDhGroup)
+	dst.IPSecEspDhGroup = int(aux.IPSecEspDhGroup)
+	dst.IPSecIkeDhGroup = int(aux.IPSecIkeDhGroup)
+	dst.IPV6RaPreferredLifetime = int(aux.IPV6RaPreferredLifetime)
+	dst.IPV6RaValidLifetime = int(aux.IPV6RaValidLifetime)
+	dst.OpenVPNLocalPort = int(aux.OpenVPNLocalPort)
+	dst.OpenVPNRemotePort = int(aux.OpenVPNRemotePort)
+	dst.PptpcRouteDistance = int(aux.PptpcRouteDistance)
+	dst.Priority = int(aux.Priority)
+	dst.RouteDistance = int(aux.RouteDistance)
+	dst.VLAN = int(aux.VLAN)
+	dst.WANDHCPv6PDSize = int(aux.WANDHCPv6PDSize)
+	dst.WANEgressQOS = int(aux.WANEgressQOS)
+	dst.WANLoadBalanceWeight = int(aux.WANLoadBalanceWeight)
+	dst.WANPrefixlen = int(aux.WANPrefixlen)
+	dst.WANSmartqDownRate = int(aux.WANSmartqDownRate)
+	dst.WANSmartqUpRate = int(aux.WANSmartqUpRate)
+	dst.WANVLAN = int(aux.WANVLAN)
+
+	return nil
+}
+
 type NetworkNATOutboundIPAddresses struct {
 	IPAddress       string `json:"ip_address"`                  // ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$
 	WANNetworkGroup string `json:"wan_network_group,omitempty"` // WAN|WAN2
 }
 
+func (dst *NetworkNATOutboundIPAddresses) UnmarshalJSON(b []byte) error {
+	type Alias NetworkNATOutboundIPAddresses
+	aux := &struct {
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+
+	return nil
+}
+
 type NetworkWANDHCPOptions struct {
 	OptionNumber int    `json:"optionNumber,omitempty"` // ([1-9]|[1-8][0-9]|9[0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-4])
 	Value        string `json:"value,omitempty"`
+}
+
+func (dst *NetworkWANDHCPOptions) UnmarshalJSON(b []byte) error {
+	type Alias NetworkWANDHCPOptions
+	aux := &struct {
+		OptionNumber emptyStringInt `json:"optionNumber"`
+
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+	dst.OptionNumber = int(aux.OptionNumber)
+
+	return nil
 }
 
 func (c *Client) listNetwork(ctx context.Context, site string) ([]Network, error) {

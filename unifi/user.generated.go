@@ -5,13 +5,15 @@ package unifi
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 )
 
 // just to fix compile issues with the import
 var (
-	_ fmt.Formatter
 	_ context.Context
+	_ fmt.Formatter
+	_ json.Marshaler
 )
 
 type User struct {
@@ -35,6 +37,25 @@ type User struct {
 	Note        string `json:"note,omitempty"`
 	UseFixedIP  bool   `json:"use_fixedip"`
 	UserGroupID string `json:"usergroup_id"`
+}
+
+func (dst *User) UnmarshalJSON(b []byte) error {
+	type Alias User
+	aux := &struct {
+		LastSeen emptyStringInt `json:"last_seen"`
+
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+	dst.LastSeen = int(aux.LastSeen)
+
+	return nil
 }
 
 func (c *Client) listUser(ctx context.Context, site string) ([]User, error) {

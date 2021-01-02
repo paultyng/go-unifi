@@ -5,13 +5,15 @@ package unifi
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 )
 
 // just to fix compile issues with the import
 var (
-	_ fmt.Formatter
 	_ context.Context
+	_ fmt.Formatter
+	_ json.Marshaler
 )
 
 type UserGroup struct {
@@ -26,6 +28,27 @@ type UserGroup struct {
 	Name           string `json:"name,omitempty"`              // .{1,128}
 	QOSRateMaxDown int    `json:"qos_rate_max_down,omitempty"` // -1|[2-9]|[1-9][0-9]{1,4}|100000
 	QOSRateMaxUp   int    `json:"qos_rate_max_up,omitempty"`   // -1|[2-9]|[1-9][0-9]{1,4}|100000
+}
+
+func (dst *UserGroup) UnmarshalJSON(b []byte) error {
+	type Alias UserGroup
+	aux := &struct {
+		QOSRateMaxDown emptyStringInt `json:"qos_rate_max_down"`
+		QOSRateMaxUp   emptyStringInt `json:"qos_rate_max_up"`
+
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+	dst.QOSRateMaxDown = int(aux.QOSRateMaxDown)
+	dst.QOSRateMaxUp = int(aux.QOSRateMaxUp)
+
+	return nil
 }
 
 func (c *Client) listUserGroup(ctx context.Context, site string) ([]UserGroup, error) {

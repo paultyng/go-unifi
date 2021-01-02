@@ -5,13 +5,15 @@ package unifi
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 )
 
 // just to fix compile issues with the import
 var (
-	_ fmt.Formatter
 	_ context.Context
+	_ fmt.Formatter
+	_ json.Marshaler
 )
 
 type SettingRsyslogd struct {
@@ -34,6 +36,27 @@ type SettingRsyslogd struct {
 	Port                        int    `json:"port,omitempty"`            // [1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5]
 	ThisController              bool   `json:"this_controller"`
 	ThisControllerEncryptedOnly bool   `json:"this_controller_encrypted_only"`
+}
+
+func (dst *SettingRsyslogd) UnmarshalJSON(b []byte) error {
+	type Alias SettingRsyslogd
+	aux := &struct {
+		NetconsolePort emptyStringInt `json:"netconsole_port"`
+		Port           emptyStringInt `json:"port"`
+
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+	dst.NetconsolePort = int(aux.NetconsolePort)
+	dst.Port = int(aux.Port)
+
+	return nil
 }
 
 func (c *Client) getSettingRsyslogd(ctx context.Context, site string) (*SettingRsyslogd, error) {

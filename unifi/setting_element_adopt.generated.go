@@ -5,13 +5,15 @@ package unifi
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 )
 
 // just to fix compile issues with the import
 var (
-	_ fmt.Formatter
 	_ context.Context
+	_ fmt.Formatter
+	_ json.Marshaler
 )
 
 type SettingElementAdopt struct {
@@ -28,6 +30,22 @@ type SettingElementAdopt struct {
 	Enabled       bool   `json:"enabled"`
 	XElementEssid string `json:"x_element_essid,omitempty"`
 	XElementPsk   string `json:"x_element_psk,omitempty"`
+}
+
+func (dst *SettingElementAdopt) UnmarshalJSON(b []byte) error {
+	type Alias SettingElementAdopt
+	aux := &struct {
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+
+	return nil
 }
 
 func (c *Client) getSettingElementAdopt(ctx context.Context, site string) (*SettingElementAdopt, error) {

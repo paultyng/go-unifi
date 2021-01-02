@@ -3,32 +3,7 @@ package unifi
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 )
-
-func (dst *Account) UnmarshalJSON(b []byte) error {
-	type Alias Account
-	aux := &struct {
-		TunnelType       emptyStringInt `json:"tunnel_type"`
-		TunnelMediumType emptyStringInt `json:"tunnel_medium_type"`
-		VLAN             emptyStringInt `json:"vlan"`
-
-		*Alias
-	}{
-		Alias: (*Alias)(dst),
-	}
-
-	err := json.Unmarshal(b, &aux)
-	if err != nil {
-		return fmt.Errorf("unable to unmarshal alias: %w", err)
-	}
-
-	dst.TunnelType = int(aux.TunnelType)
-	dst.TunnelMediumType = int(aux.TunnelMediumType)
-	dst.VLAN = int(aux.VLAN)
-
-	return nil
-}
 
 func (dst *Account) MarshalJSON() ([]byte, error) {
 	type Alias Account

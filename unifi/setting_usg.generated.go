@@ -5,13 +5,15 @@ package unifi
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 )
 
 // just to fix compile issues with the import
 var (
-	_ fmt.Formatter
 	_ context.Context
+	_ fmt.Formatter
+	_ json.Marshaler
 )
 
 type SettingUsg struct {
@@ -80,6 +82,57 @@ type SettingUsg struct {
 	UpnpNATPmpEnabled              bool   `json:"upnp_nat_pmp_enabled"`
 	UpnpSecureMode                 bool   `json:"upnp_secure_mode"`
 	UpnpWANInterface               string `json:"upnp_wan_interface,omitempty"` // WAN|WAN2
+}
+
+func (dst *SettingUsg) UnmarshalJSON(b []byte) error {
+	type Alias SettingUsg
+	aux := &struct {
+		ArpCacheBaseReachable emptyStringInt `json:"arp_cache_base_reachable"`
+		DHCPRelayHopCount     emptyStringInt `json:"dhcp_relay_hop_count"`
+		DHCPRelayMaxSize      emptyStringInt `json:"dhcp_relay_max_size"`
+		DHCPRelayPort         emptyStringInt `json:"dhcp_relay_port"`
+		ICMPTimeout           emptyStringInt `json:"icmp_timeout"`
+		MssClampMss           emptyStringInt `json:"mss_clamp_mss"`
+		OtherTimeout          emptyStringInt `json:"other_timeout"`
+		TCPCloseTimeout       emptyStringInt `json:"tcp_close_timeout"`
+		TCPCloseWaitTimeout   emptyStringInt `json:"tcp_close_wait_timeout"`
+		TCPEstablishedTimeout emptyStringInt `json:"tcp_established_timeout"`
+		TCPFinWaitTimeout     emptyStringInt `json:"tcp_fin_wait_timeout"`
+		TCPLastAckTimeout     emptyStringInt `json:"tcp_last_ack_timeout"`
+		TCPSynRecvTimeout     emptyStringInt `json:"tcp_syn_recv_timeout"`
+		TCPSynSentTimeout     emptyStringInt `json:"tcp_syn_sent_timeout"`
+		TCPTimeWaitTimeout    emptyStringInt `json:"tcp_time_wait_timeout"`
+		UDPOtherTimeout       emptyStringInt `json:"udp_other_timeout"`
+		UDPStreamTimeout      emptyStringInt `json:"udp_stream_timeout"`
+
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+	dst.ArpCacheBaseReachable = int(aux.ArpCacheBaseReachable)
+	dst.DHCPRelayHopCount = int(aux.DHCPRelayHopCount)
+	dst.DHCPRelayMaxSize = int(aux.DHCPRelayMaxSize)
+	dst.DHCPRelayPort = int(aux.DHCPRelayPort)
+	dst.ICMPTimeout = int(aux.ICMPTimeout)
+	dst.MssClampMss = int(aux.MssClampMss)
+	dst.OtherTimeout = int(aux.OtherTimeout)
+	dst.TCPCloseTimeout = int(aux.TCPCloseTimeout)
+	dst.TCPCloseWaitTimeout = int(aux.TCPCloseWaitTimeout)
+	dst.TCPEstablishedTimeout = int(aux.TCPEstablishedTimeout)
+	dst.TCPFinWaitTimeout = int(aux.TCPFinWaitTimeout)
+	dst.TCPLastAckTimeout = int(aux.TCPLastAckTimeout)
+	dst.TCPSynRecvTimeout = int(aux.TCPSynRecvTimeout)
+	dst.TCPSynSentTimeout = int(aux.TCPSynSentTimeout)
+	dst.TCPTimeWaitTimeout = int(aux.TCPTimeWaitTimeout)
+	dst.UDPOtherTimeout = int(aux.UDPOtherTimeout)
+	dst.UDPStreamTimeout = int(aux.UDPStreamTimeout)
+
+	return nil
 }
 
 func (c *Client) getSettingUsg(ctx context.Context, site string) (*SettingUsg, error) {

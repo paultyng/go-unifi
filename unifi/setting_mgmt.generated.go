@@ -5,13 +5,15 @@ package unifi
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 )
 
 // just to fix compile issues with the import
 var (
-	_ fmt.Formatter
 	_ context.Context
+	_ fmt.Formatter
+	_ json.Marshaler
 )
 
 type SettingMgmt struct {
@@ -42,6 +44,22 @@ type SettingMgmt struct {
 	XSshPassword            string   `json:"x_ssh_password,omitempty"` // .{1,128}
 	XSshSha512Passwd        string   `json:"x_ssh_sha512passwd,omitempty"`
 	XSshUsername            string   `json:"x_ssh_username,omitempty"` // ^[_A-Za-z0-9][-_.A-Za-z0-9]{0,29}$
+}
+
+func (dst *SettingMgmt) UnmarshalJSON(b []byte) error {
+	type Alias SettingMgmt
+	aux := &struct {
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+
+	return nil
 }
 
 func (c *Client) getSettingMgmt(ctx context.Context, site string) (*SettingMgmt, error) {

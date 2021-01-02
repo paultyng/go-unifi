@@ -5,13 +5,15 @@ package unifi
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 )
 
 // just to fix compile issues with the import
 var (
-	_ fmt.Formatter
 	_ context.Context
+	_ fmt.Formatter
+	_ json.Marshaler
 )
 
 type SettingCountry struct {
@@ -26,6 +28,25 @@ type SettingCountry struct {
 	Key string `json:"key"`
 
 	Code int `json:"code,omitempty"`
+}
+
+func (dst *SettingCountry) UnmarshalJSON(b []byte) error {
+	type Alias SettingCountry
+	aux := &struct {
+		Code emptyStringInt `json:"code"`
+
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+	dst.Code = int(aux.Code)
+
+	return nil
 }
 
 func (c *Client) getSettingCountry(ctx context.Context, site string) (*SettingCountry, error) {

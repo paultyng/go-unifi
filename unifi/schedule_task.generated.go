@@ -5,13 +5,15 @@ package unifi
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 )
 
 // just to fix compile issues with the import
 var (
-	_ fmt.Formatter
 	_ context.Context
+	_ fmt.Formatter
+	_ json.Marshaler
 )
 
 type ScheduleTask struct {
@@ -35,8 +37,40 @@ type ScheduleTask struct {
 	UpgradeTargets          []ScheduleTaskUpgradeTargets `json:"upgrade_targets,omitempty"`
 }
 
+func (dst *ScheduleTask) UnmarshalJSON(b []byte) error {
+	type Alias ScheduleTask
+	aux := &struct {
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+
+	return nil
+}
+
 type ScheduleTaskUpgradeTargets struct {
 	MAC string `json:"mac,omitempty"` // ^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$
+}
+
+func (dst *ScheduleTaskUpgradeTargets) UnmarshalJSON(b []byte) error {
+	type Alias ScheduleTaskUpgradeTargets
+	aux := &struct {
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+
+	return nil
 }
 
 func (c *Client) listScheduleTask(ctx context.Context, site string) ([]ScheduleTask, error) {
