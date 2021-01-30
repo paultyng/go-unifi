@@ -147,12 +147,6 @@ func (c *Client) Login(ctx context.Context, user, pass string) error {
 		} `json:"meta"`
 	}
 
-	err = c.do(ctx, "GET", c.statusPath, nil, &status)
-	if err != nil {
-		return err
-	}
-	c.version = status.Meta.ServerVersion
-
 	err = c.do(ctx, "POST", c.loginPath, &struct {
 		Username string `json:"username"`
 		Password string `json:"password"`
@@ -163,6 +157,12 @@ func (c *Client) Login(ctx context.Context, user, pass string) error {
 	if err != nil {
 		return err
 	}
+
+	err = c.do(ctx, "GET", c.statusPath, nil, &status)
+	if err != nil {
+		return err
+	}
+	c.version = status.Meta.ServerVersion
 
 	return nil
 }
