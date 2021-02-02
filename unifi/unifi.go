@@ -112,7 +112,7 @@ func (c *Client) setAPIUrlStyle(ctx context.Context) error {
 	defer resp.Body.Close()
 	_, _ = io.Copy(ioutil.Discard, resp.Body)
 
-	if resp.StatusCode == http.StatusOK {
+	if resp.StatusCode == http.StatusUnauthorized {
 		// the new API returns a 200 for a / request
 		c.apiPath = apiPathNew
 		c.loginPath = loginPathNew
