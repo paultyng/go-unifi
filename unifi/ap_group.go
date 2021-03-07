@@ -28,7 +28,7 @@ type APGroup struct {
 func (c *Client) ListAPGroup(ctx context.Context, site string) ([]APGroup, error) {
 	var respBody []APGroup
 
-	err := c.do(ctx, "GET", fmt.Sprintf("/v2/api/site/%s/apgroups", site), nil, &respBody)
+	err := c.do(ctx, "GET", fmt.Sprintf("%s/site/%s/apgroups", c.apiV2Path, site), nil, &respBody)
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +66,7 @@ func (c *Client) ListAPGroup(ctx context.Context, site string) ([]APGroup, error
 func (c *Client) CreateAPGroup(ctx context.Context, site string, d *APGroup) (*APGroup, error) {
 	var respBody APGroup
 
-	err := c.do(ctx, "POST", fmt.Sprintf("/v2/api/site/%s/apgroups", site), d, &respBody)
+	err := c.do(ctx, "POST", fmt.Sprintf("%s/site/%s/apgroups", c.apiV2Path, site), d, &respBody)
 	if err != nil {
 		return nil, err
 	}

@@ -16,8 +16,11 @@ import (
 )
 
 const (
-	apiPath    = "/api"
-	apiPathNew = "/proxy/network/api"
+	apiPath   = "/api"
+	apiV2Path = "/v2/api"
+
+	apiPathNew   = "/proxy/network/api"
+	apiV2PathNew = "/proxy/network/v2/api"
 
 	loginPath    = "/api/login"
 	loginPathNew = "/api/auth/login"
@@ -49,6 +52,7 @@ type Client struct {
 	baseURL *url.URL
 
 	apiPath    string
+	apiV2Path  string
 	loginPath  string
 	statusPath string
 
@@ -115,6 +119,7 @@ func (c *Client) setAPIUrlStyle(ctx context.Context) error {
 	if resp.StatusCode == http.StatusOK {
 		// the new API returns a 200 for a / request
 		c.apiPath = apiPathNew
+		c.apiV2Path = apiV2PathNew
 		c.loginPath = loginPathNew
 		c.statusPath = statusPathNew
 		return nil
@@ -122,6 +127,7 @@ func (c *Client) setAPIUrlStyle(ctx context.Context) error {
 
 	// The old version returns a "302" (to /manage) for a / request
 	c.apiPath = apiPath
+	c.apiV2Path = apiV2Path
 	c.loginPath = loginPath
 	c.statusPath = statusPath
 	return nil
