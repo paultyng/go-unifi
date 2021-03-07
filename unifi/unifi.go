@@ -168,7 +168,24 @@ func (c *Client) Login(ctx context.Context, user, pass string) error {
 	if err != nil {
 		return err
 	}
-	c.version = status.Meta.ServerVersion
+
+	if version := status.Meta.ServerVersion; version != "" {
+		c.version = status.Meta.ServerVersion
+		return nil
+	}
+
+	// newer version of 6.0 controller, use sysinfo to determine version
+	// using default site since it must exist
+	si, err := c.sysinfo(ctx, "default")
+	if err != nil {
+		return err
+	}
+
+	c.version = si.Version
+
+	if c.version == "" {
+		return fmt.Errorf("unable to determine controller version")
+	}
 
 	return nil
 }
@@ -227,7 +244,6 @@ func (c *Client) do(ctx context.Context, method, relativeURL string, reqBody int
 	}
 
 	if resp.StatusCode != 200 {
-		fmt.Printf("Request Body:\n%s\n", string(reqBytes))
 		errBody := struct {
 			Meta meta `json:"meta"`
 		}{}
