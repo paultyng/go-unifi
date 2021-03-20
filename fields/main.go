@@ -252,8 +252,6 @@ func main() {
 				switch name {
 				case "X", "Y":
 					f.FieldType = "float64"
-				case "Channel", "BackupChannel", "TxPower":
-					f.FieldType = "int"
 				case "StpPriority", "Ht":
 					f.FieldType = "string"
 				}

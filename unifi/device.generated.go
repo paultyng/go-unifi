@@ -275,19 +275,19 @@ func (dst *DevicePortOverrides) UnmarshalJSON(b []byte) error {
 type DeviceRadioTable struct {
 	AntennaGain           int    `json:"antenna_gain,omitempty"`   // ^-?([0-9]|[1-9][0-9])
 	AntennaID             int    `json:"antenna_id,omitempty"`     // -1|[0-9]
-	BackupChannel         int    `json:"backup_channel,omitempty"` // [0-9]|[1][0-4]|16|34|36|38|40|42|44|46|48|52|56|60|64|100|104|108|112|116|120|124|128|132|136|140|144|149|153|157|161|165|183|184|185|187|188|189|192|196|auto
-	Channel               int    `json:"channel,omitempty"`        // [0-9]|[1][0-4]|4.5|16|34|36|38|40|42|44|46|48|52|56|60|64|100|104|108|112|116|120|124|128|132|136|140|144|149|153|157|161|165|183|184|185|187|188|189|192|196|auto
+	BackupChannel         string `json:"backup_channel,omitempty"` // [0-9]|[1][0-4]|16|34|36|38|40|42|44|46|48|52|56|60|64|100|104|108|112|116|120|124|128|132|136|140|144|149|153|157|161|165|183|184|185|187|188|189|192|196|auto
+	Channel               string `json:"channel,omitempty"`        // [0-9]|[1][0-4]|4.5|16|34|36|38|40|42|44|46|48|52|56|60|64|100|104|108|112|116|120|124|128|132|136|140|144|149|153|157|161|165|183|184|185|187|188|189|192|196|auto
 	HardNoiseFloorEnabled bool   `json:"hard_noise_floor_enabled,omitempty"`
 	Ht                    string `json:"ht,omitempty"` // 20|40|80|160|1080|2160
 	LoadbalanceEnabled    bool   `json:"loadbalance_enabled,omitempty"`
 	Maxsta                int    `json:"maxsta,omitempty"`   // [1-9]|[1-9][0-9]|1[0-9]{2}|200|^$
-	MinRssi               int    `json:"min_rssi,omitempty"` // ^-([1-9]|[1-8][0-9]|9[0-4])$
+	MinRssi               int    `json:"min_rssi,omitempty"` // ^-(6[7-9]|[7-8][0-9]|90)$
 	MinRssiEnabled        bool   `json:"min_rssi_enabled,omitempty"`
 	Name                  string `json:"name,omitempty"`
 	Radio                 string `json:"radio,omitempty"`      // ng|na|ad
 	SensLevel             int    `json:"sens_level,omitempty"` // ^-([5-8][0-9]|90)$
 	SensLevelEnabled      bool   `json:"sens_level_enabled,omitempty"`
-	TxPower               int    `json:"tx_power,omitempty"`      // [\d]+|auto
+	TxPower               string `json:"tx_power,omitempty"`      // [\d]+|auto
 	TxPowerMode           string `json:"tx_power_mode,omitempty"` // auto|medium|high|low|custom
 	VwireEnabled          bool   `json:"vwire_enabled,omitempty"`
 }
@@ -295,14 +295,11 @@ type DeviceRadioTable struct {
 func (dst *DeviceRadioTable) UnmarshalJSON(b []byte) error {
 	type Alias DeviceRadioTable
 	aux := &struct {
-		AntennaGain   emptyStringInt `json:"antenna_gain"`
-		AntennaID     emptyStringInt `json:"antenna_id"`
-		BackupChannel emptyStringInt `json:"backup_channel"`
-		Channel       emptyStringInt `json:"channel"`
-		Maxsta        emptyStringInt `json:"maxsta"`
-		MinRssi       emptyStringInt `json:"min_rssi"`
-		SensLevel     emptyStringInt `json:"sens_level"`
-		TxPower       emptyStringInt `json:"tx_power"`
+		AntennaGain emptyStringInt `json:"antenna_gain"`
+		AntennaID   emptyStringInt `json:"antenna_id"`
+		Maxsta      emptyStringInt `json:"maxsta"`
+		MinRssi     emptyStringInt `json:"min_rssi"`
+		SensLevel   emptyStringInt `json:"sens_level"`
 
 		*Alias
 	}{
@@ -315,12 +312,9 @@ func (dst *DeviceRadioTable) UnmarshalJSON(b []byte) error {
 	}
 	dst.AntennaGain = int(aux.AntennaGain)
 	dst.AntennaID = int(aux.AntennaID)
-	dst.BackupChannel = int(aux.BackupChannel)
-	dst.Channel = int(aux.Channel)
 	dst.Maxsta = int(aux.Maxsta)
 	dst.MinRssi = int(aux.MinRssi)
 	dst.SensLevel = int(aux.SensLevel)
-	dst.TxPower = int(aux.TxPower)
 
 	return nil
 }

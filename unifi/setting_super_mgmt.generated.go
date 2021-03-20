@@ -67,6 +67,7 @@ type SettingSuperMgmt struct {
 	LiveUpdates                              string   `json:"live_updates,omitempty"` // disabled|live|auto
 	MinimumUsableHdSpace                     int      `json:"minimum_usable_hd_space,omitempty"`
 	MinimumUsableSdSpace                     int      `json:"minimum_usable_sd_space,omitempty"`
+	MultipleSitesEnabled                     bool     `json:"multiple_sites_enabled"`
 	OverrideInformHost                       bool     `json:"override_inform_host"`
 	StoreEnabled                             string   `json:"store_enabled,omitempty"` // disabled|super-only|everyone
 	TimeSeriesPerClientStatsEnabled          bool     `json:"time_series_per_client_stats_enabled"`
