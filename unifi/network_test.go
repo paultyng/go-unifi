@@ -77,3 +77,51 @@ func TestNetworkUnmarshalJSON(t *testing.T) {
 		})
 	}
 }
+
+func TestNetworkMarshalJSON(t *testing.T) {
+	for n, c := range map[string]struct {
+		network          unifi.Network
+		expectedFields   []string
+		unexpectedFields []string
+	}{
+		"lan": {
+			network: unifi.Network{
+				Purpose: "lan",
+			},
+			expectedFields:   []string{"auto_scale_enabled"},
+			unexpectedFields: []string{"wan_gateway"},
+		},
+		"wan": {
+			network: unifi.Network{
+				Purpose: "wan",
+			},
+			expectedFields:   []string{"wan_gateway"},
+			unexpectedFields: []string{"auto_scale_enabled"},
+		},
+	} {
+		t.Run(n, func(t *testing.T) {
+			networkJson, err := json.Marshal(&c.network)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			jsonMap := make(map[string]interface{})
+			err = json.Unmarshal(([]byte)(networkJson), &jsonMap)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			for _, field := range c.expectedFields {
+				if _, ok := jsonMap[field]; !ok {
+					t.Fatalf("expected: %#v\nactual: %s", field, networkJson)
+				}
+			}
+
+			for _, field := range c.unexpectedFields {
+				if _, ok := jsonMap[field]; ok {
+					t.Fatalf("unexpected: %#v\nactual: %s", field, networkJson)
+				}
+			}
+		})
+	}
+}
