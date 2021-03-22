@@ -281,7 +281,7 @@ type DeviceRadioTable struct {
 	Ht                    string `json:"ht,omitempty"` // 20|40|80|160|1080|2160
 	LoadbalanceEnabled    bool   `json:"loadbalance_enabled,omitempty"`
 	Maxsta                int    `json:"maxsta,omitempty"`   // [1-9]|[1-9][0-9]|1[0-9]{2}|200|^$
-	MinRssi               int    `json:"min_rssi,omitempty"` // ^-(6[7-9]|[7-8][0-9]|90)$
+	MinRssi               int    `json:"min_rssi,omitempty"` // ^-([1-9]|[1-8][0-9]|9[0-4])$
 	MinRssiEnabled        bool   `json:"min_rssi_enabled,omitempty"`
 	Name                  string `json:"name,omitempty"`
 	Radio                 string `json:"radio,omitempty"`      // ng|na|ad
@@ -295,11 +295,13 @@ type DeviceRadioTable struct {
 func (dst *DeviceRadioTable) UnmarshalJSON(b []byte) error {
 	type Alias DeviceRadioTable
 	aux := &struct {
-		AntennaGain emptyStringInt `json:"antenna_gain"`
-		AntennaID   emptyStringInt `json:"antenna_id"`
-		Maxsta      emptyStringInt `json:"maxsta"`
-		MinRssi     emptyStringInt `json:"min_rssi"`
-		SensLevel   emptyStringInt `json:"sens_level"`
+		AntennaGain   emptyStringInt `json:"antenna_gain"`
+		AntennaID     emptyStringInt `json:"antenna_id"`
+		BackupChannel numberOrString `json:"backup_channel"`
+		Channel       numberOrString `json:"channel"`
+		Maxsta        emptyStringInt `json:"maxsta"`
+		MinRssi       emptyStringInt `json:"min_rssi"`
+		SensLevel     emptyStringInt `json:"sens_level"`
 
 		*Alias
 	}{

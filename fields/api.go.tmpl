@@ -5,6 +5,10 @@
 {{ define "field-emptyStringInt" }}
 	{{- if ne .FieldType "int" }}{{else}}
 	    {{ .FieldName }} {{ if .IsArray }}[]{{end}}emptyStringInt `json:"{{ .JSONName }}{{ if .OmitEmpty }}{{ end }}"`{{ end }} {{- end }}
+{{ define "field-numberOrString" }}
+	{{- /* this is kind of a hack, probably a better way to do this when looking at the normalized validation */ -}}
+	{{- if and (eq .FieldType "string") (or (eq .JSONName "channel") (eq .JSONName "backup_channel")) }}
+	    {{ .FieldName }} {{ if .IsArray }}[]{{end}}numberOrString `json:"{{ .JSONName }}{{ if .OmitEmpty }}{{ end }}"`{{ end }} {{- end }}
 {{ define "typecast" }}
     {{- if eq .FieldType "int" }}{{- if .IsArray }}
     dst.{{ .FieldName }}= make([]int, len(aux.{{ .FieldName }}))
@@ -55,7 +59,7 @@ func (dst *{{ $k }}) UnmarshalJSON(b []byte) error {
 	type Alias {{ $k }}
 	aux := &struct {
 	    {{- range $fk, $fv := $v.Fields }}{{ if not $fv }}
-	    {{- else }}{{- template "field-emptyStringInt" $fv }}{{ end }}{{- end }}
+	    {{- else }}{{- template "field-emptyStringInt" $fv }}{{- template "field-numberOrString" $fv }}{{ end }}{{- end }}
 
 		*Alias
 	}{

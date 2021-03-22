@@ -119,7 +119,9 @@ type ChannelPlanRadioTable struct {
 func (dst *ChannelPlanRadioTable) UnmarshalJSON(b []byte) error {
 	type Alias ChannelPlanRadioTable
 	aux := &struct {
-		Width emptyStringInt `json:"width"`
+		BackupChannel numberOrString `json:"backup_channel"`
+		Channel       numberOrString `json:"channel"`
+		Width         emptyStringInt `json:"width"`
 
 		*Alias
 	}{
