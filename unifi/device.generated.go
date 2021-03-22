@@ -302,6 +302,7 @@ func (dst *DeviceRadioTable) UnmarshalJSON(b []byte) error {
 		Maxsta        emptyStringInt `json:"maxsta"`
 		MinRssi       emptyStringInt `json:"min_rssi"`
 		SensLevel     emptyStringInt `json:"sens_level"`
+		TxPower       numberOrString `json:"tx_power"`
 
 		*Alias
 	}{

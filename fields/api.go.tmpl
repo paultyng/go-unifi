@@ -7,7 +7,7 @@
 	    {{ .FieldName }} {{ if .IsArray }}[]{{end}}emptyStringInt `json:"{{ .JSONName }}{{ if .OmitEmpty }}{{ end }}"`{{ end }} {{- end }}
 {{ define "field-numberOrString" }}
 	{{- /* this is kind of a hack, probably a better way to do this when looking at the normalized validation */ -}}
-	{{- if and (eq .FieldType "string") (or (eq .JSONName "channel") (eq .JSONName "backup_channel")) }}
+	{{- if and (eq .FieldType "string") (or (eq .JSONName "channel") (eq .JSONName "backup_channel") (eq .JSONName "tx_power")) }}
 	    {{ .FieldName }} {{ if .IsArray }}[]{{end}}numberOrString `json:"{{ .JSONName }}{{ if .OmitEmpty }}{{ end }}"`{{ end }} {{- end }}
 {{ define "typecast" }}
     {{- if eq .FieldType "int" }}{{- if .IsArray }}

@@ -121,6 +121,7 @@ func (dst *ChannelPlanRadioTable) UnmarshalJSON(b []byte) error {
 	aux := &struct {
 		BackupChannel numberOrString `json:"backup_channel"`
 		Channel       numberOrString `json:"channel"`
+		TxPower       numberOrString `json:"tx_power"`
 		Width         emptyStringInt `json:"width"`
 
 		*Alias
