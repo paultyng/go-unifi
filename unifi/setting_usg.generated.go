@@ -160,6 +160,7 @@ func (c *Client) updateSettingUsg(ctx context.Context, site string, d *SettingUs
 		Data []SettingUsg `json:"data"`
 	}
 
+	d.Key = "usg"
 	err := c.do(ctx, "PUT", fmt.Sprintf("s/%s/set/setting/usg", site), d, &respBody)
 	if err != nil {
 		return nil, err

@@ -76,6 +76,7 @@ func (c *Client) updateSettingBroadcast(ctx context.Context, site string, d *Set
 		Data []SettingBroadcast `json:"data"`
 	}
 
+	d.Key = "broadcast"
 	err := c.do(ctx, "PUT", fmt.Sprintf("s/%s/set/setting/broadcast", site), d, &respBody)
 	if err != nil {
 		return nil, err

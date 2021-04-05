@@ -73,6 +73,7 @@ func (c *Client) updateSettingSuperFwupdate(ctx context.Context, site string, d 
 		Data []SettingSuperFwupdate `json:"data"`
 	}
 
+	d.Key = "super_fwupdate"
 	err := c.do(ctx, "PUT", fmt.Sprintf("s/%s/set/setting/super_fwupdate", site), d, &respBody)
 	if err != nil {
 		return nil, err

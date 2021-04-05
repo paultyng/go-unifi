@@ -74,6 +74,7 @@ func (c *Client) updateSettingNtp(ctx context.Context, site string, d *SettingNt
 		Data []SettingNtp `json:"data"`
 	}
 
+	d.Key = "ntp"
 	err := c.do(ctx, "PUT", fmt.Sprintf("s/%s/set/setting/ntp", site), d, &respBody)
 	if err != nil {
 		return nil, err

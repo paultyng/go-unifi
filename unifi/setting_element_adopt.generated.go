@@ -73,6 +73,7 @@ func (c *Client) updateSettingElementAdopt(ctx context.Context, site string, d *
 		Data []SettingElementAdopt `json:"data"`
 	}
 
+	d.Key = "element_adopt"
 	err := c.do(ctx, "PUT", fmt.Sprintf("s/%s/set/setting/element_adopt", site), d, &respBody)
 	if err != nil {
 		return nil, err

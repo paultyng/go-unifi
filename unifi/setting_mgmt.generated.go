@@ -87,6 +87,7 @@ func (c *Client) updateSettingMgmt(ctx context.Context, site string, d *SettingM
 		Data []SettingMgmt `json:"data"`
 	}
 
+	d.Key = "mgmt"
 	err := c.do(ctx, "PUT", fmt.Sprintf("s/%s/set/setting/mgmt", site), d, &respBody)
 	if err != nil {
 		return nil, err

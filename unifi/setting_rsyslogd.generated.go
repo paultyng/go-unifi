@@ -84,6 +84,7 @@ func (c *Client) updateSettingRsyslogd(ctx context.Context, site string, d *Sett
 		Data []SettingRsyslogd `json:"data"`
 	}
 
+	d.Key = "rsyslogd"
 	err := c.do(ctx, "PUT", fmt.Sprintf("s/%s/set/setting/rsyslogd", site), d, &respBody)
 	if err != nil {
 		return nil, err

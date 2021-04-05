@@ -71,6 +71,7 @@ func (c *Client) updateSettingPorta(ctx context.Context, site string, d *Setting
 		Data []SettingPorta `json:"data"`
 	}
 
+	d.Key = "porta"
 	err := c.do(ctx, "PUT", fmt.Sprintf("s/%s/set/setting/porta", site), d, &respBody)
 	if err != nil {
 		return nil, err

@@ -225,6 +225,7 @@ func (c *Client) updateSettingIps(ctx context.Context, site string, d *SettingIp
 		Data []SettingIps `json:"data"`
 	}
 
+	d.Key = "ips"
 	err := c.do(ctx, "PUT", fmt.Sprintf("s/%s/set/setting/ips", site), d, &respBody)
 	if err != nil {
 		return nil, err

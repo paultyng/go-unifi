@@ -80,6 +80,7 @@ func (c *Client) updateSettingSuperSdn(ctx context.Context, site string, d *Sett
 		Data []SettingSuperSdn `json:"data"`
 	}
 
+	d.Key = "super_sdn"
 	err := c.do(ctx, "PUT", fmt.Sprintf("s/%s/set/setting/super_sdn", site), d, &respBody)
 	if err != nil {
 		return nil, err

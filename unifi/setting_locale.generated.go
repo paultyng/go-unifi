@@ -71,6 +71,7 @@ func (c *Client) updateSettingLocale(ctx context.Context, site string, d *Settin
 		Data []SettingLocale `json:"data"`
 	}
 
+	d.Key = "locale"
 	err := c.do(ctx, "PUT", fmt.Sprintf("s/%s/set/setting/locale", site), d, &respBody)
 	if err != nil {
 		return nil, err
