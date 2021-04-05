@@ -74,6 +74,7 @@ func (c *Client) updateSettingBaresip(ctx context.Context, site string, d *Setti
 		Data []SettingBaresip `json:"data"`
 	}
 
+	d.Key = "baresip"
 	err := c.do(ctx, "PUT", fmt.Sprintf("s/%s/set/setting/baresip", site), d, &respBody)
 	if err != nil {
 		return nil, err

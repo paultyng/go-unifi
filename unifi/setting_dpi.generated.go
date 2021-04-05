@@ -72,6 +72,7 @@ func (c *Client) updateSettingDpi(ctx context.Context, site string, d *SettingDp
 		Data []SettingDpi `json:"data"`
 	}
 
+	d.Key = "dpi"
 	err := c.do(ctx, "PUT", fmt.Sprintf("s/%s/set/setting/dpi", site), d, &respBody)
 	if err != nil {
 		return nil, err

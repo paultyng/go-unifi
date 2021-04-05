@@ -153,6 +153,7 @@ func (c *Client) update{{ .StructName }}(ctx context.Context, site string, d *{{
 		Data []{{ .StructName }} `json:"data"`
 	}
 {{ if .IsSetting }}
+	d.Key = "{{ .ResourcePath }}"
 	err := c.do(ctx, "PUT", fmt.Sprintf("s/%s/set/setting/{{ .ResourcePath }}", site), d, &respBody)
 {{- else }}
 	err := c.do(ctx, "PUT", fmt.Sprintf("s/%s/rest/{{ .ResourcePath }}/%s", site, d.ID), d, &respBody)

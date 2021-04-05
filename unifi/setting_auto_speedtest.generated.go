@@ -75,6 +75,7 @@ func (c *Client) updateSettingAutoSpeedtest(ctx context.Context, site string, d 
 		Data []SettingAutoSpeedtest `json:"data"`
 	}
 
+	d.Key = "auto_speedtest"
 	err := c.do(ctx, "PUT", fmt.Sprintf("s/%s/set/setting/auto_speedtest", site), d, &respBody)
 	if err != nil {
 		return nil, err

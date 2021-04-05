@@ -71,6 +71,7 @@ func (c *Client) updateSettingSuperEvents(ctx context.Context, site string, d *S
 		Data []SettingSuperEvents `json:"data"`
 	}
 
+	d.Key = "super_events"
 	err := c.do(ctx, "PUT", fmt.Sprintf("s/%s/set/setting/super_events", site), d, &respBody)
 	if err != nil {
 		return nil, err

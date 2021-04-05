@@ -80,6 +80,7 @@ func (c *Client) updateSettingLcm(ctx context.Context, site string, d *SettingLc
 		Data []SettingLcm `json:"data"`
 	}
 
+	d.Key = "lcm"
 	err := c.do(ctx, "PUT", fmt.Sprintf("s/%s/set/setting/lcm", site), d, &respBody)
 	if err != nil {
 		return nil, err

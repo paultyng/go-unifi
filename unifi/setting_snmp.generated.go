@@ -75,6 +75,7 @@ func (c *Client) updateSettingSnmp(ctx context.Context, site string, d *SettingS
 		Data []SettingSnmp `json:"data"`
 	}
 
+	d.Key = "snmp"
 	err := c.do(ctx, "PUT", fmt.Sprintf("s/%s/set/setting/snmp", site), d, &respBody)
 	if err != nil {
 		return nil, err

@@ -71,6 +71,7 @@ func (c *Client) updateSettingNetworkOptimization(ctx context.Context, site stri
 		Data []SettingNetworkOptimization `json:"data"`
 	}
 
+	d.Key = "network_optimization"
 	err := c.do(ctx, "PUT", fmt.Sprintf("s/%s/set/setting/network_optimization", site), d, &respBody)
 	if err != nil {
 		return nil, err

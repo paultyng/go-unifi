@@ -85,6 +85,7 @@ func (c *Client) updateSettingRadius(ctx context.Context, site string, d *Settin
 		Data []SettingRadius `json:"data"`
 	}
 
+	d.Key = "radius"
 	err := c.do(ctx, "PUT", fmt.Sprintf("s/%s/set/setting/radius", site), d, &respBody)
 	if err != nil {
 		return nil, err

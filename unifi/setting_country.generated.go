@@ -74,6 +74,7 @@ func (c *Client) updateSettingCountry(ctx context.Context, site string, d *Setti
 		Data []SettingCountry `json:"data"`
 	}
 
+	d.Key = "country"
 	err := c.do(ctx, "PUT", fmt.Sprintf("s/%s/set/setting/country", site), d, &respBody)
 	if err != nil {
 		return nil, err

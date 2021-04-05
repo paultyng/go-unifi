@@ -78,6 +78,7 @@ func (c *Client) updateSettingProviderCapabilities(ctx context.Context, site str
 		Data []SettingProviderCapabilities `json:"data"`
 	}
 
+	d.Key = "provider_capabilities"
 	err := c.do(ctx, "PUT", fmt.Sprintf("s/%s/set/setting/provider_capabilities", site), d, &respBody)
 	if err != nil {
 		return nil, err

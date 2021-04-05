@@ -72,6 +72,7 @@ func (c *Client) updateSettingSuperIdentity(ctx context.Context, site string, d 
 		Data []SettingSuperIdentity `json:"data"`
 	}
 
+	d.Key = "super_identity"
 	err := c.do(ctx, "PUT", fmt.Sprintf("s/%s/set/setting/super_identity", site), d, &respBody)
 	if err != nil {
 		return nil, err

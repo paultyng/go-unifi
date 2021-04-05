@@ -168,6 +168,7 @@ func (c *Client) updateSettingGuestAccess(ctx context.Context, site string, d *S
 		Data []SettingGuestAccess `json:"data"`
 	}
 
+	d.Key = "guest_access"
 	err := c.do(ctx, "PUT", fmt.Sprintf("s/%s/set/setting/guest_access", site), d, &respBody)
 	if err != nil {
 		return nil, err
