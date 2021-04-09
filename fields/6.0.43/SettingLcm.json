@@ -1,0 +1,7 @@
+{
+  "brightness": "[1-9]|[1-9][0-9]|100",
+  "enabled": "true|false",
+  "idle_timeout": "[1-9][0-9]|[1-9][0-9][0-9]|[1-2][0-9][0-9][0-9]|3[0-5][0-9][0-9]|3600",
+  "sync": "true|false",
+  "touch_event": "true|false"
+}
