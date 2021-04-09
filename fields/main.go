@@ -2,7 +2,9 @@ package main
 
 import (
 	"bytes"
+	_ "embed"
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -171,7 +173,7 @@ func cleanName(name string, reps []replacement) string {
 }
 
 func usage() {
-	fmt.Printf("Usage: %s [OPTIONS] versionDir outputDir\n", path.Base(os.Args[0]))
+	fmt.Printf("Usage: %s [OPTIONS] version\n", path.Base(os.Args[0]))
 	flag.PrintDefaults()
 }
 
@@ -179,21 +181,18 @@ func main() {
 
 	flag.Usage = usage
 
-	noEmbeddedTypes := flag.Bool("no-embedded-types", true, "Whether to generate top-level type definitions for embedded type definitions")
+	noEmbeddedTypesFlag := flag.Bool("no-embedded-types", true, "Whether to generate top-level type definitions for embedded type definitions")
+	versionBaseDirFlag := flag.String("version-base-dir", ".", "The base directory for version JSON files")
+	outputDirFlag := flag.String("output-dir", ".", "The output directory of the generated Go code")
+	downloadOnly := flag.Bool("download-only", false, "Only download and build the fields JSON directory, do not generate")
+
 	flag.Parse()
 
-	versionDir := flag.Arg(0)
-	outputDir := flag.Arg(1)
-	embedTypes = !*noEmbeddedTypes
+	embedTypes = !*noEmbeddedTypesFlag
 
+	versionDir := flag.Arg(0)
 	if versionDir == "" {
 		fmt.Print("error: no version directory specified\n\n")
-		usage()
-		os.Exit(1)
-	}
-
-	if outputDir == "" {
-		fmt.Print("error: no output directory specified\n\n")
 		usage()
 		os.Exit(1)
 	}
@@ -203,8 +202,40 @@ func main() {
 		panic(err)
 	}
 
-	fieldsDir := filepath.Join(wd, versionDir)
-	outDir := filepath.Join(wd, outputDir)
+	fieldsDir := filepath.Join(wd, *versionBaseDirFlag, versionDir)
+	outDir := filepath.Join(wd, *outputDirFlag)
+
+	fieldsInfo, err := os.Stat(fieldsDir)
+	if err != nil {
+		if !errors.Is(err, os.ErrNotExist) {
+			panic(err)
+		}
+
+		// download fields, create
+		jarFile, err := downloadJar(versionDir)
+		if err != nil {
+			panic(err)
+		}
+
+		err = extractJSON(jarFile, fieldsDir)
+		os.Remove(jarFile)
+		if err != nil {
+			panic(err)
+		}
+
+		fieldsInfo, err = os.Stat(fieldsDir)
+		if err != nil {
+			panic(err)
+		}
+	}
+	if !fieldsInfo.IsDir() {
+		panic("version info isn't a directory")
+	}
+
+	if *downloadOnly {
+		fmt.Println("Fields JSON ready!")
+		os.Exit(0)
+	}
 
 	fieldsFiles, err := ioutil.ReadDir(fieldsDir)
 	if err != nil {
@@ -412,6 +443,9 @@ func (r *Resource) processJSON(b []byte) error {
 	return nil
 }
 
+//go:embed api.go.tmpl
+var apiGoTemplate string
+
 func (r *Resource) generateCode() (string, error) {
 	var err error
 	var buf bytes.Buffer
@@ -419,7 +453,7 @@ func (r *Resource) generateCode() (string, error) {
 
 	tpl := template.Must(template.New("api.go.tmpl").Funcs(template.FuncMap{
 		"embedTypes": func() bool { return embedTypes },
-	}).ParseFiles("api.go.tmpl"))
+	}).Parse(apiGoTemplate))
 
 	tpl.Execute(writer, r)
 
