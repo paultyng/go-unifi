@@ -133,6 +133,9 @@ func (dst *ChannelPlanRadioTable) UnmarshalJSON(b []byte) error {
 	if err != nil {
 		return fmt.Errorf("unable to unmarshal alias: %w", err)
 	}
+	dst.BackupChannel = string(aux.BackupChannel)
+	dst.Channel = string(aux.Channel)
+	dst.TxPower = string(aux.TxPower)
 	dst.Width = int(aux.Width)
 
 	return nil

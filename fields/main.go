@@ -98,13 +98,14 @@ type Resource struct {
 }
 
 type FieldInfo struct {
-	FieldName       string
-	JSONName        string
-	FieldType       string
-	FieldValidation string
-	OmitEmpty       bool
-	IsArray         bool
-	Fields          map[string]*FieldInfo
+	FieldName           string
+	JSONName            string
+	FieldType           string
+	FieldValidation     string
+	OmitEmpty           bool
+	IsArray             bool
+	Fields              map[string]*FieldInfo
+	CustomUnmarshalType string
 }
 
 func NewResource(structName string, resourcePath string) *Resource {
@@ -278,6 +279,16 @@ func main() {
 				}
 				return nil
 			}
+		case "ChannelPlan":
+			resource.FieldProcessor = func(name string, f *FieldInfo) error {
+				switch name {
+				case "Channel", "BackupChannel", "TxPower":
+					if f.FieldType == "string" {
+						f.CustomUnmarshalType = "numberOrString"
+					}
+				}
+				return nil
+			}
 		case "Device":
 			resource.FieldProcessor = func(name string, f *FieldInfo) error {
 				switch name {
@@ -285,6 +296,11 @@ func main() {
 					f.FieldType = "float64"
 				case "StpPriority", "Ht":
 					f.FieldType = "string"
+					f.CustomUnmarshalType = ""
+				case "Channel", "BackupChannel", "TxPower":
+					if f.FieldType == "string" {
+						f.CustomUnmarshalType = "numberOrString"
+					}
 				}
 
 				f.OmitEmpty = true
@@ -294,6 +310,7 @@ func main() {
 			resource.FieldProcessor = func(name string, f *FieldInfo) error {
 				if strings.HasSuffix(name, "Timeout") && name != "ArpCacheTimeout" {
 					f.FieldType = "int"
+					f.CustomUnmarshalType = "emptyStringInt"
 				}
 				return nil
 			}
@@ -304,6 +321,7 @@ func main() {
 					f.FieldType = "bool"
 				case "LastSeen":
 					f.FieldType = "int"
+					f.CustomUnmarshalType = "emptyStringInt"
 				}
 				return nil
 			}
@@ -416,6 +434,7 @@ func (r *Resource) fieldInfoFromValidation(name string, validation interface{}) 
 
 				omitEmpty = true
 				fieldInfo, err = NewFieldInfo(fieldName, name, "int", fieldValidation, omitEmpty, false), nil
+				fieldInfo.CustomUnmarshalType = "emptyStringInt"
 				return fieldInfo, r.FieldProcessor(fieldName, fieldInfo)
 			}
 		}

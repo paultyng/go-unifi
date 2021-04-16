@@ -315,9 +315,12 @@ func (dst *DeviceRadioTable) UnmarshalJSON(b []byte) error {
 	}
 	dst.AntennaGain = int(aux.AntennaGain)
 	dst.AntennaID = int(aux.AntennaID)
+	dst.BackupChannel = string(aux.BackupChannel)
+	dst.Channel = string(aux.Channel)
 	dst.Maxsta = int(aux.Maxsta)
 	dst.MinRssi = int(aux.MinRssi)
 	dst.SensLevel = int(aux.SensLevel)
+	dst.TxPower = string(aux.TxPower)
 
 	return nil
 }
