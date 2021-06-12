@@ -306,6 +306,24 @@ func main() {
 				f.OmitEmpty = true
 				return nil
 			}
+		case "SettingMgmt":
+			sshKeyField := NewFieldInfo(resource.StructName+"XSshKeys", "x_ssh_keys", "struct", "", false, false)
+			sshKeyField.Fields = map[string]*FieldInfo{
+				"name":        NewFieldInfo("name", "name", "string", "", false, false),
+				"keyType":     NewFieldInfo("keyType", "type", "string", "", false, false),
+				"key":         NewFieldInfo("key", "key", "string", "", false, false),
+				"comment":     NewFieldInfo("comment", "comment", "string", "", false, false),
+				"date":        NewFieldInfo("date", "date", "string", "", false, false),
+				"fingerprint": NewFieldInfo("fingerprint", "fingerprint", "string", "", false, false),
+			}
+			resource.Types[sshKeyField.FieldName] = sshKeyField
+
+			resource.FieldProcessor = func(name string, f *FieldInfo) error {
+				if name == "XSshKeys" {
+					f.FieldType = sshKeyField.FieldName
+				}
+				return nil
+			}
 		case "SettingUsg":
 			resource.FieldProcessor = func(name string, f *FieldInfo) error {
 				if strings.HasSuffix(name, "Timeout") && name != "ArpCacheTimeout" {
