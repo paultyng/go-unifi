@@ -131,6 +131,34 @@ func (c *Client) DeleteUserByMAC(ctx context.Context, site, mac string) error {
 	return nil
 }
 
+func (c *Client) OverrideUserFingerprint(ctx context.Context, site, mac string, devIdOveride int) error {
+	reqBody := map[string]interface{}{
+		"mac":             mac,
+		"dev_id_override": devIdOveride,
+		"search_query":    "",
+	}
+
+	var reqMethod string
+	if devIdOveride == 0 {
+		reqMethod = "DELETE"
+	} else {
+		reqMethod = "PUT"
+	}
+
+	var respBody struct {
+		Mac           string `json:"mac"`
+		DevIdOverride int    `json:"dev_id_override"`
+		SearchQuery   string `json:"search_query"`
+	}
+
+	err := c.do(ctx, reqMethod, fmt.Sprintf("%s/site/%s/station/%s/fingerprint_override", c.apiV2Path, site, mac), reqBody, &respBody)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (c *Client) ListUser(ctx context.Context, site string) ([]User, error) {
 	return c.listUser(ctx, site)
 }
