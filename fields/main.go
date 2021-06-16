@@ -146,6 +146,7 @@ func NewResource(structName string, resourcePath string) *Resource {
 		baseType.Fields[" MAC"] = NewFieldInfo("MAC", "mac", "string", "", true, false)
 	case resource.StructName == "User":
 		baseType.Fields[" IP"] = NewFieldInfo("IP", "ip", "string", "non-generated field", true, false)
+		baseType.Fields[" DevIdOverride"] = NewFieldInfo("DevIdOverride", "dev_id_override", "int", "non-generated field", true, false)
 	case resource.StructName == "WLAN":
 		// this field removed in v6, retaining for backwards compatibility
 		baseType.Fields["WLANGroupID"] = NewFieldInfo("WLANGroupID", "wlangroup_id", "string", "", false, false)
