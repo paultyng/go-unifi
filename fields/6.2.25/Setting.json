@@ -66,6 +66,8 @@
     },
     "super_mgmt": {
         "override_inform_host": "true|false",
+        "override_inform_host_type": "unifi-os|custom",
+        "override_inform_host_location": "",
         "auto_upgrade": "true|false",
         "discoverable": "true|false",
         "led_enabled": "true|false",
@@ -109,7 +111,8 @@
         "contact_info_country": "",
         "default_site_device_auth_password_alert": "false",
         "enable_analytics" : "true|false",
-        "analytics_disapproved_for": ""
+        "analytics_disapproved_for": "",
+        "multiple_sites_enabled": "true|false"
     },
     "super_identity": {
         "name": "",
@@ -263,11 +266,6 @@
     "auto_speedtest": {
         "enabled": "false|true",
         "interval": "^(1[2-9]|[2-9][0-9]|[1-9][0-9]{2,3})$"
-    },
-    "provider_capabilities": {
-        "enabled": "false|true",
-        "download": "^[1-9][0-9]*$",
-        "upload": "^[1-9][0-9]*$"
     },
     "dpi": {
         "enabled": "false|true",
