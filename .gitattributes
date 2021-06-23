@@ -1,0 +1,2 @@
+/fields/*/*.json linguist-generated
+*.generated.go linguist-generated
