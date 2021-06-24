@@ -247,7 +247,9 @@ func (c *Client) do(ctx context.Context, method, relativeURL string, reqBody int
 		errBody := struct {
 			Meta meta `json:"meta"`
 		}{}
-		err = json.NewDecoder(resp.Body).Decode(&errBody)
+		if err = json.NewDecoder(resp.Body).Decode(&errBody); err != nil {
+			return err
+		}
 		return fmt.Errorf("%w (%s) for %s %s", errBody.Meta.error(), resp.Status, method, url.String())
 	}
 
