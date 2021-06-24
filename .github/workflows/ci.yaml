@@ -27,6 +27,24 @@ jobs:
           go-version: "${{ env.GO_VERSION }}"
       - run: "go build ./..."
 
+  generate:
+    needs: "build"
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: "actions/checkout@v2"
+      - uses: "actions/cache@v2"
+        with:
+          path: "~/go/pkg/mod"
+          key: "${{ runner.os }}-gomod-${{ hashFiles('**/go.sum') }}"
+          restore-keys: |
+            ${{ runner.os }}-gomod-
+
+      - uses: "actions/setup-go@v2"
+        with:
+          go-version: "${{ env.GO_VERSION }}"
+      - run: "go generate ./..."
+      - run: "git diff --compact-summary --exit-code"
+
   lint:
     runs-on: "ubuntu-latest"
     steps:
