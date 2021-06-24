@@ -109,7 +109,7 @@ type FieldInfo struct {
 }
 
 func NewResource(structName string, resourcePath string) *Resource {
-	baseType := NewFieldInfo(structName, resourcePath, "struct", "", false, false)
+	baseType := NewFieldInfo(structName, resourcePath, "struct", "", false, false, "")
 	resource := &Resource{
 		StructName:   structName,
 		ResourcePath: resourcePath,
@@ -125,14 +125,14 @@ func NewResource(structName string, resourcePath string) *Resource {
 	//
 	// This hack is here for stability of the generatd code, but can be removed if desired.
 	baseType.Fields = map[string]*FieldInfo{
-		"   ID":      NewFieldInfo("ID", "_id", "string", "", true, false),
-		"   SiteID":  NewFieldInfo("SiteID", "site_id", "string", "", true, false),
+		"   ID":      NewFieldInfo("ID", "_id", "string", "", true, false, ""),
+		"   SiteID":  NewFieldInfo("SiteID", "site_id", "string", "", true, false, ""),
 		"   _Spacer": nil,
 
-		"  Hidden":   NewFieldInfo("Hidden", "attr_hidden", "bool", "", true, false),
-		"  HiddenID": NewFieldInfo("HiddenID", "attr_hidden_id", "string", "", true, false),
-		"  NoDelete": NewFieldInfo("NoDelete", "attr_no_delete", "bool", "", true, false),
-		"  NoEdit":   NewFieldInfo("NoEdit", "attr_no_edit", "bool", "", true, false),
+		"  Hidden":   NewFieldInfo("Hidden", "attr_hidden", "bool", "", true, false, ""),
+		"  HiddenID": NewFieldInfo("HiddenID", "attr_hidden_id", "string", "", true, false, ""),
+		"  NoDelete": NewFieldInfo("NoDelete", "attr_no_delete", "bool", "", true, false, ""),
+		"  NoEdit":   NewFieldInfo("NoEdit", "attr_no_edit", "bool", "", true, false, ""),
 		"  _Spacer":  nil,
 
 		" _Spacer": nil,
@@ -141,28 +141,29 @@ func NewResource(structName string, resourcePath string) *Resource {
 	switch {
 	case resource.IsSetting():
 		resource.ResourcePath = strcase.ToSnake(strings.TrimPrefix(structName, "Setting"))
-		baseType.Fields[" Key"] = NewFieldInfo("Key", "key", "string", "", false, false)
+		baseType.Fields[" Key"] = NewFieldInfo("Key", "key", "string", "", false, false, "")
 	case resource.StructName == "Device":
-		baseType.Fields[" MAC"] = NewFieldInfo("MAC", "mac", "string", "", true, false)
+		baseType.Fields[" MAC"] = NewFieldInfo("MAC", "mac", "string", "", true, false, "")
 	case resource.StructName == "User":
-		baseType.Fields[" IP"] = NewFieldInfo("IP", "ip", "string", "non-generated field", true, false)
-		baseType.Fields[" DevIdOverride"] = NewFieldInfo("DevIdOverride", "dev_id_override", "int", "non-generated field", true, false)
+		baseType.Fields[" IP"] = NewFieldInfo("IP", "ip", "string", "non-generated field", true, false, "")
+		baseType.Fields[" DevIdOverride"] = NewFieldInfo("DevIdOverride", "dev_id_override", "int", "non-generated field", true, false, "")
 	case resource.StructName == "WLAN":
 		// this field removed in v6, retaining for backwards compatibility
-		baseType.Fields["WLANGroupID"] = NewFieldInfo("WLANGroupID", "wlangroup_id", "string", "", false, false)
+		baseType.Fields["WLANGroupID"] = NewFieldInfo("WLANGroupID", "wlangroup_id", "string", "", false, false, "")
 	}
 
 	return resource
 }
 
-func NewFieldInfo(fieldName string, jsonName string, fieldType string, fieldValidation string, omitempty bool, isArray bool) *FieldInfo {
+func NewFieldInfo(fieldName string, jsonName string, fieldType string, fieldValidation string, omitempty bool, isArray bool, customUnmarshalType string) *FieldInfo {
 	return &FieldInfo{
-		FieldName:       fieldName,
-		JSONName:        jsonName,
-		FieldType:       fieldType,
-		FieldValidation: fieldValidation,
-		OmitEmpty:       omitempty,
-		IsArray:         isArray,
+		FieldName:           fieldName,
+		JSONName:            jsonName,
+		FieldType:           fieldType,
+		FieldValidation:     fieldValidation,
+		OmitEmpty:           omitempty,
+		IsArray:             isArray,
+		CustomUnmarshalType: customUnmarshalType,
 	}
 }
 
@@ -308,14 +309,14 @@ func main() {
 				return nil
 			}
 		case "SettingMgmt":
-			sshKeyField := NewFieldInfo(resource.StructName+"XSshKeys", "x_ssh_keys", "struct", "", false, false)
+			sshKeyField := NewFieldInfo(resource.StructName+"XSshKeys", "x_ssh_keys", "struct", "", false, false, "")
 			sshKeyField.Fields = map[string]*FieldInfo{
-				"name":        NewFieldInfo("name", "name", "string", "", false, false),
-				"keyType":     NewFieldInfo("keyType", "type", "string", "", false, false),
-				"key":         NewFieldInfo("key", "key", "string", "", false, false),
-				"comment":     NewFieldInfo("comment", "comment", "string", "", false, false),
-				"date":        NewFieldInfo("date", "date", "string", "", false, false),
-				"fingerprint": NewFieldInfo("fingerprint", "fingerprint", "string", "", false, false),
+				"name":        NewFieldInfo("name", "name", "string", "", false, false, ""),
+				"keyType":     NewFieldInfo("keyType", "type", "string", "", false, false, ""),
+				"key":         NewFieldInfo("key", "key", "string", "", false, false, ""),
+				"comment":     NewFieldInfo("comment", "comment", "string", "", false, false, ""),
+				"date":        NewFieldInfo("date", "date", "string", "", false, false, ""),
+				"fingerprint": NewFieldInfo("fingerprint", "fingerprint", "string", "", false, false, ""),
 			}
 			resource.Types[sshKeyField.FieldName] = sshKeyField
 
@@ -388,7 +389,7 @@ func (r *Resource) fieldInfoFromValidation(name string, validation interface{}) 
 	switch validation := validation.(type) {
 	case []interface{}:
 		if len(validation) == 0 {
-			fieldInfo, err = NewFieldInfo(fieldName, name, "string", "", false, true), nil
+			fieldInfo, err = NewFieldInfo(fieldName, name, "string", "", false, true, ""), nil
 			err = r.FieldProcessor(fieldName, fieldInfo)
 			return fieldInfo, err
 		}
@@ -410,7 +411,7 @@ func (r *Resource) fieldInfoFromValidation(name string, validation interface{}) 
 	case map[string]interface{}:
 		typeName := r.StructName + fieldName
 
-		result := NewFieldInfo(fieldName, name, typeName, "", true, false)
+		result := NewFieldInfo(fieldName, name, typeName, "", true, false, "")
 		result.Fields = make(map[string]*FieldInfo)
 
 		for name, fv := range validation {
@@ -434,7 +435,7 @@ func (r *Resource) fieldInfoFromValidation(name string, validation interface{}) 
 
 		switch {
 		case normalized == "falsetrue" || normalized == "truefalse":
-			fieldInfo, err = NewFieldInfo(fieldName, name, "bool", "", omitEmpty, false), nil
+			fieldInfo, err = NewFieldInfo(fieldName, name, "bool", "", omitEmpty, false, ""), nil
 			return fieldInfo, r.FieldProcessor(fieldName, fieldInfo)
 		default:
 			if _, err := strconv.ParseFloat(normalized, 64); err == nil {
@@ -449,12 +450,12 @@ func (r *Resource) fieldInfoFromValidation(name string, validation interface{}) 
 					}
 
 					omitEmpty = true
-					fieldInfo = NewFieldInfo(fieldName, name, "float64", fieldValidation, omitEmpty, false)
+					fieldInfo = NewFieldInfo(fieldName, name, "float64", fieldValidation, omitEmpty, false, "")
 					return fieldInfo, r.FieldProcessor(fieldName, fieldInfo)
 				}
 
 				omitEmpty = true
-				fieldInfo = NewFieldInfo(fieldName, name, "int", fieldValidation, omitEmpty, false)
+				fieldInfo = NewFieldInfo(fieldName, name, "int", fieldValidation, omitEmpty, false, "")
 				fieldInfo.CustomUnmarshalType = "emptyStringInt"
 				return fieldInfo, r.FieldProcessor(fieldName, fieldInfo)
 			}
@@ -464,7 +465,7 @@ func (r *Resource) fieldInfoFromValidation(name string, validation interface{}) 
 		}
 
 		omitEmpty = omitEmpty || (!strings.Contains(validation, "^$") && !strings.HasSuffix(fieldName, "ID"))
-		fieldInfo, err = NewFieldInfo(fieldName, name, "string", fieldValidation, omitEmpty, false), nil
+		fieldInfo, err = NewFieldInfo(fieldName, name, "string", fieldValidation, omitEmpty, false, ""), nil
 		return fieldInfo, r.FieldProcessor(fieldName, fieldInfo)
 	}
 

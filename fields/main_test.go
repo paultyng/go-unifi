@@ -71,11 +71,11 @@ func TestResourceTypes(t *testing.T) {
 }
 	`
 	expectedFields := map[string]*FieldInfo{
-		"Note":    NewFieldInfo("Note", "note", "string", ".{0,1024}", true, false),
-		"Date":    NewFieldInfo("Date", "date", "string", "^$|^(20[0-9]{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9])Z?$", false, false),
-		"MAC":     NewFieldInfo("MAC", "mac", "string", "^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$", true, false),
-		"Number":  NewFieldInfo("Number", "number", "int", "", true, false),
-		"Boolean": NewFieldInfo("Boolean", "boolean", "bool", "", false, false),
+		"Note":    NewFieldInfo("Note", "note", "string", ".{0,1024}", true, false, ""),
+		"Date":    NewFieldInfo("Date", "date", "string", "^$|^(20[0-9]{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9])Z?$", false, false, ""),
+		"MAC":     NewFieldInfo("MAC", "mac", "string", "^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$", true, false, ""),
+		"Number":  NewFieldInfo("Number", "number", "int", "", true, false, "emptyStringInt"),
+		"Boolean": NewFieldInfo("Boolean", "boolean", "bool", "", false, false, ""),
 		"NestedType": {
 			FieldName:       "NestedType",
 			JSONName:        "nested_type",
@@ -84,7 +84,7 @@ func TestResourceTypes(t *testing.T) {
 			OmitEmpty:       true,
 			IsArray:         false,
 			Fields: map[string]*FieldInfo{
-				"NestedFieldModified": NewFieldInfo("NestedFieldModified", "nested_field", "string", "^$", false, false),
+				"NestedFieldModified": NewFieldInfo("NestedFieldModified", "nested_field", "string", "^$", false, false, ""),
 			},
 		},
 		"NestedTypeArray": {
@@ -95,7 +95,7 @@ func TestResourceTypes(t *testing.T) {
 			OmitEmpty:       true,
 			IsArray:         true,
 			Fields: map[string]*FieldInfo{
-				"NestedFieldModified": NewFieldInfo("NestedFieldModified", "nested_field", "string", "^$", false, false),
+				"NestedFieldModified": NewFieldInfo("NestedFieldModified", "nested_field", "string", "^$", false, false, ""),
 			},
 		},
 	}
@@ -109,13 +109,13 @@ func TestResourceTypes(t *testing.T) {
 			OmitEmpty:       false,
 			IsArray:         false,
 			Fields: map[string]*FieldInfo{
-				"   ID":      NewFieldInfo("ID", "_id", "string", "", true, false),
-				"   SiteID":  NewFieldInfo("SiteID", "site_id", "string", "", true, false),
+				"   ID":      NewFieldInfo("ID", "_id", "string", "", true, false, ""),
+				"   SiteID":  NewFieldInfo("SiteID", "site_id", "string", "", true, false, ""),
 				"   _Spacer": nil,
-				"  Hidden":   NewFieldInfo("Hidden", "attr_hidden", "bool", "", true, false),
-				"  HiddenID": NewFieldInfo("HiddenID", "attr_hidden_id", "string", "", true, false),
-				"  NoDelete": NewFieldInfo("NoDelete", "attr_no_delete", "bool", "", true, false),
-				"  NoEdit":   NewFieldInfo("NoEdit", "attr_no_edit", "bool", "", true, false),
+				"  Hidden":   NewFieldInfo("Hidden", "attr_hidden", "bool", "", true, false, ""),
+				"  HiddenID": NewFieldInfo("HiddenID", "attr_hidden_id", "string", "", true, false, ""),
+				"  NoDelete": NewFieldInfo("NoDelete", "attr_no_delete", "bool", "", true, false, ""),
+				"  NoEdit":   NewFieldInfo("NoEdit", "attr_no_edit", "bool", "", true, false, ""),
 				"  _Spacer":  nil,
 				" _Spacer":   nil,
 			},
