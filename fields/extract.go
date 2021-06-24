@@ -44,9 +44,9 @@ func downloadJar(version string) (string, error) {
 	var uncompressedReader io.Reader
 
 	arReader := ar.NewReader(debResp.Body)
-	for true {
+	for {
 		header, err := arReader.Next()
-		if err == io.EOF || header == nil {
+		if errors.Is(err, io.EOF) || header == nil {
 			break
 		}
 		if err != nil {
@@ -70,9 +70,9 @@ func downloadJar(version string) (string, error) {
 
 	var aceJar *os.File
 
-	for true {
+	for {
 		header, err := tarReader.Next()
-		if err == io.EOF {
+		if errors.Is(err, io.EOF) {
 			break
 		}
 		if err != nil {

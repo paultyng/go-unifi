@@ -355,7 +355,9 @@ func main() {
 		code, _ := resource.generateCode()
 
 		_ = os.Remove(filepath.Join(outDir, goFile))
-		ioutil.WriteFile(filepath.Join(outDir, goFile), ([]byte)(code), 0644)
+		if err := ioutil.WriteFile(filepath.Join(outDir, goFile), ([]byte)(code), 0644); err != nil {
+			panic(err)
+		}
 	}
 
 	fmt.Printf("%s\n", outDir)
@@ -447,12 +449,12 @@ func (r *Resource) fieldInfoFromValidation(name string, validation interface{}) 
 					}
 
 					omitEmpty = true
-					fieldInfo, err = NewFieldInfo(fieldName, name, "float64", fieldValidation, omitEmpty, false), nil
+					fieldInfo = NewFieldInfo(fieldName, name, "float64", fieldValidation, omitEmpty, false)
 					return fieldInfo, r.FieldProcessor(fieldName, fieldInfo)
 				}
 
 				omitEmpty = true
-				fieldInfo, err = NewFieldInfo(fieldName, name, "int", fieldValidation, omitEmpty, false), nil
+				fieldInfo = NewFieldInfo(fieldName, name, "int", fieldValidation, omitEmpty, false)
 				fieldInfo.CustomUnmarshalType = "emptyStringInt"
 				return fieldInfo, r.FieldProcessor(fieldName, fieldInfo)
 			}
@@ -493,7 +495,7 @@ func (r *Resource) generateCode() (string, error) {
 		"embedTypes": func() bool { return embedTypes },
 	}).Parse(apiGoTemplate))
 
-	tpl.Execute(writer, r)
+	err = tpl.Execute(writer, r)
 
 	return buf.String(), err
 }
