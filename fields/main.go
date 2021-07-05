@@ -311,12 +311,12 @@ func main() {
 		case "SettingMgmt":
 			sshKeyField := NewFieldInfo(resource.StructName+"XSshKeys", "x_ssh_keys", "struct", "", false, false, "")
 			sshKeyField.Fields = map[string]*FieldInfo{
-				"name":        NewFieldInfo("name", "name", "string", "", false, false, ""),
-				"keyType":     NewFieldInfo("keyType", "type", "string", "", false, false, ""),
-				"key":         NewFieldInfo("key", "key", "string", "", false, false, ""),
-				"comment":     NewFieldInfo("comment", "comment", "string", "", false, false, ""),
-				"date":        NewFieldInfo("date", "date", "string", "", false, false, ""),
-				"fingerprint": NewFieldInfo("fingerprint", "fingerprint", "string", "", false, false, ""),
+				"name":        NewFieldInfo("Name", "name", "string", "", false, false, ""),
+				"keyType":     NewFieldInfo("KeyType", "type", "string", "", false, false, ""),
+				"key":         NewFieldInfo("Key", "key", "string", "", false, false, ""),
+				"comment":     NewFieldInfo("Comment", "comment", "string", "", false, false, ""),
+				"date":        NewFieldInfo("Date", "date", "string", "", false, false, ""),
+				"fingerprint": NewFieldInfo("Fingerprint", "fingerprint", "string", "", false, false, ""),
 			}
 			resource.Types[sshKeyField.FieldName] = sshKeyField
 
