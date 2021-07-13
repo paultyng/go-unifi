@@ -4,7 +4,7 @@ module github.com/paultyng/go-unifi
 go 1.16
 
 require (
-	github.com/iancoleman/strcase v0.1.3
+	github.com/iancoleman/strcase v0.2.0
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/stretchr/testify v1.7.0
 	github.com/tj/assert v0.0.3
