@@ -19,27 +19,14 @@ import (
 	"github.com/xor-gate/ar"
 )
 
-func downloadJar(version string) (string, error) {
+func downloadJar(version, outputDir string) (string, error) {
 	url := fmt.Sprintf("https://dl.ui.com/unifi/%s/unifi_sysvinit_all.deb", version)
-
-	// debFile, err := ioutil.TempFile("", "go-unifi-fields*.deb")
-	// if err != nil {
-	// 	return err
-	// }
-	// defer debFile.Close()
-	// fmt.Println(debFile.Name())
-	// defer os.Remove(debFile.Name())
 
 	debResp, err := http.Get(url)
 	if err != nil {
 		return "", fmt.Errorf("unable to download deb: %w", err)
 	}
 	defer debResp.Body.Close()
-
-	// _, err = io.Copy(debFile, debResp.Body)
-	// if err != nil {
-	// 	return err
-	// }
 
 	var uncompressedReader io.Reader
 
@@ -84,7 +71,7 @@ func downloadJar(version string) (string, error) {
 			continue
 		}
 
-		aceJar, err = ioutil.TempFile("", fmt.Sprintf("ace-%s-*.jar", version))
+		aceJar, err = os.Create(filepath.Join(outputDir, "ace.jar"))
 		if err != nil {
 			return "", fmt.Errorf("unable to create temp file: %w", err)
 		}
@@ -109,11 +96,6 @@ func extractJSON(jarFile, fieldsDir string) error {
 		return fmt.Errorf("unable to open jar: %w", err)
 	}
 	defer jarZip.Close()
-
-	err = os.MkdirAll(fieldsDir, 0755)
-	if err != nil {
-		return fmt.Errorf("unable to create fields dir: %w", err)
-	}
 
 	for _, f := range jarZip.File {
 		if !strings.HasPrefix(f.Name, "api/fields/") || path.Ext(f.Name) != ".json" {
@@ -172,23 +154,6 @@ func extractJSON(jarFile, fieldsDir string) error {
 			return fmt.Errorf("unable to write new settings file: %w", err)
 		}
 	}
-
-	/*
-
-		#!/usr/bin/env bash
-
-		ver="$1"
-		keys=$(jq -r keys[] "$ver/Setting.json")
-
-		while IFS= read -r key; do
-		    readarray -td ' ' arr <<< "${key//_/ }"
-		    fn=$(printf %s "${arr[@]^}")
-		    echo "... $key $fn ..."
-		    jq ".$key" "$ver/Setting.json" > "$ver/Setting$fn.json"
-		done <<< "$keys"
-
-
-	*/
 
 	// TODO: cleanup JSON
 	return nil
