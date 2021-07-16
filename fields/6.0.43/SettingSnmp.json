@@ -1,7 +1,0 @@
-{
-  "community": ".{1,256}",
-  "enabled": "true|false",
-  "enabledV3": "true|false",
-  "username": "[a-zA-Z0-9_-]{1,30}",
-  "x_password": "[^'\"]{8,32}"
-}

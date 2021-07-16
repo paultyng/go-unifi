@@ -193,9 +193,9 @@ func main() {
 
 	embedTypes = !*noEmbeddedTypesFlag
 
-	versionDir := flag.Arg(0)
-	if versionDir == "" {
-		fmt.Print("error: no version directory specified\n\n")
+	version := flag.Arg(0)
+	if version == "" {
+		fmt.Print("error: no version specified\n\n")
 		usage()
 		os.Exit(1)
 	}
@@ -205,7 +205,7 @@ func main() {
 		panic(err)
 	}
 
-	fieldsDir := filepath.Join(wd, *versionBaseDirFlag, versionDir)
+	fieldsDir := filepath.Join(wd, *versionBaseDirFlag, fmt.Sprintf("v%s", version))
 	outDir := filepath.Join(wd, *outputDirFlag)
 
 	fieldsInfo, err := os.Stat(fieldsDir)
@@ -214,14 +214,18 @@ func main() {
 			panic(err)
 		}
 
+		err = os.MkdirAll(fieldsDir, 0755)
+		if err != nil {
+			panic(err)
+		}
+
 		// download fields, create
-		jarFile, err := downloadJar(versionDir)
+		jarFile, err := downloadJar(version, fieldsDir)
 		if err != nil {
 			panic(err)
 		}
 
 		err = extractJSON(jarFile, fieldsDir)
-		os.Remove(jarFile)
 		if err != nil {
 			panic(err)
 		}
@@ -359,6 +363,18 @@ func main() {
 		if err := ioutil.WriteFile(filepath.Join(outDir, goFile), ([]byte)(code), 0644); err != nil {
 			panic(err)
 		}
+	}
+
+	// Write version file.
+	versionGo := fmt.Sprintf(`
+// Generated code. DO NOT EDIT.
+
+package unifi
+
+const UnifiVersion = %q
+`, version)
+	if err := ioutil.WriteFile(filepath.Join(outDir, "version.generated.go"), []byte(versionGo), 0644); err != nil {
+		panic(err)
 	}
 
 	fmt.Printf("%s\n", outDir)
