@@ -27,60 +27,72 @@ type Device struct {
 
 	MAC string `json:"mac,omitempty"`
 
-	AtfEnabled                 bool                      `json:"atf_enabled,omitempty"`
-	BandsteeringMode           string                    `json:"bandsteering_mode,omitempty"` // off|equal|prefer_5g
-	BaresipAuthUser            string                    `json:"baresip_auth_user,omitempty"` // ^\+?[a-zA-Z0-9_.\-!~*'()]*
-	BaresipEnabled             bool                      `json:"baresip_enabled,omitempty"`
-	BaresipExtension           string                    `json:"baresip_extension,omitempty"` // ^\+?[a-zA-Z0-9_.\-!~*'()]*
-	ConfigNetwork              DeviceConfigNetwork       `json:"config_network,omitempty"`
-	DPIEnabled                 bool                      `json:"dpi_enabled,omitempty"`
-	Disabled                   bool                      `json:"disabled,omitempty"`
-	Dot1XFallbackNetworkID     string                    `json:"dot1x_fallback_networkconf_id,omitempty"` // [\d\w]+|
-	Dot1XPortctrlEnabled       bool                      `json:"dot1x_portctrl_enabled,omitempty"`
-	EthernetOverrides          []DeviceEthernetOverrides `json:"ethernet_overrides,omitempty"`
-	FlowctrlEnabled            bool                      `json:"flowctrl_enabled,omitempty"`
-	HeightInMeters             float64                   `json:"heightInMeters,omitempty"`
-	JumboframeEnabled          bool                      `json:"jumboframe_enabled,omitempty"`
-	LcmBrightness              int                       `json:"lcm_brightness,omitempty"` // [1-9]|[1-9][0-9]|100
-	LcmBrightnessOverride      bool                      `json:"lcm_brightness_override,omitempty"`
-	LcmIDleTimeout             int                       `json:"lcm_idle_timeout,omitempty"` // [1-9][0-9]|[1-9][0-9][0-9]|[1-2][0-9][0-9][0-9]|3[0-5][0-9][0-9]|3600
-	LcmIDleTimeoutOverride     bool                      `json:"lcm_idle_timeout_override,omitempty"`
-	LcmTrackerEnabled          bool                      `json:"lcm_tracker_enabled,omitempty"`
-	LcmTrackerSeed             string                    `json:"lcm_tracker_seed,omitempty"`              // .{0,50}
-	LedOverride                string                    `json:"led_override,omitempty"`                  // default|on|off
-	LedOverrideColor           string                    `json:"led_override_color,omitempty"`            // ^#(?:[0-9a-fA-F]{3}){1,2}$
-	LedOverrideColorBrightness int                       `json:"led_override_color_brightness,omitempty"` // ^[0-9][0-9]?$|^100$
-	Locked                     bool                      `json:"locked,omitempty"`
-	LteApn                     string                    `json:"lte_apn,omitempty"` // .{1,128}
-	LteExtAnt                  bool                      `json:"lte_ext_ant,omitempty"`
-	LtePoe                     bool                      `json:"lte_poe,omitempty"`
-	LteSimPin                  int                       `json:"lte_sim_pin,omitempty"`
-	LteSoftLimit               int                       `json:"lte_soft_limit,omitempty"`
-	MapID                      string                    `json:"map_id,omitempty"`
-	MeshStaVapEnabled          bool                      `json:"mesh_sta_vap_enabled,omitempty"`
-	MgmtNetworkID              string                    `json:"mgmt_network_id,omitempty"`       // [\d\w]+
-	Name                       string                    `json:"name,omitempty"`                  // .{1,128}
-	OutdoorModeOverride        string                    `json:"outdoor_mode_override,omitempty"` // default|on|off
-	OutletEnabled              bool                      `json:"outlet_enabled,omitempty"`
-	OutletOverrides            []DeviceOutletOverrides   `json:"outlet_overrides,omitempty"`
-	PortOverrides              []DevicePortOverrides     `json:"port_overrides,omitempty"`
-	PowerSourceCtrl            string                    `json:"power_source_ctrl,omitempty"` // auto|8023af|8023at|8023bt-type3|8023bt-type4|pasv24|poe-injector|ac|adapter|dc|rps
-	PowerSourceCtrlEnabled     bool                      `json:"power_source_ctrl_enabled,omitempty"`
-	RADIUSProfileID            string                    `json:"radiusprofile_id,omitempty"`
-	RadioTable                 []DeviceRadioTable        `json:"radio_table,omitempty"`
-	ResetbtnEnabled            string                    `json:"resetbtn_enabled,omitempty"` // on|off
-	RpsOverride                DeviceRpsOverride         `json:"rps_override,omitempty"`
-	SnmpContact                string                    `json:"snmp_contact,omitempty"`  // .{0,255}
-	SnmpLocation               string                    `json:"snmp_location,omitempty"` // .{0,255}
-	StpPriority                string                    `json:"stp_priority,omitempty"`  // 0|4096|8192|12288|16384|20480|24576|28672|32768|36864|40960|45056|49152|53248|57344|61440
-	StpVersion                 string                    `json:"stp_version,omitempty"`   // stp|rstp|disabled
-	SwitchVLANEnabled          bool                      `json:"switch_vlan_enabled,omitempty"`
-	UbbPairName                string                    `json:"ubb_pair_name,omitempty"` // .{1,128}
-	Volume                     int                       `json:"volume,omitempty"`        // [0-9]|[1-9][0-9]|100
-	WLANOverrides              []DeviceWLANOverrides     `json:"wlan_overrides,omitempty"`
-	X                          float64                   `json:"x,omitempty"`
-	XBaresipPassword           string                    `json:"x_baresip_password,omitempty"` // ^[a-zA-Z0-9_.\-!~*'()]*
-	Y                          float64                   `json:"y,omitempty"`
+	AtfEnabled                  bool                      `json:"atf_enabled,omitempty"`
+	BandsteeringMode            string                    `json:"bandsteering_mode,omitempty"` // off|equal|prefer_5g
+	BaresipAuthUser             string                    `json:"baresip_auth_user,omitempty"` // ^\+?[a-zA-Z0-9_.\-!~*'()]*
+	BaresipEnabled              bool                      `json:"baresip_enabled,omitempty"`
+	BaresipExtension            string                    `json:"baresip_extension,omitempty"` // ^\+?[a-zA-Z0-9_.\-!~*'()]*
+	ConfigNetwork               DeviceConfigNetwork       `json:"config_network,omitempty"`
+	DPIEnabled                  bool                      `json:"dpi_enabled,omitempty"`
+	Disabled                    bool                      `json:"disabled,omitempty"`
+	Dot1XFallbackNetworkID      string                    `json:"dot1x_fallback_networkconf_id,omitempty"` // [\d\w]+|
+	Dot1XPortctrlEnabled        bool                      `json:"dot1x_portctrl_enabled,omitempty"`
+	EthernetOverrides           []DeviceEthernetOverrides `json:"ethernet_overrides,omitempty"`
+	FlowctrlEnabled             bool                      `json:"flowctrl_enabled,omitempty"`
+	HeightInMeters              float64                   `json:"heightInMeters,omitempty"`
+	Hostname                    string                    `json:"hostname,omitempty"` // .{1,128}
+	JumboframeEnabled           bool                      `json:"jumboframe_enabled,omitempty"`
+	LcmBrightness               int                       `json:"lcm_brightness,omitempty"` // [1-9]|[1-9][0-9]|100
+	LcmBrightnessOverride       bool                      `json:"lcm_brightness_override,omitempty"`
+	LcmIDleTimeout              int                       `json:"lcm_idle_timeout,omitempty"` // [1-9][0-9]|[1-9][0-9][0-9]|[1-2][0-9][0-9][0-9]|3[0-5][0-9][0-9]|3600
+	LcmIDleTimeoutOverride      bool                      `json:"lcm_idle_timeout_override,omitempty"`
+	LcmNightModeBegins          string                    `json:"lcm_night_mode_begins,omitempty"` // (^$)|(^(0[1-9])|(1[0-9])|(2[0-3])):([0-5][0-9]$)
+	LcmNightModeEnds            string                    `json:"lcm_night_mode_ends,omitempty"`   // (^$)|(^(0[1-9])|(1[0-9])|(2[0-3])):([0-5][0-9]$)
+	LcmSettingsRestrictedAccess bool                      `json:"lcm_settings_restricted_access,omitempty"`
+	LcmTrackerEnabled           bool                      `json:"lcm_tracker_enabled,omitempty"`
+	LcmTrackerSeed              string                    `json:"lcm_tracker_seed,omitempty"`              // .{0,50}
+	LedOverride                 string                    `json:"led_override,omitempty"`                  // default|on|off
+	LedOverrideColor            string                    `json:"led_override_color,omitempty"`            // ^#(?:[0-9a-fA-F]{3}){1,2}$
+	LedOverrideColorBrightness  int                       `json:"led_override_color_brightness,omitempty"` // ^[0-9][0-9]?$|^100$
+	Locked                      bool                      `json:"locked,omitempty"`
+	LteApn                      string                    `json:"lte_apn,omitempty"`       // .{1,128}
+	LteAuthType                 string                    `json:"lte_auth_type,omitempty"` // PAP|CHAP|PAP-CHAP|NONE
+	LteDataLimitEnabled         bool                      `json:"lte_data_limit_enabled,omitempty"`
+	LteDataWarningEnabled       bool                      `json:"lte_data_warning_enabled,omitempty"`
+	LteExtAnt                   bool                      `json:"lte_ext_ant,omitempty"`
+	LteHardLimit                int                       `json:"lte_hard_limit,omitempty"`
+	LtePassword                 string                    `json:"lte_password,omitempty"`
+	LtePoe                      bool                      `json:"lte_poe,omitempty"`
+	LteRoamingAllowed           bool                      `json:"lte_roaming_allowed,omitempty"`
+	LteSimPin                   int                       `json:"lte_sim_pin,omitempty"`
+	LteSoftLimit                int                       `json:"lte_soft_limit,omitempty"`
+	LteUsername                 string                    `json:"lte_username,omitempty"`
+	MapID                       string                    `json:"map_id,omitempty"`
+	MeshStaVapEnabled           bool                      `json:"mesh_sta_vap_enabled,omitempty"`
+	MgmtNetworkID               string                    `json:"mgmt_network_id,omitempty"`       // [\d\w]+
+	Name                        string                    `json:"name,omitempty"`                  // .{0,128}
+	OutdoorModeOverride         string                    `json:"outdoor_mode_override,omitempty"` // default|on|off
+	OutletEnabled               bool                      `json:"outlet_enabled,omitempty"`
+	OutletOverrides             []DeviceOutletOverrides   `json:"outlet_overrides,omitempty"`
+	OutletPowerCycleEnabled     bool                      `json:"outlet_power_cycle_enabled,omitempty"`
+	PortOverrides               []DevicePortOverrides     `json:"port_overrides,omitempty"`
+	PowerSourceCtrl             string                    `json:"power_source_ctrl,omitempty"` // auto|8023af|8023at|8023bt-type3|8023bt-type4|pasv24|poe-injector|ac|adapter|dc|rps
+	PowerSourceCtrlEnabled      bool                      `json:"power_source_ctrl_enabled,omitempty"`
+	RADIUSProfileID             string                    `json:"radiusprofile_id,omitempty"`
+	RadioTable                  []DeviceRadioTable        `json:"radio_table,omitempty"`
+	ResetbtnEnabled             string                    `json:"resetbtn_enabled,omitempty"` // on|off
+	RpsOverride                 DeviceRpsOverride         `json:"rps_override,omitempty"`
+	SnmpContact                 string                    `json:"snmp_contact,omitempty"`  // .{0,255}
+	SnmpLocation                string                    `json:"snmp_location,omitempty"` // .{0,255}
+	StpPriority                 string                    `json:"stp_priority,omitempty"`  // 0|4096|8192|12288|16384|20480|24576|28672|32768|36864|40960|45056|49152|53248|57344|61440
+	StpVersion                  string                    `json:"stp_version,omitempty"`   // stp|rstp|disabled
+	SwitchVLANEnabled           bool                      `json:"switch_vlan_enabled,omitempty"`
+	UbbPairName                 string                    `json:"ubb_pair_name,omitempty"` // .{1,128}
+	Volume                      int                       `json:"volume,omitempty"`        // [0-9]|[1-9][0-9]|100
+	WLANOverrides               []DeviceWLANOverrides     `json:"wlan_overrides,omitempty"`
+	X                           float64                   `json:"x,omitempty"`
+	XBaresipPassword            string                    `json:"x_baresip_password,omitempty"` // ^[a-zA-Z0-9_.\-!~*'()]*
+	Y                           float64                   `json:"y,omitempty"`
 }
 
 func (dst *Device) UnmarshalJSON(b []byte) error {
@@ -89,6 +101,7 @@ func (dst *Device) UnmarshalJSON(b []byte) error {
 		LcmBrightness              emptyStringInt `json:"lcm_brightness"`
 		LcmIDleTimeout             emptyStringInt `json:"lcm_idle_timeout"`
 		LedOverrideColorBrightness emptyStringInt `json:"led_override_color_brightness"`
+		LteHardLimit               emptyStringInt `json:"lte_hard_limit"`
 		LteSimPin                  emptyStringInt `json:"lte_sim_pin"`
 		LteSoftLimit               emptyStringInt `json:"lte_soft_limit"`
 		Volume                     emptyStringInt `json:"volume"`
@@ -105,6 +118,7 @@ func (dst *Device) UnmarshalJSON(b []byte) error {
 	dst.LcmBrightness = int(aux.LcmBrightness)
 	dst.LcmIDleTimeout = int(aux.LcmIDleTimeout)
 	dst.LedOverrideColorBrightness = int(aux.LedOverrideColorBrightness)
+	dst.LteHardLimit = int(aux.LteHardLimit)
 	dst.LteSimPin = int(aux.LteSimPin)
 	dst.LteSoftLimit = int(aux.LteSoftLimit)
 	dst.Volume = int(aux.Volume)
@@ -381,7 +395,7 @@ type DeviceWLANOverrides struct {
 	VLAN               int    `json:"vlan,omitempty"` // [2-9]|[1-9][0-9]{1,2}|[1-3][0-9]{3}|40[0-8][0-9]|409[0-5]|^$
 	VLANEnabled        bool   `json:"vlan_enabled,omitempty"`
 	WLANID             string `json:"wlan_id,omitempty"`      // [\d\w]+
-	XPassphrase        string `json:"x_passphrase,omitempty"` // [\x20-\x7E]{8,63}|[0-9a-fA-F]{64}
+	XPassphrase        string `json:"x_passphrase,omitempty"` // [\x20-\x7E]{8,255}|[0-9a-fA-F]{64}
 }
 
 func (dst *DeviceWLANOverrides) UnmarshalJSON(b []byte) error {
