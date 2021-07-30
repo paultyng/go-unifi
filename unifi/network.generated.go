@@ -106,8 +106,11 @@ type Network struct {
 	IPV6RaValidLifetime     int                             `json:"ipv6_ra_valid_lifetime,omitempty"`     // ^([0-9]|[1-8][0-9]|9[0-9]|[1-8][0-9]{2}|9[0-8][0-9]|99[0-9]|[1-8][0-9]{3}|9[0-8][0-9]{2}|99[0-8][0-9]|999[0-9]|[1-8][0-9]{4}|9[0-8][0-9]{3}|99[0-8][0-9]{2}|999[0-8][0-9]|9999[0-9]|[1-8][0-9]{5}|9[0-8][0-9]{4}|99[0-8][0-9]{3}|999[0-8][0-9]{2}|9999[0-8][0-9]|99999[0-9]|[1-8][0-9]{6}|9[0-8][0-9]{5}|99[0-8][0-9]{4}|999[0-8][0-9]{3}|9999[0-8][0-9]{2}|99999[0-8][0-9]|999999[0-9]|[12][0-9]{7}|30[0-9]{6}|31[0-4][0-9]{5}|315[0-2][0-9]{4}|3153[0-5][0-9]{3}|31536000)$|^$
 	IPV6Subnet              string                          `json:"ipv6_subnet,omitempty"`
 	IsNAT                   bool                            `json:"is_nat"`
-	L2TpInterface           string                          `json:"l2tp_interface,omitempty"` // wan|wan2
+	L2TpInterface           string                          `json:"l2tp_interface,omitempty"`    // wan|wan2
+	L2TpLocalWANIP          string                          `json:"l2tp_local_wan_ip,omitempty"` // ^any$|^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$
 	LteLanEnabled           bool                            `json:"lte_lan_enabled"`
+	MACOverride             string                          `json:"mac_override"` // (^$|^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$)
+	MACOverrideEnabled      bool                            `json:"mac_override_enabled"`
 	NATOutboundIPAddresses  []NetworkNATOutboundIPAddresses `json:"nat_outbound_ip_addresses,omitempty"`
 	Name                    string                          `json:"name,omitempty"`                   // .{1,128}
 	NetworkGroup            string                          `json:"networkgroup,omitempty"`           // LAN[2-8]?
@@ -147,14 +150,15 @@ type Network struct {
 	WANGateway              string                          `json:"wan_gateway"`                       // ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$
 	WANGatewayV6            string                          `json:"wan_gateway_v6"`                    // ^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$|^$
 	WANIP                   string                          `json:"wan_ip,omitempty"`                  // ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$
-	WANIPAliases            []string                        `json:"wan_ip_aliases,omitempty"`          // ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\/([1-9]|[1-2][0-9]|30)$|^$
+	WANIPAliases            []string                        `json:"wan_ip_aliases,omitempty"`          // ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\/([8-9]|[1-2][0-9]|3[0-2])$|^$
 	WANIPV6                 string                          `json:"wan_ipv6"`                          // ^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$|^$
 	WANLoadBalanceType      string                          `json:"wan_load_balance_type,omitempty"`   // failover-only|weighted
 	WANLoadBalanceWeight    int                             `json:"wan_load_balance_weight,omitempty"` // [1-9]|[1-9][0-9]
 	WANNetmask              string                          `json:"wan_netmask,omitempty"`             // ^((128|192|224|240|248|252|254)\.0\.0\.0)|(255\.(((0|128|192|224|240|248|252|254)\.0\.0)|(255\.(((0|128|192|224|240|248|252|254)\.0)|255\.(0|128|192|224|240|248|252|254)))))$
 	WANNetworkGroup         string                          `json:"wan_networkgroup,omitempty"`        // WAN[2]?|WAN_LTE_FAILOVER
 	WANPrefixlen            int                             `json:"wan_prefixlen,omitempty"`           // ^([1-9]|[1-8][0-9]|9[0-9]|1[01][0-9]|12[0-8])$|^$
-	WANSmartqDownRate       int                             `json:"wan_smartq_down_rate,omitempty"`    // [0-9]{1,6}|1000000
+	WANProviderCapabilities NetworkWANProviderCapabilities  `json:"wan_provider_capabilities,omitempty"`
+	WANSmartqDownRate       int                             `json:"wan_smartq_down_rate,omitempty"` // [0-9]{1,6}|1000000
 	WANSmartqEnabled        bool                            `json:"wan_smartq_enabled"`
 	WANSmartqUpRate         int                             `json:"wan_smartq_up_rate,omitempty"` // [0-9]{1,6}|1000000
 	WANType                 string                          `json:"wan_type,omitempty"`           // disabled|dhcp|static|pppoe
@@ -274,6 +278,32 @@ func (dst *NetworkWANDHCPOptions) UnmarshalJSON(b []byte) error {
 		return fmt.Errorf("unable to unmarshal alias: %w", err)
 	}
 	dst.OptionNumber = int(aux.OptionNumber)
+
+	return nil
+}
+
+type NetworkWANProviderCapabilities struct {
+	DownloadKilobitsPerSecond int `json:"download_kilobits_per_second,omitempty"` // ^[1-9][0-9]*$
+	UploadKilobitsPerSecond   int `json:"upload_kilobits_per_second,omitempty"`   // ^[1-9][0-9]*$
+}
+
+func (dst *NetworkWANProviderCapabilities) UnmarshalJSON(b []byte) error {
+	type Alias NetworkWANProviderCapabilities
+	aux := &struct {
+		DownloadKilobitsPerSecond emptyStringInt `json:"download_kilobits_per_second"`
+		UploadKilobitsPerSecond   emptyStringInt `json:"upload_kilobits_per_second"`
+
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+	dst.DownloadKilobitsPerSecond = int(aux.DownloadKilobitsPerSecond)
+	dst.UploadKilobitsPerSecond = int(aux.UploadKilobitsPerSecond)
 
 	return nil
 }

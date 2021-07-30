@@ -26,6 +26,8 @@ type Routing struct {
 	NoEdit   bool   `json:"attr_no_edit,omitempty"`
 
 	Enabled              bool   `json:"enabled"`
+	GatewayDevice        string `json:"gateway_device,omitempty"`        // ^([0-9A-Fa-f]{2}[:]){5}([0-9A-Fa-f]{2})$
+	GatewayType          string `json:"gateway_type,omitempty"`          // default|switch
 	Name                 string `json:"name,omitempty"`                  // .{1,128}
 	StaticRouteDistance  int    `json:"static-route_distance,omitempty"` // ^[1-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]$|^$
 	StaticRouteInterface string `json:"static-route_interface"`          // WAN1|WAN2|[\d\w]+|^$

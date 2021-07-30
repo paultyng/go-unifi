@@ -67,8 +67,11 @@ type SettingSuperMgmt struct {
 	LiveUpdates                              string   `json:"live_updates,omitempty"` // disabled|live|auto
 	MinimumUsableHdSpace                     int      `json:"minimum_usable_hd_space,omitempty"`
 	MinimumUsableSdSpace                     int      `json:"minimum_usable_sd_space,omitempty"`
+	MultipleSitesEnabled                     bool     `json:"multiple_sites_enabled"`
 	OverrideInformHost                       bool     `json:"override_inform_host"`
-	StoreEnabled                             string   `json:"store_enabled,omitempty"` // disabled|super-only|everyone
+	OverrideInformHostLocation               string   `json:"override_inform_host_location,omitempty"`
+	OverrideInformHostType                   string   `json:"override_inform_host_type,omitempty"` // unifi-os|custom
+	StoreEnabled                             string   `json:"store_enabled,omitempty"`             // disabled|super-only|everyone
 	TimeSeriesPerClientStatsEnabled          bool     `json:"time_series_per_client_stats_enabled"`
 	XSshPassword                             string   `json:"x_ssh_password,omitempty"`
 	XSshUsername                             string   `json:"x_ssh_username,omitempty"`

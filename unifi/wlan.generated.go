@@ -47,6 +47,7 @@ type WLAN struct {
 	IappEnabled               bool                       `json:"iapp_enabled"`
 	IsGuest                   bool                       `json:"is_guest"`
 	L2Isolation               bool                       `json:"l2_isolation"`
+	LogLevel                  string                     `json:"log_level,omitempty"`
 	MACFilterEnabled          bool                       `json:"mac_filter_enabled"`
 	MACFilterList             []string                   `json:"mac_filter_list,omitempty"`   // ^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$
 	MACFilterPolicy           string                     `json:"mac_filter_policy,omitempty"` // allow|deny
@@ -69,16 +70,23 @@ type WLAN struct {
 	No2GhzOui                 bool                       `json:"no2ghz_oui"`
 	P2P                       bool                       `json:"p2p"`
 	P2PCrossConnect           bool                       `json:"p2p_cross_connect"`
-	PMFMode                   string                     `json:"pmf_mode,omitempty"` // disabled|optional|required
-	Priority                  string                     `json:"priority,omitempty"` // medium|high|low
+	PMFCipher                 string                     `json:"pmf_cipher,omitempty"` // auto|aes-128-cmac|bip-gmac-256
+	PMFMode                   string                     `json:"pmf_mode,omitempty"`   // disabled|optional|required
+	Priority                  string                     `json:"priority,omitempty"`   // medium|high|low
 	ProxyArp                  bool                       `json:"proxy_arp"`
 	RADIUSDasEnabled          bool                       `json:"radius_das_enabled"`
+	RADIUSFilterIDEnabled     bool                       `json:"radius_filter_id_enabled"`
 	RADIUSMACAuthEnabled      bool                       `json:"radius_mac_auth_enabled"`
 	RADIUSMACaclEmptyPassword bool                       `json:"radius_macacl_empty_password"`
 	RADIUSMACaclFormat        string                     `json:"radius_macacl_format,omitempty"` // none_lower|hyphen_lower|colon_lower|none_upper|hyphen_upper|colon_upper
 	RADIUSProfileID           string                     `json:"radiusprofile_id"`
 	RoamClusterID             int                        `json:"roam_cluster_id,omitempty"` // [0-9]|[1-2][0-9]|[3][0-1]|^$
 	RrmEnabled                bool                       `json:"rrm_enabled"`
+	SaeAntiClogging           int                        `json:"sae_anti_clogging,omitempty"`
+	SaeGroups                 []int                      `json:"sae_groups,omitempty"`
+	SaePsk                    []WLANSaePsk               `json:"sae_psk,omitempty"`
+	SaePskVLANRequired        bool                       `json:"sae_psk_vlan_required"`
+	SaeSync                   int                        `json:"sae_sync,omitempty"`
 	Schedule                  []string                   `json:"schedule,omitempty"` // (sun|mon|tue|wed|thu|fri|sat)(\-(sun|mon|tue|wed|thu|fri|sat))?\|([0-2][0-9][0-5][0-9])\-([0-2][0-9][0-5][0-9])
 	ScheduleEnabled           bool                       `json:"schedule_enabled"`
 	ScheduleReversed          bool                       `json:"schedule_reversed"`
@@ -92,28 +100,36 @@ type WLAN struct {
 	WEPIDX                    int                        `json:"wep_idx,omitempty"`   // [1-4]
 	WLANBand                  string                     `json:"wlan_band,omitempty"` // 2g|5g|both
 	WLANGroupID               string                     `json:"wlangroup_id"`
-	WPAEnc                    string                     `json:"wpa_enc,omitempty"`      // auto|ccmp
-	WPAMode                   string                     `json:"wpa_mode,omitempty"`     // auto|wpa1|wpa2
-	XIappKey                  string                     `json:"x_iapp_key,omitempty"`   // [0-9A-Fa-f]{32}
-	XPassphrase               string                     `json:"x_passphrase,omitempty"` // [\x20-\x7E]{8,63}|[0-9a-fA-F]{64}
+	WPA3Enhanced192           bool                       `json:"wpa3_enhanced_192"`
+	WPA3FastRoaming           bool                       `json:"wpa3_fast_roaming"`
+	WPA3Support               bool                       `json:"wpa3_support"`
+	WPA3Transition            bool                       `json:"wpa3_transition"`
+	WPAEnc                    string                     `json:"wpa_enc,omitempty"`        // auto|ccmp|gcmp|ccmp-256|gcmp-256
+	WPAMode                   string                     `json:"wpa_mode,omitempty"`       // auto|wpa1|wpa2
+	WPAPskRADIUS              string                     `json:"wpa_psk_radius,omitempty"` // disabled|optional|required
+	XIappKey                  string                     `json:"x_iapp_key,omitempty"`     // [0-9A-Fa-f]{32}
+	XPassphrase               string                     `json:"x_passphrase,omitempty"`   // [\x20-\x7E]{8,255}|[0-9a-fA-F]{64}
 	XWEP                      string                     `json:"x_wep,omitempty"`
 }
 
 func (dst *WLAN) UnmarshalJSON(b []byte) error {
 	type Alias WLAN
 	aux := &struct {
-		DTIMNa                  emptyStringInt `json:"dtim_na"`
-		DTIMNg                  emptyStringInt `json:"dtim_ng"`
-		GroupRekey              emptyStringInt `json:"group_rekey"`
-		MinrateNaBeaconRateKbps emptyStringInt `json:"minrate_na_beacon_rate_kbps"`
-		MinrateNaDataRateKbps   emptyStringInt `json:"minrate_na_data_rate_kbps"`
-		MinrateNaMgmtRateKbps   emptyStringInt `json:"minrate_na_mgmt_rate_kbps"`
-		MinrateNgBeaconRateKbps emptyStringInt `json:"minrate_ng_beacon_rate_kbps"`
-		MinrateNgDataRateKbps   emptyStringInt `json:"minrate_ng_data_rate_kbps"`
-		MinrateNgMgmtRateKbps   emptyStringInt `json:"minrate_ng_mgmt_rate_kbps"`
-		RoamClusterID           emptyStringInt `json:"roam_cluster_id"`
-		VLAN                    emptyStringInt `json:"vlan"`
-		WEPIDX                  emptyStringInt `json:"wep_idx"`
+		DTIMNa                  emptyStringInt   `json:"dtim_na"`
+		DTIMNg                  emptyStringInt   `json:"dtim_ng"`
+		GroupRekey              emptyStringInt   `json:"group_rekey"`
+		MinrateNaBeaconRateKbps emptyStringInt   `json:"minrate_na_beacon_rate_kbps"`
+		MinrateNaDataRateKbps   emptyStringInt   `json:"minrate_na_data_rate_kbps"`
+		MinrateNaMgmtRateKbps   emptyStringInt   `json:"minrate_na_mgmt_rate_kbps"`
+		MinrateNgBeaconRateKbps emptyStringInt   `json:"minrate_ng_beacon_rate_kbps"`
+		MinrateNgDataRateKbps   emptyStringInt   `json:"minrate_ng_data_rate_kbps"`
+		MinrateNgMgmtRateKbps   emptyStringInt   `json:"minrate_ng_mgmt_rate_kbps"`
+		RoamClusterID           emptyStringInt   `json:"roam_cluster_id"`
+		SaeAntiClogging         emptyStringInt   `json:"sae_anti_clogging"`
+		SaeGroups               []emptyStringInt `json:"sae_groups"`
+		SaeSync                 emptyStringInt   `json:"sae_sync"`
+		VLAN                    emptyStringInt   `json:"vlan"`
+		WEPIDX                  emptyStringInt   `json:"wep_idx"`
 
 		*Alias
 	}{
@@ -134,14 +150,47 @@ func (dst *WLAN) UnmarshalJSON(b []byte) error {
 	dst.MinrateNgDataRateKbps = int(aux.MinrateNgDataRateKbps)
 	dst.MinrateNgMgmtRateKbps = int(aux.MinrateNgMgmtRateKbps)
 	dst.RoamClusterID = int(aux.RoamClusterID)
+	dst.SaeAntiClogging = int(aux.SaeAntiClogging)
+	dst.SaeGroups = make([]int, len(aux.SaeGroups))
+	for i, v := range aux.SaeGroups {
+		dst.SaeGroups[i] = int(v)
+	}
+	dst.SaeSync = int(aux.SaeSync)
 	dst.VLAN = int(aux.VLAN)
 	dst.WEPIDX = int(aux.WEPIDX)
 
 	return nil
 }
 
+type WLANSaePsk struct {
+	ID   string `json:"id"`             // .{0,128}
+	MAC  string `json:"mac,omitempty"`  // ^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$
+	Psk  string `json:"psk,omitempty"`  // [\x20-\x7E]{8,255}
+	VLAN int    `json:"vlan,omitempty"` // [0-9]|[1-9][0-9]{1,2}|[1-3][0-9]{3}|40[0-8][0-9]|409[0-5]|^$
+}
+
+func (dst *WLANSaePsk) UnmarshalJSON(b []byte) error {
+	type Alias WLANSaePsk
+	aux := &struct {
+		VLAN emptyStringInt `json:"vlan"`
+
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+	dst.VLAN = int(aux.VLAN)
+
+	return nil
+}
+
 type WLANScheduleWithDuration struct {
 	DurationMinutes int      `json:"duration_minutes,omitempty"`   // ^[1-9][0-9]*$
+	Name            string   `json:"name,omitempty"`               // .*
 	StartDaysOfWeek []string `json:"start_days_of_week,omitempty"` // ^(sun|mon|tue|wed|thu|fri|sat)$
 	StartHour       int      `json:"start_hour,omitempty"`         // ^(1?[0-9])|(2[0-3])$
 	StartMinute     int      `json:"start_minute,omitempty"`       // ^[0-5]?[0-9]$
