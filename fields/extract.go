@@ -14,12 +14,13 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/hashicorp/go-version"
 	"github.com/iancoleman/strcase"
 	"github.com/ulikunitz/xz"
 	"github.com/xor-gate/ar"
 )
 
-func downloadJar(version, outputDir string) (string, error) {
+func downloadJar(version *version.Version, outputDir string) (string, error) {
 	url := fmt.Sprintf("https://dl.ui.com/unifi/%s/unifi_sysvinit_all.deb", version)
 
 	debResp, err := http.Get(url)
