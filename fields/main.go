@@ -17,6 +17,7 @@ import (
 	"strings"
 	"text/template"
 
+	"github.com/hashicorp/go-version"
 	"github.com/iancoleman/strcase"
 )
 
@@ -181,23 +182,43 @@ func usage() {
 }
 
 func main() {
-
 	flag.Usage = usage
 
 	noEmbeddedTypesFlag := flag.Bool("no-embedded-types", true, "Whether to generate top-level type definitions for embedded type definitions")
 	versionBaseDirFlag := flag.String("version-base-dir", ".", "The base directory for version JSON files")
 	outputDirFlag := flag.String("output-dir", ".", "The output directory of the generated Go code")
 	downloadOnly := flag.Bool("download-only", false, "Only download and build the fields JSON directory, do not generate")
+	useLatestVersion := flag.Bool("latest", false, "Use the latest available version")
 
 	flag.Parse()
 
 	embedTypes = !*noEmbeddedTypesFlag
 
-	version := flag.Arg(0)
-	if version == "" {
-		fmt.Print("error: no version specified\n\n")
+	specifiedVersion := flag.Arg(0)
+	if specifiedVersion != "" && *useLatestVersion {
+		fmt.Print("error: cannot specify version with latest\n\n")
 		usage()
 		os.Exit(1)
+	} else if specifiedVersion == "" && !*useLatestVersion {
+		fmt.Print("error: must specify version or latest\n\n")
+		usage()
+		os.Exit(1)
+	}
+
+	var unifiVersion *version.Version
+	var err error
+
+	if *useLatestVersion {
+		unifiVersion, err = latestUnifiVersion()
+		if err != nil {
+			panic(err)
+		}
+	} else {
+		unifiVersion, err = version.NewVersion(specifiedVersion)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
 	}
 
 	wd, err := os.Getwd()
@@ -205,7 +226,7 @@ func main() {
 		panic(err)
 	}
 
-	fieldsDir := filepath.Join(wd, *versionBaseDirFlag, fmt.Sprintf("v%s", version))
+	fieldsDir := filepath.Join(wd, *versionBaseDirFlag, fmt.Sprintf("v%s", unifiVersion))
 	outDir := filepath.Join(wd, *outputDirFlag)
 
 	fieldsInfo, err := os.Stat(fieldsDir)
@@ -220,7 +241,7 @@ func main() {
 		}
 
 		// download fields, create
-		jarFile, err := downloadJar(version, fieldsDir)
+		jarFile, err := downloadJar(unifiVersion, fieldsDir)
 		if err != nil {
 			panic(err)
 		}
@@ -372,7 +393,7 @@ func main() {
 package unifi
 
 const UnifiVersion = %q
-`, version)
+`, unifiVersion)
 	if err := ioutil.WriteFile(filepath.Join(outDir, "version.generated.go"), []byte(versionGo), 0644); err != nil {
 		panic(err)
 	}
