@@ -321,9 +321,11 @@ func main() {
 				switch name {
 				case "X", "Y":
 					f.FieldType = "float64"
-				case "StpPriority", "Ht":
+				case "StpPriority":
 					f.FieldType = "string"
 					f.CustomUnmarshalType = ""
+				case "Ht":
+					f.FieldType = "int"
 				case "Channel", "BackupChannel", "TxPower":
 					if f.FieldType == "string" {
 						f.CustomUnmarshalType = "numberOrString"
