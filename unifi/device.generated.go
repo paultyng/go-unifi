@@ -292,7 +292,7 @@ type DeviceRadioTable struct {
 	BackupChannel         string `json:"backup_channel,omitempty"` // [0-9]|[1][0-4]|16|34|36|38|40|42|44|46|48|52|56|60|64|100|104|108|112|116|120|124|128|132|136|140|144|149|153|157|161|165|183|184|185|187|188|189|192|196|auto
 	Channel               string `json:"channel,omitempty"`        // [0-9]|[1][0-4]|4.5|16|34|36|38|40|42|44|46|48|52|56|60|64|100|104|108|112|116|120|124|128|132|136|140|144|149|153|157|161|165|183|184|185|187|188|189|192|196|auto
 	HardNoiseFloorEnabled bool   `json:"hard_noise_floor_enabled,omitempty"`
-	Ht                    string `json:"ht,omitempty"` // 20|40|80|160|1080|2160
+	Ht                    int    `json:"ht,omitempty"` // 20|40|80|160|1080|2160
 	LoadbalanceEnabled    bool   `json:"loadbalance_enabled,omitempty"`
 	Maxsta                int    `json:"maxsta,omitempty"`   // [1-9]|[1-9][0-9]|1[0-9]{2}|200|^$
 	MinRssi               int    `json:"min_rssi,omitempty"` // ^-(6[7-9]|[7-8][0-9]|90)$
@@ -313,6 +313,7 @@ func (dst *DeviceRadioTable) UnmarshalJSON(b []byte) error {
 		AntennaID     emptyStringInt `json:"antenna_id"`
 		BackupChannel numberOrString `json:"backup_channel"`
 		Channel       numberOrString `json:"channel"`
+		Ht            emptyStringInt `json:"ht"`
 		Maxsta        emptyStringInt `json:"maxsta"`
 		MinRssi       emptyStringInt `json:"min_rssi"`
 		SensLevel     emptyStringInt `json:"sens_level"`
@@ -331,6 +332,7 @@ func (dst *DeviceRadioTable) UnmarshalJSON(b []byte) error {
 	dst.AntennaID = int(aux.AntennaID)
 	dst.BackupChannel = string(aux.BackupChannel)
 	dst.Channel = string(aux.Channel)
+	dst.Ht = int(aux.Ht)
 	dst.Maxsta = int(aux.Maxsta)
 	dst.MinRssi = int(aux.MinRssi)
 	dst.SensLevel = int(aux.SensLevel)
