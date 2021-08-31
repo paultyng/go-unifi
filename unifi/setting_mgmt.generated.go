@@ -1,4 +1,5 @@
 // Code generated from ace.jar fields *.json files
+// Controller Version v6.2.26
 // DO NOT EDIT.
 
 package unifi
