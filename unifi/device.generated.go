@@ -85,7 +85,7 @@ type Device struct {
 	RpsOverride                 DeviceRpsOverride         `json:"rps_override,omitempty"`
 	SnmpContact                 string                    `json:"snmp_contact,omitempty"`  // .{0,255}
 	SnmpLocation                string                    `json:"snmp_location,omitempty"` // .{0,255}
-	State                       int                       `json:"state"`
+	State                       DeviceState               `json:"state"`
 	StpPriority                 string                    `json:"stp_priority,omitempty"` // 0|4096|8192|12288|16384|20480|24576|28672|32768|36864|40960|45056|49152|53248|57344|61440
 	StpVersion                  string                    `json:"stp_version,omitempty"`  // stp|rstp|disabled
 	SwitchVLANEnabled           bool                      `json:"switch_vlan_enabled,omitempty"`

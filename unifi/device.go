@@ -5,19 +5,21 @@ import (
 	"fmt"
 )
 
+type DeviceState int
+
 const (
-	DEVICE_STATE_UNKNOWN           = 0
-	DEVICE_STATE_CONNECTED         = 1
-	DEVICE_STATE_PENDING           = 2
-	DEVICE_STATE_FIRMWARE_MISMATCH = 3
-	DEVICE_STATE_UPGRADING         = 4
-	DEVICE_STATE_PROVISIONING      = 5
-	DEVICE_STATE_HEARTBEAT_MISSED  = 6
-	DEVICE_STATE_ADOPTING          = 7
-	DEVICE_STATE_DELETING          = 8
-	DEVICE_STATE_INFORM_ERROR      = 9
-	DEVICE_STATE_ADOPT_FAILED      = 10
-	DEVICE_STATE_ISOLATED          = 11
+	DeviceStateUnknown          DeviceState = 0
+	DeviceStateConnected        DeviceState = 1
+	DeviceStatePending          DeviceState = 2
+	DeviceStateFirmwareMismatch DeviceState = 3
+	DeviceStateUpgrading        DeviceState = 4
+	DeviceStateProvisioning     DeviceState = 5
+	DeviceStateHeartbeatMissed  DeviceState = 6
+	DeviceStateAdopting         DeviceState = 7
+	DeviceStateDeleting         DeviceState = 8
+	DeviceStateInformError      DeviceState = 9
+	DeviceStateAdoptFailed      DeviceState = 10
+	DeviceStateIsolated         DeviceState = 11
 )
 
 func (c *Client) ListDevice(ctx context.Context, site string) ([]Device, error) {
