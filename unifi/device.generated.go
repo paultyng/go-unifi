@@ -28,6 +28,7 @@ type Device struct {
 
 	MAC string `json:"mac,omitempty"`
 
+	Adopted                     bool                      `json:"adopted"`
 	AtfEnabled                  bool                      `json:"atf_enabled,omitempty"`
 	BandsteeringMode            string                    `json:"bandsteering_mode,omitempty"` // off|equal|prefer_5g
 	BaresipAuthUser             string                    `json:"baresip_auth_user,omitempty"` // ^\+?[a-zA-Z0-9_.\-!~*'()]*
@@ -85,8 +86,9 @@ type Device struct {
 	RpsOverride                 DeviceRpsOverride         `json:"rps_override,omitempty"`
 	SnmpContact                 string                    `json:"snmp_contact,omitempty"`  // .{0,255}
 	SnmpLocation                string                    `json:"snmp_location,omitempty"` // .{0,255}
-	StpPriority                 string                    `json:"stp_priority,omitempty"`  // 0|4096|8192|12288|16384|20480|24576|28672|32768|36864|40960|45056|49152|53248|57344|61440
-	StpVersion                  string                    `json:"stp_version,omitempty"`   // stp|rstp|disabled
+	State                       DeviceState               `json:"state"`
+	StpPriority                 string                    `json:"stp_priority,omitempty"` // 0|4096|8192|12288|16384|20480|24576|28672|32768|36864|40960|45056|49152|53248|57344|61440
+	StpVersion                  string                    `json:"stp_version,omitempty"`  // stp|rstp|disabled
 	SwitchVLANEnabled           bool                      `json:"switch_vlan_enabled,omitempty"`
 	UbbPairName                 string                    `json:"ubb_pair_name,omitempty"` // .{1,128}
 	Volume                      int                       `json:"volume,omitempty"`        // [0-9]|[1-9][0-9]|100
