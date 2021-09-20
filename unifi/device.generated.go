@@ -1,5 +1,5 @@
 // Code generated from ace.jar fields *.json files
-// Controller Version v6.2.26
+// Controller Version v6.4.54
 // DO NOT EDIT.
 
 package unifi
@@ -49,7 +49,8 @@ type Device struct {
 	LcmIDleTimeout              int                       `json:"lcm_idle_timeout,omitempty"` // [1-9][0-9]|[1-9][0-9][0-9]|[1-2][0-9][0-9][0-9]|3[0-5][0-9][0-9]|3600
 	LcmIDleTimeoutOverride      bool                      `json:"lcm_idle_timeout_override,omitempty"`
 	LcmNightModeBegins          string                    `json:"lcm_night_mode_begins,omitempty"` // (^$)|(^(0[1-9])|(1[0-9])|(2[0-3])):([0-5][0-9]$)
-	LcmNightModeEnds            string                    `json:"lcm_night_mode_ends,omitempty"`   // (^$)|(^(0[1-9])|(1[0-9])|(2[0-3])):([0-5][0-9]$)
+	LcmNightModeEnabled         bool                      `json:"lcm_night_mode_enabled,omitempty"`
+	LcmNightModeEnds            string                    `json:"lcm_night_mode_ends,omitempty"` // (^$)|(^(0[1-9])|(1[0-9])|(2[0-3])):([0-5][0-9]$)
 	LcmSettingsRestrictedAccess bool                      `json:"lcm_settings_restricted_access,omitempty"`
 	LcmTrackerEnabled           bool                      `json:"lcm_tracker_enabled,omitempty"`
 	LcmTrackerSeed              string                    `json:"lcm_tracker_seed,omitempty"`              // .{0,50}
