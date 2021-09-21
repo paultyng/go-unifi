@@ -7,6 +7,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"go/format"
 	"io"
 	"io/ioutil"
 	"os"
@@ -394,14 +395,20 @@ func main() {
 	}
 
 	// Write version file.
-	versionGo := fmt.Sprintf(`
+	versionGo := []byte(fmt.Sprintf(`
 // Generated code. DO NOT EDIT.
 
 package unifi
 
 const UnifiVersion = %q
-`, unifiVersion)
-	if err := ioutil.WriteFile(filepath.Join(outDir, "version.generated.go"), []byte(versionGo), 0644); err != nil {
+`, unifiVersion))
+
+	versionGo, err = format.Source(versionGo)
+	if err != nil {
+		panic(err)
+	}
+
+	if err := ioutil.WriteFile(filepath.Join(outDir, "version.generated.go"), versionGo, 0644); err != nil {
 		panic(err)
 	}
 
@@ -541,8 +548,16 @@ func (r *Resource) generateCode() (string, error) {
 	}).Parse(apiGoTemplate))
 
 	err = tpl.Execute(writer, r)
+	if err != nil {
+		return "", err
+	}
 
-	return buf.String(), err
+	src, err := format.Source(buf.Bytes())
+	if err != nil {
+		return "", err
+	}
+
+	return string(src), err
 }
 
 func normalizeValidation(re string) string {
