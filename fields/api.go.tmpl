@@ -21,7 +21,6 @@
 	{{ else }}{{- template "field-embed" $fv }}{{ end }}{{ end }}
 }{{ end }} `json:"{{ .JSONName }}{{ if .OmitEmpty }},omitempty{{ end }}"` {{ if .FieldValidation }}// {{ .FieldValidation }}{{ end }} {{- end }}
 // Code generated from ace.jar fields *.json files
-// Controller Version {{ .ControllerVersion }}
 // DO NOT EDIT.
 
 package unifi

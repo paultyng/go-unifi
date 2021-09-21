@@ -2,9 +2,8 @@ package main
 
 import (
 	"fmt"
-	"testing"
-
 	assert "github.com/stretchr/testify/assert"
+	"testing"
 )
 
 func TestFieldInfoFromValidation(t *testing.T) {
@@ -146,7 +145,7 @@ func TestResourceTypes(t *testing.T) {
 	}
 
 	t.Run("structural test", func(t *testing.T) {
-		resource := NewResource("v1.1", "Struct", "path")
+		resource := NewResource("Struct", "path")
 		resource.FieldProcessor = expectation.FieldProcessor
 
 		err := resource.processJSON(([]byte)(testData))
