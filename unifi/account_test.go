@@ -14,11 +14,11 @@ func TestAccountMarshalJSON(t *testing.T) {
 		acc          unifi.Account
 	}{
 		"empty strings": {
-			`{"vlan":"","tunnel_type":"","tunnel_medium_type":""}`,
+			`{"vlan":"","tunnel_type":"","tunnel_medium_type":"","networkconf_id":""}`,
 			unifi.Account{},
 		},
 		"response": {
-			`{"vlan":10,"tunnel_type":1,"tunnel_medium_type":1}`,
+			`{"vlan":10,"tunnel_type":1,"tunnel_medium_type":1,"networkconf_id":""}`,
 			unifi.Account{
 				VLAN:             10,
 				TunnelType:       1,
