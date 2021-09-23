@@ -92,11 +92,10 @@ var fileReps = []replacement{
 var embedTypes bool
 
 type Resource struct {
-	ControllerVersion string
-	StructName        string
-	ResourcePath      string
-	Types             map[string]*FieldInfo
-	FieldProcessor    func(name string, f *FieldInfo) error
+	StructName     string
+	ResourcePath   string
+	Types          map[string]*FieldInfo
+	FieldProcessor func(name string, f *FieldInfo) error
 }
 
 type FieldInfo struct {
@@ -110,11 +109,9 @@ type FieldInfo struct {
 	CustomUnmarshalType string
 }
 
-func NewResource(version string, structName string, resourcePath string) *Resource {
+func NewResource(structName string, resourcePath string) *Resource {
 	baseType := NewFieldInfo(structName, resourcePath, "struct", "", false, false, "")
 	resource := &Resource{
-		ControllerVersion: version,
-
 		StructName:   structName,
 		ResourcePath: resourcePath,
 		Types: map[string]*FieldInfo{
@@ -301,7 +298,7 @@ func main() {
 			continue
 		}
 
-		resource := NewResource(fmt.Sprintf("v%s", unifiVersion), structName, urlPath)
+		resource := NewResource(structName, urlPath)
 
 		switch resource.StructName {
 		case "Account":
