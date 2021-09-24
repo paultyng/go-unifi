@@ -5,6 +5,7 @@ import (
 	"fmt"
 )
 
+//go:generate stringer -trimprefix DeviceState -type DeviceState
 type DeviceState int
 
 const (
