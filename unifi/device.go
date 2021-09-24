@@ -5,6 +5,7 @@ import (
 	"fmt"
 )
 
+//go:generate stringer -trimprefix DeviceState -type DeviceState
 type DeviceState int
 
 const (
@@ -21,37 +22,6 @@ const (
 	DeviceStateAdoptFailed      DeviceState = 10
 	DeviceStateIsolated         DeviceState = 11
 )
-
-func (s DeviceState) String() string {
-	switch s {
-	case DeviceStateUnknown:
-		return "UNKNOWN"
-	case DeviceStateConnected:
-		return "CONNECTED"
-	case DeviceStatePending:
-		return "PENDING"
-	case DeviceStateFirmwareMismatch:
-		return "FIRMWARE_MISMATCH"
-	case DeviceStateUpgrading:
-		return "UPGRADING"
-	case DeviceStateProvisioning:
-		return "PROVISIONING"
-	case DeviceStateHeartbeatMissed:
-		return "HEARTBEAT_MISSED"
-	case DeviceStateAdopting:
-		return "ADOPTING"
-	case DeviceStateDeleting:
-		return "DELETING"
-	case DeviceStateInformError:
-		return "INFORM_ERROR"
-	case DeviceStateAdoptFailed:
-		return "ADOPT_FAILED"
-	case DeviceStateIsolated:
-		return "ISOLATED"
-	default:
-		return fmt.Sprintf("%d", s)
-	}
-}
 
 func (c *Client) ListDevice(ctx context.Context, site string) ([]Device, error) {
 	return c.listDevice(ctx, site)
