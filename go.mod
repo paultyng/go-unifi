@@ -11,6 +11,6 @@ require (
 	github.com/tj/assert v0.0.3
 	github.com/ulikunitz/xz v0.5.10
 	github.com/xor-gate/ar v0.0.0-20170530204233-5c72ae81e2b7
-	golang.org/x/tools v0.1.6
+	golang.org/x/tools v0.1.7
 	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
 )
