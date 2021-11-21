@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-//go:generate stringer -trimprefix DeviceState -type DeviceState
+//go:generate go run golang.org/x/tools/cmd/stringer -trimprefix DeviceState -type DeviceState
 type DeviceState int
 
 const (
