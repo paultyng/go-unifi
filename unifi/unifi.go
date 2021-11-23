@@ -35,9 +35,28 @@ func (err *NotFoundError) Error() string {
 	return "not found"
 }
 
+// APIError signals an error returned by the server.
 type APIError struct {
-	RC      string
+	// RC is the response code provided by the server, typically "error" in this context.
+	RC string
+	// Message is the error message provided by the server, such as "api.err.NotFound".
 	Message string
+
+	// ValidationError contains details when Message is "api.err.ValidationError".  It
+	// is nil otherwise.
+	ValidationError *struct {
+		// Field is the field name that failed validation.
+		Field string
+		// Pattern is the pattern that the field value should match for the server to consider it valid.
+		Pattern string
+	}
+
+	// Type contains the object type referencing the object being operated on, when Message is "api.err.ObjectReferredByDevice".
+	Type string
+	// AliasOrMAC contains the alias or MAC address of the object being operated on, when Message is "api.err.ObjectReferredByDevice".
+	AliasOrMAC string
+	// DeviceID contains the ID of the object being operated on, when Message is "api.err.ObjectReferredByDevice".
+	DeviceID string
 }
 
 func (err *APIError) Error() string {
@@ -268,15 +287,26 @@ func (c *Client) do(ctx context.Context, method, relativeURL string, reqBody int
 }
 
 type meta struct {
-	RC      string `json:"rc"`
-	Message string `json:"msg"`
+	RC              string `json:"rc"`
+	Message         string `json:"msg"`
+	Type            string `json:"type,omitempty"`
+	AliasOrMAC      string `json:"alias_or_mac,omitempty"`
+	DeviceID        string `json:"device_id,omitempty"`
+	ValidationError *struct {
+		Field   string
+		Pattern string
+	} `json:"validationError,omitempty"`
 }
 
 func (m *meta) error() error {
 	if m.RC != "ok" {
 		return &APIError{
-			RC:      m.RC,
-			Message: m.Message,
+			RC:              m.RC,
+			Message:         m.Message,
+			ValidationError: m.ValidationError,
+			Type:            m.Type,
+			AliasOrMAC:      m.AliasOrMAC,
+			DeviceID:        m.DeviceID,
 		}
 	}
 
