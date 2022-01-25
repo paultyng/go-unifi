@@ -304,7 +304,8 @@ func main() {
 		switch resource.StructName {
 		case "Account":
 			resource.FieldProcessor = func(name string, f *FieldInfo) error {
-				if name == "IP" {
+				switch name {
+				case "IP", "NetworkID":
 					f.OmitEmpty = true
 				}
 				return nil
