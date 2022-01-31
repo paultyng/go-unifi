@@ -34,6 +34,7 @@ type WLAN struct {
 	CountryBeacon               bool                       `json:"country_beacon"`
 	DPIEnabled                  bool                       `json:"dpi_enabled"`
 	DPIgroupID                  string                     `json:"dpigroup_id"`         // [\d\w]+|^$
+	DTIM6E                      int                        `json:"dtim_6e,omitempty"`   // ^([1-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$
 	DTIMMode                    string                     `json:"dtim_mode,omitempty"` // default|custom
 	DTIMNa                      int                        `json:"dtim_na,omitempty"`   // ^([1-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$
 	DTIMNg                      int                        `json:"dtim_ng,omitempty"`   // ^([1-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$
@@ -93,8 +94,9 @@ type WLAN struct {
 	UserGroupID                 string                     `json:"usergroup_id"`
 	VLAN                        int                        `json:"vlan,omitempty"` // [2-9]|[1-9][0-9]{1,2}|[1-3][0-9]{3}|40[0-8][0-9]|409[0-5]|^$
 	VLANEnabled                 bool                       `json:"vlan_enabled"`
-	WEPIDX                      int                        `json:"wep_idx,omitempty"`   // [1-4]
-	WLANBand                    string                     `json:"wlan_band,omitempty"` // 2g|5g|both
+	WEPIDX                      int                        `json:"wep_idx,omitempty"`    // [1-4]
+	WLANBand                    string                     `json:"wlan_band,omitempty"`  // 2g|5g|both
+	WLANBands                   []string                   `json:"wlan_bands,omitempty"` // 2g|5g|6g
 	WLANGroupID                 string                     `json:"wlangroup_id"`
 	WPA3Enhanced192             bool                       `json:"wpa3_enhanced_192"`
 	WPA3FastRoaming             bool                       `json:"wpa3_fast_roaming"`
@@ -111,6 +113,7 @@ type WLAN struct {
 func (dst *WLAN) UnmarshalJSON(b []byte) error {
 	type Alias WLAN
 	aux := &struct {
+		DTIM6E                emptyStringInt   `json:"dtim_6e"`
 		DTIMNa                emptyStringInt   `json:"dtim_na"`
 		DTIMNg                emptyStringInt   `json:"dtim_ng"`
 		GroupRekey            emptyStringInt   `json:"group_rekey"`
@@ -132,6 +135,7 @@ func (dst *WLAN) UnmarshalJSON(b []byte) error {
 	if err != nil {
 		return fmt.Errorf("unable to unmarshal alias: %w", err)
 	}
+	dst.DTIM6E = int(aux.DTIM6E)
 	dst.DTIMNa = int(aux.DTIMNa)
 	dst.DTIMNg = int(aux.DTIMNg)
 	dst.GroupRekey = int(aux.GroupRekey)
