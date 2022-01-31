@@ -204,7 +204,7 @@ func (dst *DeviceOutletOverrides) UnmarshalJSON(b []byte) error {
 }
 
 type DevicePortOverrides struct {
-	AggregateNumPorts            int      `json:"aggregate_num_ports,omitempty"` // [2-6]
+	AggregateNumPorts            int      `json:"aggregate_num_ports,omitempty"` // [2-8]
 	Autoneg                      bool     `json:"autoneg,omitempty"`
 	Dot1XCtrl                    string   `json:"dot1x_ctrl,omitempty"`             // auto|force_authorized|force_unauthorized|mac_based|multi_host
 	Dot1XIDleTimeout             int      `json:"dot1x_idle_timeout,omitempty"`     // [0-9]|[1-9][0-9]{1,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5]
@@ -292,8 +292,8 @@ func (dst *DevicePortOverrides) UnmarshalJSON(b []byte) error {
 type DeviceRadioTable struct {
 	AntennaGain           int    `json:"antenna_gain,omitempty"`   // ^-?([0-9]|[1-9][0-9])
 	AntennaID             int    `json:"antenna_id,omitempty"`     // -1|[0-9]
-	BackupChannel         string `json:"backup_channel,omitempty"` // [0-9]|[1][0-4]|16|34|36|38|40|42|44|46|48|52|56|60|64|100|104|108|112|116|120|124|128|132|136|140|144|149|153|157|161|165|183|184|185|187|188|189|192|196|auto
-	Channel               string `json:"channel,omitempty"`        // [0-9]|[1][0-4]|4.5|16|34|36|38|40|42|44|46|48|52|56|60|64|100|104|108|112|116|120|124|128|132|136|140|144|149|153|157|161|165|183|184|185|187|188|189|192|196|auto
+	BackupChannel         string `json:"backup_channel,omitempty"` // [0-9]|[1][0-4]|4.5|5|16|21|34|36|37|38|40|42|44|46|48|52|53|56|60|64|69|85|100|101|104|108|112|117|116|120|124|128|132|133|136|140|144|149|153|157|161|165|181|183|184|185|187|188|189|192|196|197|213|229|auto
+	Channel               string `json:"channel,omitempty"`        // [0-9]|[1][0-4]|4.5|5|16|21|34|36|37|38|40|42|44|46|48|52|53|56|60|64|69|85|100|101|104|108|112|117|116|120|124|128|132|133|136|140|144|149|153|157|161|165|181|183|184|185|187|188|189|192|196|197|213|229|auto
 	HardNoiseFloorEnabled bool   `json:"hard_noise_floor_enabled,omitempty"`
 	Ht                    int    `json:"ht,omitempty"` // 20|40|80|160|1080|2160
 	LoadbalanceEnabled    bool   `json:"loadbalance_enabled,omitempty"`
@@ -301,7 +301,7 @@ type DeviceRadioTable struct {
 	MinRssi               int    `json:"min_rssi,omitempty"` // ^-(6[7-9]|[7-8][0-9]|90)$
 	MinRssiEnabled        bool   `json:"min_rssi_enabled,omitempty"`
 	Name                  string `json:"name,omitempty"`
-	Radio                 string `json:"radio,omitempty"`      // ng|na|ad
+	Radio                 string `json:"radio,omitempty"`      // ng|na|ad|6e
 	SensLevel             int    `json:"sens_level,omitempty"` // ^-([5-8][0-9]|90)$
 	SensLevelEnabled      bool   `json:"sens_level_enabled,omitempty"`
 	TxPower               string `json:"tx_power,omitempty"`      // [\d]+|auto

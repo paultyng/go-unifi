@@ -137,6 +137,7 @@ type Network struct {
 	ReportWANEvent            bool                            `json:"report_wan_event"`
 	RequireMschapv2           bool                            `json:"require_mschapv2"`
 	RouteDistance             int                             `json:"route_distance,omitempty"` // ^[1-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]$|^$
+	TeleportEnabled           bool                            `json:"teleport_enabled"`
 	UpnpLanEnabled            bool                            `json:"upnp_lan_enabled"`
 	UserGroupID               string                          `json:"usergroup_id"`
 	VLAN                      int                             `json:"vlan,omitempty"` // [2-9]|[1-9][0-9]{1,2}|[1-3][0-9]{3}|400[0-9]|^$
