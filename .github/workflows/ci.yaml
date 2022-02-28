@@ -51,6 +51,15 @@ jobs:
     runs-on: "ubuntu-latest"
     steps:
       - uses: "actions/checkout@v2"
+      - uses: "actions/cache@v2"
+        with:
+          path: "~/go/pkg/mod"
+          key: "${{ runner.os }}-gomod-${{ hashFiles('**/go.sum') }}"
+
+      - uses: "actions/setup-go@v2"
+        with:
+          go-version: "${{ env.GO_VERSION }}"
+      - run: "go get ./..."
       - uses: "golangci/golangci-lint-action@v3"
 
   test:
