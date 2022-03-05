@@ -91,7 +91,8 @@ type SettingGuestAccess struct {
 	RestrictedDNSEnabled                   bool     `json:"restricted_dns_enabled"`
 	RestrictedDNSServers                   []string `json:"restricted_dns_servers,omitempty"` // ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$
 	RestrictedSubnet                       string   `json:"restricted_subnet_,omitempty"`
-	TemplateEngine                         string   `json:"template_engine,omitempty"` // jsp|angular
+	SettingPreference                      string   `json:"setting_preference,omitempty"` // auto|manual
+	TemplateEngine                         string   `json:"template_engine,omitempty"`    // jsp|angular
 	VoucherCustomized                      bool     `json:"voucher_customized"`
 	VoucherEnabled                         bool     `json:"voucher_enabled"`
 	WechatAppID                            string   `json:"wechat_app_id"`

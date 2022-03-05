@@ -45,6 +45,7 @@ type PortProfile struct {
 	PriorityQueue2Level          int      `json:"priority_queue2_level,omitempty"`     // [0-9]|[1-9][0-9]|100
 	PriorityQueue3Level          int      `json:"priority_queue3_level,omitempty"`     // [0-9]|[1-9][0-9]|100
 	PriorityQueue4Level          int      `json:"priority_queue4_level,omitempty"`     // [0-9]|[1-9][0-9]|100
+	SettingPreference            string   `json:"setting_preference,omitempty"`        // auto|manual
 	Speed                        int      `json:"speed,omitempty"`                     // 10|100|1000|2500|5000|10000|20000|25000|40000|50000|100000
 	StormctrlBroadcastastEnabled bool     `json:"stormctrl_bcast_enabled"`
 	StormctrlBroadcastastLevel   int      `json:"stormctrl_bcast_level,omitempty"` // [0-9]|[1-9][0-9]|100

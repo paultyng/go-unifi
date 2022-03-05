@@ -30,6 +30,7 @@ type SettingMgmt struct {
 	AdvancedFeatureEnabled  bool                  `json:"advanced_feature_enabled"`
 	AlertEnabled            bool                  `json:"alert_enabled"`
 	AutoUpgrade             bool                  `json:"auto_upgrade"`
+	AutoUpgradeHour         int                   `json:"auto_upgrade_hour,omitempty"` // [0-9]|1[0-9]|2[0-3]|^$
 	BootSound               bool                  `json:"boot_sound"`
 	LedEnabled              bool                  `json:"led_enabled"`
 	OutdoorModeEnabled      bool                  `json:"outdoor_mode_enabled"`
@@ -49,6 +50,8 @@ type SettingMgmt struct {
 func (dst *SettingMgmt) UnmarshalJSON(b []byte) error {
 	type Alias SettingMgmt
 	aux := &struct {
+		AutoUpgradeHour emptyStringInt `json:"auto_upgrade_hour"`
+
 		*Alias
 	}{
 		Alias: (*Alias)(dst),
@@ -58,6 +61,7 @@ func (dst *SettingMgmt) UnmarshalJSON(b []byte) error {
 	if err != nil {
 		return fmt.Errorf("unable to unmarshal alias: %w", err)
 	}
+	dst.AutoUpgradeHour = int(aux.AutoUpgradeHour)
 
 	return nil
 }
