@@ -58,6 +58,7 @@ type WLAN struct {
 	MinrateNgAdvertisingRates   bool                       `json:"minrate_ng_advertising_rates"`
 	MinrateNgDataRateKbps       int                        `json:"minrate_ng_data_rate_kbps,omitempty"`
 	MinrateNgEnabled            bool                       `json:"minrate_ng_enabled"`
+	MinrateSettingPreference    string                     `json:"minrate_setting_preference,omitempty"` // auto|manual
 	MulticastEnhanceEnabled     bool                       `json:"mcastenhance_enabled"`
 	Name                        string                     `json:"name,omitempty"` // .{1,32}
 	NameCombineEnabled          bool                       `json:"name_combine_enabled"`
@@ -88,7 +89,8 @@ type WLAN struct {
 	ScheduleEnabled             bool                       `json:"schedule_enabled"`
 	ScheduleReversed            bool                       `json:"schedule_reversed"`
 	ScheduleWithDuration        []WLANScheduleWithDuration `json:"schedule_with_duration,omitempty"`
-	Security                    string                     `json:"security,omitempty"` // open|wpapsk|wep|wpaeap|osen
+	Security                    string                     `json:"security,omitempty"`           // open|wpapsk|wep|wpaeap|osen
+	SettingPreference           string                     `json:"setting_preference,omitempty"` // auto|manual
 	TdlsProhibit                bool                       `json:"tdls_prohibit"`
 	UapsdEnabled                bool                       `json:"uapsd_enabled"`
 	UserGroupID                 string                     `json:"usergroup_id"`

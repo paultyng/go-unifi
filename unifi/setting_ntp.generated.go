@@ -27,10 +27,11 @@ type SettingNtp struct {
 
 	Key string `json:"key"`
 
-	NtpServer1 string `json:"ntp_server_1,omitempty"`
-	NtpServer2 string `json:"ntp_server_2,omitempty"`
-	NtpServer3 string `json:"ntp_server_3,omitempty"`
-	NtpServer4 string `json:"ntp_server_4,omitempty"`
+	NtpServer1        string `json:"ntp_server_1,omitempty"`
+	NtpServer2        string `json:"ntp_server_2,omitempty"`
+	NtpServer3        string `json:"ntp_server_3,omitempty"`
+	NtpServer4        string `json:"ntp_server_4,omitempty"`
+	SettingPreference string `json:"setting_preference,omitempty"` // auto|manual
 }
 
 func (dst *SettingNtp) UnmarshalJSON(b []byte) error {

@@ -110,11 +110,13 @@ type Network struct {
 	IntraNetworkAccessEnabled bool                            `json:"intra_network_access_enabled"`
 	IntraNetworks             []string                        `json:"intra_networks,omitempty"` // [\d\w]+
 	IsNAT                     bool                            `json:"is_nat"`
+	L2TpAllowWeakCiphers      bool                            `json:"l2tp_allow_weak_ciphers"`
 	L2TpInterface             string                          `json:"l2tp_interface,omitempty"`    // wan|wan2
 	L2TpLocalWANIP            string                          `json:"l2tp_local_wan_ip,omitempty"` // ^any$|^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$
 	LteLanEnabled             bool                            `json:"lte_lan_enabled"`
 	MACOverride               string                          `json:"mac_override"` // (^$|^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$)
 	MACOverrideEnabled        bool                            `json:"mac_override_enabled"`
+	MdnsEnabled               bool                            `json:"mdns_enabled"`
 	NATOutboundIPAddresses    []NetworkNATOutboundIPAddresses `json:"nat_outbound_ip_addresses,omitempty"`
 	Name                      string                          `json:"name,omitempty"`                   // .{1,128}
 	NetworkGroup              string                          `json:"networkgroup,omitempty"`           // LAN[2-8]?
@@ -136,7 +138,8 @@ type Network struct {
 	RemoteVPNSubnets          []string                        `json:"remote_vpn_subnets,omitempty"`  // ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\/([1-9]|[1-2][0-9]|30)$|^$
 	ReportWANEvent            bool                            `json:"report_wan_event"`
 	RequireMschapv2           bool                            `json:"require_mschapv2"`
-	RouteDistance             int                             `json:"route_distance,omitempty"` // ^[1-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]$|^$
+	RouteDistance             int                             `json:"route_distance,omitempty"`     // ^[1-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]$|^$
+	SettingPreference         string                          `json:"setting_preference,omitempty"` // auto|manual
 	TeleportEnabled           bool                            `json:"teleport_enabled"`
 	UpnpLanEnabled            bool                            `json:"upnp_lan_enabled"`
 	UserGroupID               string                          `json:"usergroup_id"`
@@ -144,17 +147,14 @@ type Network struct {
 	VLANEnabled               bool                            `json:"vlan_enabled"`
 	VPNClientDefaultRoute     bool                            `json:"vpn_client_default_route"`
 	VPNClientPullDNS          bool                            `json:"vpn_client_pull_dns"`
-	VPNCombinedDHCPDStart     string                          `json:"vpn_combined_dhcpd_start"` // ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$
-	VPNCombinedDHCPDStop      string                          `json:"vpn_combined_dhcpd_stop"`  // ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$
-	VPNCombinedEnabled        bool                            `json:"vpn_combined_enabled"`
-	VPNCombinedIPSubnet       string                          `json:"vpn_combined_ip_subnet,omitempty"` // ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\/([1-9]|[1-2][0-9]|30)$
-	VPNType                   string                          `json:"vpn_type,omitempty"`               // auto|ipsec-vpn|openvpn-vpn|pptp-client|l2tp-server|pptp-server|uid-server
+	VPNType                   string                          `json:"vpn_type,omitempty"` // auto|ipsec-vpn|openvpn-vpn|pptp-client|l2tp-server|pptp-server|uid-server
 	WANDHCPOptions            []NetworkWANDHCPOptions         `json:"wan_dhcp_options,omitempty"`
 	WANDHCPv6PDSize           int                             `json:"wan_dhcpv6_pd_size,omitempty"`      // ^(4[89]|5[0-9]|6[0-4])$|^$
 	WANDNS1                   string                          `json:"wan_dns1"`                          // ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$
 	WANDNS2                   string                          `json:"wan_dns2"`                          // ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$
 	WANDNS3                   string                          `json:"wan_dns3"`                          // ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$
 	WANDNS4                   string                          `json:"wan_dns4"`                          // ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$
+	WANDNSPreference          string                          `json:"wan_dns_preference,omitempty"`      // auto|manual
 	WANEgressQOS              int                             `json:"wan_egress_qos,omitempty"`          // [1-7]|^$
 	WANGateway                string                          `json:"wan_gateway,omitempty"`             // ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$
 	WANGatewayV6              string                          `json:"wan_gateway_v6"`                    // ^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$|^$

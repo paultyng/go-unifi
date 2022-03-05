@@ -295,7 +295,7 @@ type DeviceRadioTable struct {
 	BackupChannel         string `json:"backup_channel,omitempty"` // [0-9]|[1][0-4]|4.5|5|16|21|34|36|37|38|40|42|44|46|48|52|53|56|60|64|69|85|100|101|104|108|112|117|116|120|124|128|132|133|136|140|144|149|153|157|161|165|181|183|184|185|187|188|189|192|196|197|213|229|auto
 	Channel               string `json:"channel,omitempty"`        // [0-9]|[1][0-4]|4.5|5|16|21|34|36|37|38|40|42|44|46|48|52|53|56|60|64|69|85|100|101|104|108|112|117|116|120|124|128|132|133|136|140|144|149|153|157|161|165|181|183|184|185|187|188|189|192|196|197|213|229|auto
 	HardNoiseFloorEnabled bool   `json:"hard_noise_floor_enabled,omitempty"`
-	Ht                    int    `json:"ht,omitempty"` // 20|40|80|160|1080|2160
+	Ht                    int    `json:"ht,omitempty"` // 20|40|80|160|1080|2160|4320
 	LoadbalanceEnabled    bool   `json:"loadbalance_enabled,omitempty"`
 	Maxsta                int    `json:"maxsta,omitempty"`   // [1-9]|[1-9][0-9]|1[0-9]{2}|200|^$
 	MinRssi               int    `json:"min_rssi,omitempty"` // ^-(6[7-9]|[7-8][0-9]|90)$
@@ -367,7 +367,7 @@ func (dst *DeviceRpsOverride) UnmarshalJSON(b []byte) error {
 
 type DeviceRpsPortTable struct {
 	Name     string `json:"name,omitempty"`      // .{0,32}
-	PortIDX  int    `json:"port_idx,omitempty"`  // [1-6]
+	PortIDX  int    `json:"port_idx,omitempty"`  // [1-8]
 	PortMode string `json:"port_mode,omitempty"` // auto|force_active|manual|disabled
 }
 

@@ -55,7 +55,6 @@ type SettingUsg struct {
 	H323Module                     bool   `json:"h323_module"`
 	ICMPTimeout                    int    `json:"icmp_timeout,omitempty"`
 	LldpEnableAll                  bool   `json:"lldp_enable_all"`
-	MdnsEnabled                    bool   `json:"mdns_enabled"`
 	MssClamp                       string `json:"mss_clamp,omitempty"`     // auto|custom|disabled
 	MssClampMss                    int    `json:"mss_clamp_mss,omitempty"` // [1-9][0-9]{2,3}
 	OffloadAccounting              bool   `json:"offload_accounting"`
@@ -76,6 +75,7 @@ type SettingUsg struct {
 	TCPSynSentTimeout              int    `json:"tcp_syn_sent_timeout,omitempty"`
 	TCPTimeWaitTimeout             int    `json:"tcp_time_wait_timeout,omitempty"`
 	TFTPModule                     bool   `json:"tftp_module"`
+	TimeoutSettingPreference       string `json:"timeout_setting_preference,omitempty"` // auto|manual
 	UDPOtherTimeout                int    `json:"udp_other_timeout,omitempty"`
 	UDPStreamTimeout               int    `json:"udp_stream_timeout,omitempty"`
 	UpnpEnabled                    bool   `json:"upnp_enabled"`

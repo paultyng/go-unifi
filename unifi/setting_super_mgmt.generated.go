@@ -51,6 +51,7 @@ type SettingSuperMgmt struct {
 	ContactInfoShippingAddress2              string   `json:"contact_info_shipping_address_2,omitempty"`
 	ContactInfoState                         string   `json:"contact_info_state,omitempty"`
 	ContactInfoZip                           string   `json:"contact_info_zip,omitempty"`
+	DataRetentionSettingPreference           string   `json:"data_retention_setting_preference,omitempty"` // auto|manual
 	DataRetentionTimeEnabled                 bool     `json:"data_retention_time_enabled"`
 	DataRetentionTimeInHoursFor5MinutesScale int      `json:"data_retention_time_in_hours_for_5minutes_scale,omitempty"`
 	DataRetentionTimeInHoursForDailyScale    int      `json:"data_retention_time_in_hours_for_daily_scale,omitempty"`
@@ -70,8 +71,7 @@ type SettingSuperMgmt struct {
 	MultipleSitesEnabled                     bool     `json:"multiple_sites_enabled"`
 	OverrideInformHost                       bool     `json:"override_inform_host"`
 	OverrideInformHostLocation               string   `json:"override_inform_host_location,omitempty"`
-	OverrideInformHostType                   string   `json:"override_inform_host_type,omitempty"` // unifi-os|custom
-	StoreEnabled                             string   `json:"store_enabled,omitempty"`             // disabled|super-only|everyone
+	StoreEnabled                             string   `json:"store_enabled,omitempty"` // disabled|super-only|everyone
 	TimeSeriesPerClientStatsEnabled          bool     `json:"time_series_per_client_stats_enabled"`
 	XSshPassword                             string   `json:"x_ssh_password,omitempty"`
 	XSshUsername                             string   `json:"x_ssh_username,omitempty"`

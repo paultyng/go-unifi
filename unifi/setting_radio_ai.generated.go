@@ -27,17 +27,19 @@ type SettingRadioAi struct {
 
 	Key string `json:"key"`
 
-	ChannelsNa     []int    `json:"channels_na,omitempty"` // 36|40|44|48|52|56|60|64|100|104|108|112|116|120|124|128|132|136|140|144|149|153|157|161|165
-	ChannelsNg     []int    `json:"channels_ng,omitempty"` // 1|2|3|4|5|6|7|8|9|10|11|12|13|14
-	CronExpr       string   `json:"cron_expr,omitempty"`
-	Default        bool     `json:"default"`
-	Enabled        bool     `json:"enabled"`
-	ExcludeDevices []string `json:"exclude_devices,omitempty"` // ([0-9a-z]{2}:){5}[0-9a-z]{2}
-	HtModesNa      []int    `json:"ht_modes_na,omitempty"`     // ^(20|40|80|160)$
-	HtModesNg      []int    `json:"ht_modes_ng,omitempty"`     // ^(20|40)$
-	Optimize       []string `json:"optimize,omitempty"`        // channel|power
-	Radios         []string `json:"radios,omitempty"`          // na|ng
-	UseXY          bool     `json:"useXY"`
+	AutoAdjustChannelsToCountry bool     `json:"auto_adjust_channels_to_country"`
+	ChannelsNa                  []int    `json:"channels_na,omitempty"` // 36|40|44|48|52|56|60|64|100|104|108|112|116|120|124|128|132|136|140|144|149|153|157|161|165
+	ChannelsNg                  []int    `json:"channels_ng,omitempty"` // 1|2|3|4|5|6|7|8|9|10|11|12|13|14
+	CronExpr                    string   `json:"cron_expr,omitempty"`
+	Default                     bool     `json:"default"`
+	Enabled                     bool     `json:"enabled"`
+	ExcludeDevices              []string `json:"exclude_devices,omitempty"`    // ([0-9a-z]{2}:){5}[0-9a-z]{2}
+	HtModesNa                   []int    `json:"ht_modes_na,omitempty"`        // ^(20|40|80|160)$
+	HtModesNg                   []int    `json:"ht_modes_ng,omitempty"`        // ^(20|40)$
+	Optimize                    []string `json:"optimize,omitempty"`           // channel|power
+	Radios                      []string `json:"radios,omitempty"`             // na|ng
+	SettingPreference           string   `json:"setting_preference,omitempty"` // auto|manual
+	UseXY                       bool     `json:"useXY"`
 }
 
 func (dst *SettingRadioAi) UnmarshalJSON(b []byte) error {
