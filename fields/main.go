@@ -339,6 +339,14 @@ func main() {
 				f.OmitEmpty = true
 				return nil
 			}
+		case "SettingGlobalAp":
+			resource.FieldProcessor = func(name string, f *FieldInfo) error {
+				if strings.HasPrefix(name, "6E") {
+					f.FieldName = strings.Replace(f.FieldName, "6E", "SixE", 1)
+				}
+
+				return nil
+			}
 		case "SettingMgmt":
 			sshKeyField := NewFieldInfo(resource.StructName+"XSshKeys", "x_ssh_keys", "struct", "", false, false, "")
 			sshKeyField.Fields = map[string]*FieldInfo{
@@ -384,7 +392,10 @@ func main() {
 			continue
 		}
 
-		code, _ := resource.generateCode()
+		var code string
+		if code, err = resource.generateCode(); err != nil {
+			panic(err)
+		}
 
 		_ = os.Remove(filepath.Join(outDir, goFile))
 		if err := ioutil.WriteFile(filepath.Join(outDir, goFile), ([]byte)(code), 0644); err != nil {
@@ -547,12 +558,12 @@ func (r *Resource) generateCode() (string, error) {
 
 	err = tpl.Execute(writer, r)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("Failed to render template: %w", err)
 	}
 
 	src, err := format.Source(buf.Bytes())
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("Failed to format source: %w", err)
 	}
 
 	return string(src), err
