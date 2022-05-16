@@ -147,7 +147,7 @@ func NewResource(structName string, resourcePath string) *Resource {
 
 		if resource.StructName == "SettingUsg" {
 			// Removed in v7, retaining for backwards compatibility
-			baseType.Fields["MdnsEnabled"] = NewFieldInfo("MdnsEnabled", "mdns_enabled", "bool", "", true, false, "")
+			baseType.Fields["MdnsEnabled"] = NewFieldInfo("MdnsEnabled", "mdns_enabled", "bool", "", false, false, "")
 		}
 	case resource.StructName == "Device":
 		baseType.Fields[" MAC"] = NewFieldInfo("MAC", "mac", "string", "", true, false, "")
