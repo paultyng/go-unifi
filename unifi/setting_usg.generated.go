@@ -55,6 +55,7 @@ type SettingUsg struct {
 	H323Module                     bool   `json:"h323_module"`
 	ICMPTimeout                    int    `json:"icmp_timeout,omitempty"`
 	LldpEnableAll                  bool   `json:"lldp_enable_all"`
+	MdnsEnabled                    bool   `json:"mdns_enabled,omitempty"`
 	MssClamp                       string `json:"mss_clamp,omitempty"`     // auto|custom|disabled
 	MssClampMss                    int    `json:"mss_clamp_mss,omitempty"` // [1-9][0-9]{2,3}
 	OffloadAccounting              bool   `json:"offload_accounting"`

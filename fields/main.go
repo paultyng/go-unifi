@@ -144,6 +144,11 @@ func NewResource(structName string, resourcePath string) *Resource {
 	case resource.IsSetting():
 		resource.ResourcePath = strcase.ToSnake(strings.TrimPrefix(structName, "Setting"))
 		baseType.Fields[" Key"] = NewFieldInfo("Key", "key", "string", "", false, false, "")
+
+		if resource.StructName == "SettingUsg" {
+			// Removed in v7, retaining for backwards compatibility
+			baseType.Fields["MdnsEnabled"] = NewFieldInfo("MdnsEnabled", "mdns_enabled", "bool", "", true, false, "")
+		}
 	case resource.StructName == "Device":
 		baseType.Fields[" MAC"] = NewFieldInfo("MAC", "mac", "string", "", true, false, "")
 		baseType.Fields["Adopted"] = NewFieldInfo("Adopted", "adopted", "bool", "", false, false, "")
