@@ -246,11 +246,22 @@ func (c *Client) do(ctx context.Context, method, relativeURL string, reqBody int
 	if resp.StatusCode != 200 {
 		errBody := struct {
 			Meta meta `json:"meta"`
+			Data []struct {
+				Meta meta `json:"meta"`
+			} `json:"data"`
 		}{}
 		if err = json.NewDecoder(resp.Body).Decode(&errBody); err != nil {
 			return err
 		}
-		return fmt.Errorf("%w (%s) for %s %s", errBody.Meta.error(), resp.Status, method, url.String())
+		var apiErr error
+		if len(errBody.Data) > 0 && errBody.Data[0].Meta.RC == "error" {
+			// check first error in data, should we look for more than one?
+			apiErr = errBody.Data[0].Meta.error()
+		}
+		if apiErr == nil {
+			apiErr = errBody.Meta.error()
+		}
+		return fmt.Errorf("%w (%s) for %s %s", apiErr, resp.Status, method, url.String())
 	}
 
 	if respBody == nil || resp.ContentLength == 0 {
