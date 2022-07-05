@@ -3,6 +3,7 @@ package unifi
 import (
 	"strconv"
 	"strings"
+	"time"
 )
 
 // numberOrString handles strings that can also accept JSON numbers.
@@ -65,4 +66,24 @@ func (e *emptyStringInt) MarshalJSON() ([]byte, error) {
 	}
 
 	return []byte(strconv.Itoa(int(*e))), nil
+}
+
+type unixTime time.Time
+
+func (u *unixTime) UnmarshalJSON(b []byte) error {
+	e := new(emptyStringInt)
+	e.UnmarshalJSON(b)
+	if e == nil {
+		return nil
+	}
+	*u = unixTime(time.Unix(int64(*e), 0))
+	return nil
+}
+
+func (u *unixTime) MarshalJSON() ([]byte, error) {
+	if u == nil {
+		return []byte(`""`), nil
+	}
+
+	return []byte(strconv.Itoa(int(time.Time(*u).Unix()))), nil
 }

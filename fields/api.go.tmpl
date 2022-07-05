@@ -29,6 +29,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	{{ range $k, $v := .Packages }}"{{ $k }}"
+	{{ end -}}
 )
 
 // just to fix compile issues with the import

@@ -95,6 +95,7 @@ var embedTypes bool
 type Resource struct {
 	StructName     string
 	ResourcePath   string
+	Packages       map[string]bool
 	Types          map[string]*FieldInfo
 	FieldProcessor func(name string, f *FieldInfo) error
 }
@@ -115,6 +116,7 @@ func NewResource(structName string, resourcePath string) *Resource {
 	resource := &Resource{
 		StructName:   structName,
 		ResourcePath: resourcePath,
+		Packages:     map[string]bool{},
 		Types: map[string]*FieldInfo{
 			structName: baseType,
 		},
@@ -379,19 +381,20 @@ func main() {
 				return nil
 			}
 		case "User":
+			resource.Packages["time"] = true
 			resource.FieldProcessor = func(name string, f *FieldInfo) error {
 				switch name {
 				case "Blocked":
 					f.FieldType = "bool"
 				case "DisconnectTimestamp":
-					f.FieldType = "int"
-					f.CustomUnmarshalType = "emptyStringInt"
+					f.FieldType = "time.Time"
+					f.CustomUnmarshalType = "unixTime"
 				case "FirstSeen":
-					f.FieldType = "int"
-					f.CustomUnmarshalType = "emptyStringInt"
+					f.FieldType = "time.Time"
+					f.CustomUnmarshalType = "unixTime"
 				case "LastSeen":
-					f.FieldType = "int"
-					f.CustomUnmarshalType = "emptyStringInt"
+					f.FieldType = "time.Time"
+					f.CustomUnmarshalType = "unixTime"
 				}
 				return nil
 			}
