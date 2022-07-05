@@ -18,7 +18,7 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/hashicorp/go-version"
+	version "github.com/hashicorp/go-version"
 	"github.com/iancoleman/strcase"
 )
 
@@ -383,6 +383,12 @@ func main() {
 				switch name {
 				case "Blocked":
 					f.FieldType = "bool"
+				case "DisconnectTimestamp":
+					f.FieldType = "int"
+					f.CustomUnmarshalType = "emptyStringInt"
+				case "FirstSeen":
+					f.FieldType = "int"
+					f.CustomUnmarshalType = "emptyStringInt"
 				case "LastSeen":
 					f.FieldType = "int"
 					f.CustomUnmarshalType = "emptyStringInt"

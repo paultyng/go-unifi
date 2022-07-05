@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	assert "github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestFieldInfoFromValidation(t *testing.T) {

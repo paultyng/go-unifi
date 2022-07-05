@@ -28,24 +28,32 @@ type User struct {
 	DevIdOverride int    `json:"dev_id_override,omitempty"` // non-generated field
 	IP            string `json:"ip,omitempty"`              // non-generated field
 
-	Blocked        bool   `json:"blocked,omitempty"`
-	FixedApEnabled bool   `json:"fixed_ap_enabled"`
-	FixedApMAC     string `json:"fixed_ap_mac,omitempty"` // ^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$
-	FixedIP        string `json:"fixed_ip,omitempty"`
-	Hostname       string `json:"hostname,omitempty"`
-	LastSeen       int    `json:"last_seen,omitempty"`
-	MAC            string `json:"mac,omitempty"` // ^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$
-	Name           string `json:"name,omitempty"`
-	NetworkID      string `json:"network_id"`
-	Note           string `json:"note,omitempty"`
-	UseFixedIP     bool   `json:"use_fixedip"`
-	UserGroupID    string `json:"usergroup_id"`
+	Blocked             bool   `json:"blocked,omitempty"`
+	DisconnectTimestamp int    `json:"disconnect_timestamp,omitempty"`
+	FirstSeen           int    `json:"first_seen,omitempty"`
+	FixedApEnabled      bool   `json:"fixed_ap_enabled"`
+	FixedApMAC          string `json:"fixed_ap_mac,omitempty"` // ^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$
+	FixedIP             string `json:"fixed_ip,omitempty"`
+	Hostname            string `json:"hostname,omitempty"`
+	IsGuest             bool   `json:"is_guest"`
+	IsWired             bool   `json:"is_wired"`
+	LastSeen            int    `json:"last_seen,omitempty"`
+	MAC                 string `json:"mac,omitempty"` // ^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$
+	Name                string `json:"name,omitempty"`
+	NetworkID           string `json:"network_id"`
+	Note                string `json:"note,omitempty"`
+	Noted               bool   `json:"noted"`
+	Oui                 string `json:"oui,omitempty"`
+	UseFixedIP          bool   `json:"use_fixedip"`
+	UserGroupID         string `json:"usergroup_id"`
 }
 
 func (dst *User) UnmarshalJSON(b []byte) error {
 	type Alias User
 	aux := &struct {
-		LastSeen emptyStringInt `json:"last_seen"`
+		DisconnectTimestamp emptyStringInt `json:"disconnect_timestamp"`
+		FirstSeen           emptyStringInt `json:"first_seen"`
+		LastSeen            emptyStringInt `json:"last_seen"`
 
 		*Alias
 	}{
@@ -56,6 +64,8 @@ func (dst *User) UnmarshalJSON(b []byte) error {
 	if err != nil {
 		return fmt.Errorf("unable to unmarshal alias: %w", err)
 	}
+	dst.DisconnectTimestamp = int(aux.DisconnectTimestamp)
+	dst.FirstSeen = int(aux.FirstSeen)
 	dst.LastSeen = int(aux.LastSeen)
 
 	return nil
