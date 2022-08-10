@@ -27,15 +27,13 @@ type SettingAutoSpeedtest struct {
 
 	Key string `json:"key"`
 
-	Enabled  bool `json:"enabled"`
-	Interval int  `json:"interval,omitempty"` // ^(1[2-9]|[2-9][0-9]|[1-9][0-9]{2,3})$
+	CronExpr string `json:"cron_expr,omitempty"`
+	Enabled  bool   `json:"enabled"`
 }
 
 func (dst *SettingAutoSpeedtest) UnmarshalJSON(b []byte) error {
 	type Alias SettingAutoSpeedtest
 	aux := &struct {
-		Interval emptyStringInt `json:"interval"`
-
 		*Alias
 	}{
 		Alias: (*Alias)(dst),
@@ -45,7 +43,6 @@ func (dst *SettingAutoSpeedtest) UnmarshalJSON(b []byte) error {
 	if err != nil {
 		return fmt.Errorf("unable to unmarshal alias: %w", err)
 	}
-	dst.Interval = int(aux.Interval)
 
 	return nil
 }
