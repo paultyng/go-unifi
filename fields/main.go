@@ -339,6 +339,8 @@ func main() {
 					if f.FieldType == "string" {
 						f.CustomUnmarshalType = "numberOrString"
 					}
+				case "LteExtAnt", "LtePoe":
+					f.CustomUnmarshalType = "booleanishString"
 				}
 
 				f.OmitEmpty = true

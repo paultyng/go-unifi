@@ -1,6 +1,7 @@
 package unifi
 
 import (
+	"errors"
 	"strconv"
 	"strings"
 )
@@ -65,4 +66,25 @@ func (e *emptyStringInt) MarshalJSON() ([]byte, error) {
 	}
 
 	return []byte(strconv.Itoa(int(*e))), nil
+}
+
+type booleanishString bool
+
+func (e *booleanishString) UnmarshalJSON(b []byte) error {
+	s := string(b)
+	if s == `"enabled"` {
+		*e = booleanishString(true)
+		return nil
+	} else if s == `"disabled"` {
+		*e = booleanishString(false)
+		return nil
+	}
+	return errors.New("Could not unmarshal JSON value.")
+}
+
+func (e *booleanishString) MarshalJSON(b []byte) ([]byte, error) {
+	if *e == true {
+		return []byte(`"enabled"`), nil
+	}
+	return []byte(`"disabled"`), nil
 }

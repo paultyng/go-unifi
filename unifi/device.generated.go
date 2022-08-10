@@ -101,13 +101,15 @@ type Device struct {
 func (dst *Device) UnmarshalJSON(b []byte) error {
 	type Alias Device
 	aux := &struct {
-		LcmBrightness              emptyStringInt `json:"lcm_brightness"`
-		LcmIDleTimeout             emptyStringInt `json:"lcm_idle_timeout"`
-		LedOverrideColorBrightness emptyStringInt `json:"led_override_color_brightness"`
-		LteHardLimit               emptyStringInt `json:"lte_hard_limit"`
-		LteSimPin                  emptyStringInt `json:"lte_sim_pin"`
-		LteSoftLimit               emptyStringInt `json:"lte_soft_limit"`
-		Volume                     emptyStringInt `json:"volume"`
+		LcmBrightness              emptyStringInt   `json:"lcm_brightness"`
+		LcmIDleTimeout             emptyStringInt   `json:"lcm_idle_timeout"`
+		LedOverrideColorBrightness emptyStringInt   `json:"led_override_color_brightness"`
+		LteExtAnt                  booleanishString `json:"lte_ext_ant"`
+		LteHardLimit               emptyStringInt   `json:"lte_hard_limit"`
+		LtePoe                     booleanishString `json:"lte_poe"`
+		LteSimPin                  emptyStringInt   `json:"lte_sim_pin"`
+		LteSoftLimit               emptyStringInt   `json:"lte_soft_limit"`
+		Volume                     emptyStringInt   `json:"volume"`
 
 		*Alias
 	}{
@@ -121,7 +123,9 @@ func (dst *Device) UnmarshalJSON(b []byte) error {
 	dst.LcmBrightness = int(aux.LcmBrightness)
 	dst.LcmIDleTimeout = int(aux.LcmIDleTimeout)
 	dst.LedOverrideColorBrightness = int(aux.LedOverrideColorBrightness)
+	dst.LteExtAnt = bool(aux.LteExtAnt)
 	dst.LteHardLimit = int(aux.LteHardLimit)
+	dst.LtePoe = bool(aux.LtePoe)
 	dst.LteSimPin = int(aux.LteSimPin)
 	dst.LteSoftLimit = int(aux.LteSoftLimit)
 	dst.Volume = int(aux.Volume)
