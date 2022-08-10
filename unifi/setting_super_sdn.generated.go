@@ -27,16 +27,12 @@ type SettingSuperSdn struct {
 
 	Key string `json:"key"`
 
-	AuthToken         string   `json:"auth_token,omitempty"`
-	DeviceID          string   `json:"device_id"`
-	Enabled           bool     `json:"enabled"`
-	Migrated          bool     `json:"migrated"`
-	OauthAppID        string   `json:"oauth_app_id"`
-	OauthEnabled      bool     `json:"oauth_enabled"`
-	OauthRedirectUris []string `json:"oauth_redirect_uris,omitempty"`
-	SsoLoginEnabled   string   `json:"sso_login_enabled,omitempty"`
-	UbicUuid          string   `json:"ubic_uuid,omitempty"`
-	XOauthAppSecret   string   `json:"x_oauth_app_secret,omitempty"`
+	AuthToken       string `json:"auth_token,omitempty"`
+	DeviceID        string `json:"device_id"`
+	Enabled         bool   `json:"enabled"`
+	Migrated        bool   `json:"migrated"`
+	SsoLoginEnabled string `json:"sso_login_enabled,omitempty"`
+	UbicUuid        string `json:"ubic_uuid,omitempty"`
 }
 
 func (dst *SettingSuperSdn) UnmarshalJSON(b []byte) error {
