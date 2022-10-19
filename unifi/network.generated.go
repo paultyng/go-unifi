@@ -187,30 +187,32 @@ type Network struct {
 func (dst *Network) UnmarshalJSON(b []byte) error {
 	type Alias Network
 	aux := &struct {
-		DHCPDLeaseTime          emptyStringInt `json:"dhcpd_leasetime"`
-		DHCPDTimeOffset         emptyStringInt `json:"dhcpd_time_offset"`
-		DHCPDV6LeaseTime        emptyStringInt `json:"dhcpdv6_leasetime"`
-		IGMPGroupmembership     emptyStringInt `json:"igmp_groupmembership"`
-		IGMPMaxresponse         emptyStringInt `json:"igmp_maxresponse"`
-		IGMPMcrtrexpiretime     emptyStringInt `json:"igmp_mcrtrexpiretime"`
-		IPSecDhGroup            emptyStringInt `json:"ipsec_dh_group"`
-		IPSecEspDhGroup         emptyStringInt `json:"ipsec_esp_dh_group"`
-		IPSecIkeDhGroup         emptyStringInt `json:"ipsec_ike_dh_group"`
-		IPV6RaPreferredLifetime emptyStringInt `json:"ipv6_ra_preferred_lifetime"`
-		IPV6RaValidLifetime     emptyStringInt `json:"ipv6_ra_valid_lifetime"`
-		OpenVPNLocalPort        emptyStringInt `json:"openvpn_local_port"`
-		OpenVPNRemotePort       emptyStringInt `json:"openvpn_remote_port"`
-		PptpcRouteDistance      emptyStringInt `json:"pptpc_route_distance"`
-		Priority                emptyStringInt `json:"priority"`
-		RouteDistance           emptyStringInt `json:"route_distance"`
-		VLAN                    emptyStringInt `json:"vlan"`
-		WANDHCPv6PDSize         emptyStringInt `json:"wan_dhcpv6_pd_size"`
-		WANEgressQOS            emptyStringInt `json:"wan_egress_qos"`
-		WANLoadBalanceWeight    emptyStringInt `json:"wan_load_balance_weight"`
-		WANPrefixlen            emptyStringInt `json:"wan_prefixlen"`
-		WANSmartqDownRate       emptyStringInt `json:"wan_smartq_down_rate"`
-		WANSmartqUpRate         emptyStringInt `json:"wan_smartq_up_rate"`
-		WANVLAN                 emptyStringInt `json:"wan_vlan"`
+		DHCPDLeaseTime            emptyStringInt `json:"dhcpd_leasetime"`
+		DHCPDTimeOffset           emptyStringInt `json:"dhcpd_time_offset"`
+		DHCPDV6LeaseTime          emptyStringInt `json:"dhcpdv6_leasetime"`
+		IGMPGroupmembership       emptyStringInt `json:"igmp_groupmembership"`
+		IGMPMaxresponse           emptyStringInt `json:"igmp_maxresponse"`
+		IGMPMcrtrexpiretime       emptyStringInt `json:"igmp_mcrtrexpiretime"`
+		IPSecDhGroup              emptyStringInt `json:"ipsec_dh_group"`
+		IPSecEspDhGroup           emptyStringInt `json:"ipsec_esp_dh_group"`
+		IPSecIkeDhGroup           emptyStringInt `json:"ipsec_ike_dh_group"`
+		IPV6RaPreferredLifetime   emptyStringInt `json:"ipv6_ra_preferred_lifetime"`
+		IPV6RaValidLifetime       emptyStringInt `json:"ipv6_ra_valid_lifetime"`
+		InternetAccessEnabled     *bool          `json:"internet_access_enabled,omitempty"`
+		IntraNetworkAccessEnabled *bool          `json:"intra_network_access_enabled,omitempty"`
+		OpenVPNLocalPort          emptyStringInt `json:"openvpn_local_port"`
+		OpenVPNRemotePort         emptyStringInt `json:"openvpn_remote_port"`
+		PptpcRouteDistance        emptyStringInt `json:"pptpc_route_distance"`
+		Priority                  emptyStringInt `json:"priority"`
+		RouteDistance             emptyStringInt `json:"route_distance"`
+		VLAN                      emptyStringInt `json:"vlan"`
+		WANDHCPv6PDSize           emptyStringInt `json:"wan_dhcpv6_pd_size"`
+		WANEgressQOS              emptyStringInt `json:"wan_egress_qos"`
+		WANLoadBalanceWeight      emptyStringInt `json:"wan_load_balance_weight"`
+		WANPrefixlen              emptyStringInt `json:"wan_prefixlen"`
+		WANSmartqDownRate         emptyStringInt `json:"wan_smartq_down_rate"`
+		WANSmartqUpRate           emptyStringInt `json:"wan_smartq_up_rate"`
+		WANVLAN                   emptyStringInt `json:"wan_vlan"`
 
 		*Alias
 	}{
@@ -232,6 +234,8 @@ func (dst *Network) UnmarshalJSON(b []byte) error {
 	dst.IPSecIkeDhGroup = int(aux.IPSecIkeDhGroup)
 	dst.IPV6RaPreferredLifetime = int(aux.IPV6RaPreferredLifetime)
 	dst.IPV6RaValidLifetime = int(aux.IPV6RaValidLifetime)
+	dst.InternetAccessEnabled = emptyBoolToTrue(aux.InternetAccessEnabled)
+	dst.IntraNetworkAccessEnabled = emptyBoolToTrue(aux.IntraNetworkAccessEnabled)
 	dst.OpenVPNLocalPort = int(aux.OpenVPNLocalPort)
 	dst.OpenVPNRemotePort = int(aux.OpenVPNRemotePort)
 	dst.PptpcRouteDistance = int(aux.PptpcRouteDistance)
