@@ -6,6 +6,13 @@ import (
 	"strings"
 )
 
+func emptyBoolToTrue(b *bool) bool {
+	if b == nil {
+		return true
+	}
+	return *b
+}
+
 // numberOrString handles strings that can also accept JSON numbers.
 // For example a field may contain a number or the string "auto".
 type numberOrString string
