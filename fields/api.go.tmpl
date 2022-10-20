@@ -4,9 +4,11 @@
 	{{ .FieldName }} {{ if .IsArray }}[]{{end}}{{ .FieldType }} `json:"{{ .JSONName }}{{ if .OmitEmpty }},omitempty{{ end }}"` {{ if .FieldValidation }}// {{ .FieldValidation }}{{ end }} {{- end }}
 {{ define "field-customUnmarshalType" }}
 	{{- if eq .CustomUnmarshalType "" }}{{else}}
-			{{ .FieldName }} {{ if .IsArray }}[]{{end}}{{ .CustomUnmarshalType }} `json:"{{ .JSONName }}{{ if .OmitEmpty }}{{ end }}"`{{ end }} {{- end }}
+			{{ .FieldName }} {{ if .IsArray }}[]{{end}}{{ .CustomUnmarshalType }} `json:"{{ .JSONName }}"`{{ end }} {{- end }}
 {{ define "typecast" }}
-	{{- if eq .CustomUnmarshalType "" }}{{else}}
+	{{- if ne .CustomUnmarshalFunc "" }}
+		dst.{{ .FieldName }}= {{ .CustomUnmarshalFunc }}(aux.{{ .FieldName }})
+	{{- else if eq .CustomUnmarshalType "" }}{{else}}
 		{{- if .IsArray }}
 		dst.{{ .FieldName }}= make([]{{ .FieldType }}, len(aux.{{ .FieldName }}))
 		for i, v := range aux.{{ .FieldName }} {

@@ -108,6 +108,7 @@ type FieldInfo struct {
 	IsArray             bool
 	Fields              map[string]*FieldInfo
 	CustomUnmarshalType string
+	CustomUnmarshalFunc string
 }
 
 func NewResource(structName string, resourcePath string) *Resource {
@@ -344,6 +345,17 @@ func main() {
 				}
 
 				f.OmitEmpty = true
+				return nil
+			}
+		case "Network":
+			resource.FieldProcessor = func(name string, f *FieldInfo) error {
+				switch name {
+				case "InternetAccessEnabled", "IntraNetworkAccessEnabled":
+					if f.FieldType == "bool" {
+						f.CustomUnmarshalType = "*bool"
+						f.CustomUnmarshalFunc = "emptyBoolToTrue"
+					}
+				}
 				return nil
 			}
 		case "SettingGlobalAp":
