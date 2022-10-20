@@ -198,8 +198,8 @@ func (dst *Network) UnmarshalJSON(b []byte) error {
 		IPSecIkeDhGroup           emptyStringInt `json:"ipsec_ike_dh_group"`
 		IPV6RaPreferredLifetime   emptyStringInt `json:"ipv6_ra_preferred_lifetime"`
 		IPV6RaValidLifetime       emptyStringInt `json:"ipv6_ra_valid_lifetime"`
-		InternetAccessEnabled     *bool          `json:"internet_access_enabled,omitempty"`
-		IntraNetworkAccessEnabled *bool          `json:"intra_network_access_enabled,omitempty"`
+		InternetAccessEnabled     *bool          `json:"internet_access_enabled"`
+		IntraNetworkAccessEnabled *bool          `json:"intra_network_access_enabled"`
 		OpenVPNLocalPort          emptyStringInt `json:"openvpn_local_port"`
 		OpenVPNRemotePort         emptyStringInt `json:"openvpn_remote_port"`
 		PptpcRouteDistance        emptyStringInt `json:"pptpc_route_distance"`
