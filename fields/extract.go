@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"path"
@@ -128,7 +127,7 @@ func extractJSON(jarFile, fieldsDir string) error {
 		}
 	}
 
-	settingsData, err := ioutil.ReadFile(filepath.Join(fieldsDir, "Setting.json"))
+	settingsData, err := os.ReadFile(filepath.Join(fieldsDir, "Setting.json"))
 	if errors.Is(err, os.ErrNotExist) {
 		return nil
 	}
@@ -150,7 +149,7 @@ func extractJSON(jarFile, fieldsDir string) error {
 			return fmt.Errorf("unable to marshal setting %q: %w", k, err)
 		}
 
-		err = ioutil.WriteFile(filepath.Join(fieldsDir, fileName), data, 0755)
+		err = os.WriteFile(filepath.Join(fieldsDir, fileName), data, 0755)
 		if err != nil {
 			return fmt.Errorf("unable to write new settings file: %w", err)
 		}

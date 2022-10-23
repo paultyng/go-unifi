@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"go/format"
 	"io"
-	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
@@ -274,7 +273,7 @@ func main() {
 		os.Exit(0)
 	}
 
-	fieldsFiles, err := ioutil.ReadDir(fieldsDir)
+	fieldsFiles, err := os.ReadDir(fieldsDir)
 	if err != nil {
 		panic(err)
 	}
@@ -299,7 +298,7 @@ func main() {
 
 		goFile := strcase.ToSnake(structName) + ".generated.go"
 		fieldsFilePath := filepath.Join(fieldsDir, fieldsFile.Name())
-		b, err := ioutil.ReadFile(fieldsFilePath)
+		b, err := os.ReadFile(fieldsFilePath)
 		if err != nil {
 			fmt.Printf("skipping file %s: %s", fieldsFile.Name(), err)
 			continue
@@ -426,7 +425,7 @@ func main() {
 		}
 
 		_ = os.Remove(filepath.Join(outDir, goFile))
-		if err := ioutil.WriteFile(filepath.Join(outDir, goFile), ([]byte)(code), 0644); err != nil {
+		if err := os.WriteFile(filepath.Join(outDir, goFile), ([]byte)(code), 0644); err != nil {
 			panic(err)
 		}
 	}
@@ -445,7 +444,7 @@ const UnifiVersion = %q
 		panic(err)
 	}
 
-	if err := ioutil.WriteFile(filepath.Join(outDir, "version.generated.go"), versionGo, 0644); err != nil {
+	if err := os.WriteFile(filepath.Join(outDir, "version.generated.go"), versionGo, 0644); err != nil {
 		panic(err)
 	}
 
@@ -586,12 +585,12 @@ func (r *Resource) generateCode() (string, error) {
 
 	err = tpl.Execute(writer, r)
 	if err != nil {
-		return "", fmt.Errorf("Failed to render template: %w", err)
+		return "", fmt.Errorf("failed to render template: %w", err)
 	}
 
 	src, err := format.Source(buf.Bytes())
 	if err != nil {
-		return "", fmt.Errorf("Failed to format source: %w", err)
+		return "", fmt.Errorf("failed to format source: %w", err)
 	}
 
 	return string(src), err
