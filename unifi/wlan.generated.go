@@ -88,7 +88,7 @@ type WLAN struct {
 	Schedule                    []string                   `json:"schedule,omitempty"` // (sun|mon|tue|wed|thu|fri|sat)(\-(sun|mon|tue|wed|thu|fri|sat))?\|([0-2][0-9][0-5][0-9])\-([0-2][0-9][0-5][0-9])
 	ScheduleEnabled             bool                       `json:"schedule_enabled"`
 	ScheduleReversed            bool                       `json:"schedule_reversed"`
-	ScheduleWithDuration        []WLANScheduleWithDuration `json:"schedule_with_duration,omitempty"`
+	ScheduleWithDuration        []WLANScheduleWithDuration `json:"schedule_with_duration"`
 	Security                    string                     `json:"security,omitempty"`           // open|wpapsk|wep|wpaeap|osen
 	SettingPreference           string                     `json:"setting_preference,omitempty"` // auto|manual
 	TdlsProhibit                bool                       `json:"tdls_prohibit"`

@@ -403,6 +403,15 @@ func main() {
 				}
 				return nil
 			}
+		case "WLAN":
+			resource.FieldProcessor = func(name string, f *FieldInfo) error {
+				switch name {
+				case "ScheduleWithDuration":
+					// always send schedule, so we can empty it if we want to
+					f.OmitEmpty = false
+				}
+				return nil
+			}
 		}
 
 		err = resource.processJSON(b)
