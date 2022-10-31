@@ -331,8 +331,7 @@ func main() {
 				case "X", "Y":
 					f.FieldType = "float64"
 				case "StpPriority":
-					f.FieldType = "string"
-					f.CustomUnmarshalType = ""
+					f.CustomUnmarshalType = "numberOrString"
 				case "Ht":
 					f.FieldType = "int"
 				case "Channel", "BackupChannel", "TxPower":
