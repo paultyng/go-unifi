@@ -88,10 +88,3 @@ func (e *booleanishString) UnmarshalJSON(b []byte) error {
 	}
 	return errors.New("Could not unmarshal JSON value.")
 }
-
-func (e *booleanishString) MarshalJSON(b []byte) ([]byte, error) {
-	if *e {
-		return []byte(`"enabled"`), nil
-	}
-	return []byte(`"disabled"`), nil
-}
