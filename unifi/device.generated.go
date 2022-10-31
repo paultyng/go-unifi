@@ -87,7 +87,7 @@ type Device struct {
 	SnmpContact                 string                    `json:"snmp_contact,omitempty"`  // .{0,255}
 	SnmpLocation                string                    `json:"snmp_location,omitempty"` // .{0,255}
 	State                       DeviceState               `json:"state"`
-	StpPriority                 int                       `json:"stp_priority,omitempty"` // 0|4096|8192|12288|16384|20480|24576|28672|32768|36864|40960|45056|49152|53248|57344|61440
+	StpPriority                 string                    `json:"stp_priority,omitempty"` // 0|4096|8192|12288|16384|20480|24576|28672|32768|36864|40960|45056|49152|53248|57344|61440
 	StpVersion                  string                    `json:"stp_version,omitempty"`  // stp|rstp|disabled
 	SwitchVLANEnabled           bool                      `json:"switch_vlan_enabled,omitempty"`
 	UbbPairName                 string                    `json:"ubb_pair_name,omitempty"` // .{1,128}
@@ -129,7 +129,7 @@ func (dst *Device) UnmarshalJSON(b []byte) error {
 	dst.LtePoe = bool(aux.LtePoe)
 	dst.LteSimPin = int(aux.LteSimPin)
 	dst.LteSoftLimit = int(aux.LteSoftLimit)
-	dst.StpPriority = int(aux.StpPriority)
+	dst.StpPriority = string(aux.StpPriority)
 	dst.Volume = int(aux.Volume)
 
 	return nil
