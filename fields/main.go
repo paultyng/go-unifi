@@ -344,6 +344,11 @@ func main() {
 				}
 
 				f.OmitEmpty = true
+				switch name {
+				case "PortOverrides":
+					f.OmitEmpty = false
+				}
+
 				return nil
 			}
 		case "Network":
