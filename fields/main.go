@@ -476,7 +476,7 @@ func (r *Resource) fieldInfoFromValidation(name string, validation interface{}) 
 	switch validation := validation.(type) {
 	case []interface{}:
 		if len(validation) == 0 {
-			fieldInfo, err = NewFieldInfo(fieldName, name, "string", "", false, true, ""), nil
+			fieldInfo = NewFieldInfo(fieldName, name, "string", "", false, true, "")
 			err = r.FieldProcessor(fieldName, fieldInfo)
 			return fieldInfo, err
 		}
@@ -522,7 +522,7 @@ func (r *Resource) fieldInfoFromValidation(name string, validation interface{}) 
 
 		switch {
 		case normalized == "falsetrue" || normalized == "truefalse":
-			fieldInfo, err = NewFieldInfo(fieldName, name, "bool", "", omitEmpty, false, ""), nil
+			fieldInfo = NewFieldInfo(fieldName, name, "bool", "", omitEmpty, false, "")
 			return fieldInfo, r.FieldProcessor(fieldName, fieldInfo)
 		default:
 			if _, err := strconv.ParseFloat(normalized, 64); err == nil {
@@ -552,7 +552,7 @@ func (r *Resource) fieldInfoFromValidation(name string, validation interface{}) 
 		}
 
 		omitEmpty = omitEmpty || (!strings.Contains(validation, "^$") && !strings.HasSuffix(fieldName, "ID"))
-		fieldInfo, err = NewFieldInfo(fieldName, name, "string", fieldValidation, omitEmpty, false, ""), nil
+		fieldInfo = NewFieldInfo(fieldName, name, "string", fieldValidation, omitEmpty, false, "")
 		return fieldInfo, r.FieldProcessor(fieldName, fieldInfo)
 	}
 
