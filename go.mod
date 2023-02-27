@@ -1,7 +1,6 @@
 module github.com/paultyng/go-unifi
 
-// set to use embed for generation
-go 1.20
+go 1.18
 
 require (
 	github.com/golangci/golangci-lint v1.51.2
