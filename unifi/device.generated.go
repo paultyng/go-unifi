@@ -81,7 +81,7 @@ type Device struct {
 	OutletEnabled               bool                              `json:"outlet_enabled,omitempty"`
 	OutletOverrides             []DeviceOutletOverrides           `json:"outlet_overrides,omitempty"`
 	OutletPowerCycleEnabled     bool                              `json:"outlet_power_cycle_enabled,omitempty"`
-	PortOverrides               []DevicePortOverrides             `json:"port_overrides,omitempty"`
+	PortOverrides               []DevicePortOverrides             `json:"port_overrides"`
 	PowerSourceCtrl             string                            `json:"power_source_ctrl,omitempty"` // auto|8023af|8023at|8023bt-type3|8023bt-type4|pasv24|poe-injector|ac|adapter|dc|rps
 	PowerSourceCtrlEnabled      bool                              `json:"power_source_ctrl_enabled,omitempty"`
 	RADIUSProfileID             string                            `json:"radiusprofile_id,omitempty"`
