@@ -152,7 +152,9 @@ func NewResource(structName string, resourcePath string) *Resource {
 	case resource.StructName == "Device":
 		baseType.Fields[" MAC"] = NewFieldInfo("MAC", "mac", "string", "", true, false, "")
 		baseType.Fields["Adopted"] = NewFieldInfo("Adopted", "adopted", "bool", "", false, false, "")
+		baseType.Fields["Model"] = NewFieldInfo("Model", "model", "string", "", true, false, "")
 		baseType.Fields["State"] = NewFieldInfo("State", "state", "DeviceState", "", false, false, "")
+		baseType.Fields["Type"] = NewFieldInfo("Type", "type", "string", "", true, false, "")
 	case resource.StructName == "User":
 		baseType.Fields[" IP"] = NewFieldInfo("IP", "ip", "string", "non-generated field", true, false, "")
 		baseType.Fields[" DevIdOverride"] = NewFieldInfo("DevIdOverride", "dev_id_override", "int", "non-generated field", true, false, "")
