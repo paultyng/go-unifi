@@ -75,7 +75,8 @@ type Device struct {
 	LteUsername                 string                            `json:"lte_username,omitempty"`
 	MapID                       string                            `json:"map_id,omitempty"`
 	MeshStaVapEnabled           bool                              `json:"mesh_sta_vap_enabled,omitempty"`
-	MgmtNetworkID               string                            `json:"mgmt_network_id,omitempty"`       // [\d\w]+
+	MgmtNetworkID               string                            `json:"mgmt_network_id,omitempty"` // [\d\w]+
+	Model                       string                            `json:"model,omitempty"`
 	Name                        string                            `json:"name,omitempty"`                  // .{0,128}
 	OutdoorModeOverride         string                            `json:"outdoor_mode_override,omitempty"` // default|on|off
 	OutletEnabled               bool                              `json:"outlet_enabled,omitempty"`
@@ -94,6 +95,7 @@ type Device struct {
 	StpPriority                 string                            `json:"stp_priority,omitempty"` // 0|4096|8192|12288|16384|20480|24576|28672|32768|36864|40960|45056|49152|53248|57344|61440
 	StpVersion                  string                            `json:"stp_version,omitempty"`  // stp|rstp|disabled
 	SwitchVLANEnabled           bool                              `json:"switch_vlan_enabled,omitempty"`
+	Type                        string                            `json:"type,omitempty"`
 	UbbPairName                 string                            `json:"ubb_pair_name,omitempty"` // .{1,128}
 	Volume                      int                               `json:"volume,omitempty"`        // [0-9]|[1-9][0-9]|100
 	WLANOverrides               []DeviceWLANOverrides             `json:"wlan_overrides,omitempty"`
