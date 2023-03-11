@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/golangci/golangci-lint v1.51.2
-	github.com/goreleaser/goreleaser v1.16.0
+	github.com/goreleaser/goreleaser v1.16.1
 	github.com/hashicorp/go-version v1.6.0
 	github.com/iancoleman/strcase v0.2.0
 	github.com/stretchr/testify v1.8.2
