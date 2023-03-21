@@ -13,8 +13,6 @@ jobs:
     steps:
       - uses: "actions/checkout@v3.3.0"
       - uses: "actions/setup-go@v4"
-        with:
-          cache: true
       - run: "go build ./..."
 
   generate:
@@ -23,8 +21,6 @@ jobs:
     steps:
       - uses: "actions/checkout@v3.3.0"
       - uses: "actions/setup-go@v4"
-        with:
-          cache: true
 
       - run: "go generate unifi/device.go"
       - run: "git diff --compact-summary --exit-code"
@@ -34,8 +30,6 @@ jobs:
     steps:
       - uses: "actions/checkout@v3.3.0"
       - uses: "actions/setup-go@v4"
-        with:
-          cache: true
       - uses: "golangci/golangci-lint-action@v3"
         with:
           skip-pkg-cache: true
@@ -46,6 +40,4 @@ jobs:
     steps:
       - uses: "actions/checkout@v3.3.0"
       - uses: "actions/setup-go@v4"
-        with:
-          cache: true
       - run: "go test ./..."

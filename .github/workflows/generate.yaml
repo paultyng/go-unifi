@@ -10,8 +10,6 @@ jobs:
     steps:
       - uses: "actions/checkout@v3.3.0"
       - uses: "actions/setup-go@v4"
-        with:
-          cache: true
 
       # TODO: Automatically merge the PR if tests pass.
       - run: "go generate unifi/fields.go"
