@@ -3,7 +3,7 @@ module github.com/paultyng/go-unifi
 go 1.18
 
 require (
-	github.com/golangci/golangci-lint v1.52.0
+	github.com/golangci/golangci-lint v1.52.1
 	github.com/goreleaser/goreleaser v1.16.2
 	github.com/hashicorp/go-version v1.6.0
 	github.com/iancoleman/strcase v0.2.0
