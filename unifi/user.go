@@ -133,7 +133,7 @@ func (c *Client) DeleteUserByMAC(ctx context.Context, site, mac string) error {
 
 func (c *Client) KickUserByMAC(ctx context.Context, site, mac string) error {
 	users, err := c.stamgr(ctx, site, "kick-sta", map[string]interface{}{
-		"macs": []string{mac},
+		"mac": mac,
 	})
 	if err != nil {
 		return err
