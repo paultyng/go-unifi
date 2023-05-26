@@ -8,10 +8,10 @@ import (
 	"github.com/hashicorp/go-version"
 )
 
-func latestUnifiVersion() (*version.Version, error) {
+func latestUnifiVersion() (*version.Version, *url.URL, error) {
 	url, err := url.Parse(firmwareUpdateApi)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	query := url.Query()
@@ -21,22 +21,20 @@ func latestUnifiVersion() (*version.Version, error) {
 
 	req, err := http.NewRequest(http.MethodGet, url.String(), nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	defer resp.Body.Close()
 
 	var respData firmwareUpdateApiResponse
-	var latestVersion *version.Version
-
 	err = json.NewDecoder(resp.Body).Decode(&respData)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	for _, firmware := range respData.Embedded.Firmware {
@@ -44,14 +42,8 @@ func latestUnifiVersion() (*version.Version, error) {
 			continue
 		}
 
-		latestVersion, err = version.NewVersion(firmware.Version)
-		if err != nil {
-			// Skip this entry if the version isn't valid.
-			continue
-		}
-
-		break
+		return firmware.Version, firmware.Links.Data.Href, nil
 	}
 
-	return latestVersion, nil
+	return nil, nil, nil
 }

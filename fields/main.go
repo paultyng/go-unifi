@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"go/format"
 	"io"
+	"net/url"
 	"os"
 	"path"
 	"path/filepath"
@@ -211,10 +212,11 @@ func main() {
 	}
 
 	var unifiVersion *version.Version
+	var unifiDownloadUrl *url.URL
 	var err error
 
 	if *useLatestVersion {
-		unifiVersion, err = latestUnifiVersion()
+		unifiVersion, unifiDownloadUrl, err = latestUnifiVersion()
 		if err != nil {
 			panic(err)
 		}
@@ -223,6 +225,11 @@ func main() {
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
+		}
+
+		unifiDownloadUrl, err = url.Parse(fmt.Sprintf("https://dl.ui.com/unifi/%s/unifi_sysvinit_all.deb", unifiVersion))
+		if err != nil {
+			panic(err)
 		}
 	}
 
@@ -246,7 +253,7 @@ func main() {
 		}
 
 		// download fields, create
-		jarFile, err := downloadJar(unifiVersion, fieldsDir)
+		jarFile, err := downloadJar(unifiDownloadUrl, fieldsDir)
 		if err != nil {
 			panic(err)
 		}

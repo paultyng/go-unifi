@@ -2,6 +2,9 @@ package main
 
 import (
 	"fmt"
+	"net/url"
+
+	"github.com/hashicorp/go-version"
 )
 
 var firmwareUpdateApi = "https://fw-update.ubnt.com/api/firmware-latest"
@@ -26,12 +29,12 @@ type firmwareUpdateApiResponseEmbeddedFirmware struct {
 	Id       string                                         `json:"id"`
 	Platform string                                         `json:"platform"`
 	Product  string                                         `json:"product"`
-	Version  string                                         `json:"version"`
+	Version  *version.Version                               `json:"version"`
 	Links    firmwareUpdateApiResponseEmbeddedFirmwareLinks `json:"_links"`
 }
 
 type firmwareUpdateApiResponseEmbeddedFirmwareDataLink struct {
-	Href string `json:"href"`
+	Href *url.URL `json:"href"`
 }
 
 type firmwareUpdateApiResponseEmbeddedFirmwareLinks struct {

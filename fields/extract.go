@@ -8,21 +8,19 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"os"
 	"path"
 	"path/filepath"
 	"strings"
 
-	"github.com/hashicorp/go-version"
 	"github.com/iancoleman/strcase"
 	"github.com/ulikunitz/xz"
 	"github.com/xor-gate/ar"
 )
 
-func downloadJar(version *version.Version, outputDir string) (string, error) {
-	url := fmt.Sprintf("https://dl.ui.com/unifi/%s/unifi_sysvinit_all.deb", version)
-
-	debResp, err := http.Get(url)
+func downloadJar(url *url.URL, outputDir string) (string, error) {
+	debResp, err := http.Get(url.String())
 	if err != nil {
 		return "", fmt.Errorf("unable to download deb: %w", err)
 	}

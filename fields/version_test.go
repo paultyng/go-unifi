@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"testing"
 
 	"github.com/hashicorp/go-version"
@@ -15,8 +16,11 @@ func TestLatestUnifiVersion(t *testing.T) {
 	assert := assert.New(t)
 	require := require.New(t)
 
-	fwVersion := "v7.3.83+atag-7.3.83-19645"
-	fwDownload := "https://fw-download.ubnt.com/data/unifi-controller/c31c-debian-7.3.83-c9249c913b91416693b869b9548850c3.deb"
+	fwVersion, err := version.NewVersion("7.3.83+atag-7.3.83-19645")
+	require.NoError(err)
+
+	fwDownload, err := url.Parse("https://fw-download.ubnt.com/data/unifi-controller/c31c-debian-7.3.83-c9249c913b91416693b869b9548850c3.deb")
+	require.NoError(err)
 
 	respData := firmwareUpdateApiResponse{
 		Embedded: firmwareUpdateApiResponseEmbedded{
@@ -43,7 +47,7 @@ func TestLatestUnifiVersion(t *testing.T) {
 					Version:  fwVersion,
 					Links: firmwareUpdateApiResponseEmbeddedFirmwareLinks{
 						Data: firmwareUpdateApiResponseEmbeddedFirmwareDataLink{
-							Href: "https://fw-download.ubnt.com/data/unifi-controller/edf8-document-7.3.83-2a6001087f794b3eb6e04dd262460457",
+							Href: nil,
 						},
 					},
 				},
@@ -56,7 +60,7 @@ func TestLatestUnifiVersion(t *testing.T) {
 					Version:  fwVersion,
 					Links: firmwareUpdateApiResponseEmbeddedFirmwareLinks{
 						Data: firmwareUpdateApiResponseEmbeddedFirmwareDataLink{
-							Href: "https://fw-download.ubnt.com/data/unifi-controller/c0ce-windows-7.3.83-9d2d413d36ce4742a10d4351aac6f08d.exe",
+							Href: nil,
 						},
 					},
 				},
@@ -77,12 +81,10 @@ func TestLatestUnifiVersion(t *testing.T) {
 	}))
 	defer server.Close()
 
-	expected, err := version.NewVersion(fwVersion)
-	require.NoError(err)
-
 	firmwareUpdateApi = server.URL
-	actual, err := latestUnifiVersion()
+	gotVersion, gotDownload, err := latestUnifiVersion()
 	require.NoError(err)
 
-	assert.Equal(expected, actual)
+	assert.Equal(fwVersion, gotVersion)
+	assert.Equal(fwDownload, gotDownload)
 }
