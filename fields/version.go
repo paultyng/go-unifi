@@ -42,7 +42,7 @@ func latestUnifiVersion() (*version.Version, *url.URL, error) {
 			continue
 		}
 
-		return firmware.Version, firmware.Links.Data.Href, nil
+		return firmware.Version.Core(), firmware.Links.Data.Href, nil
 	}
 
 	return nil, nil, nil

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/url"
 
@@ -35,6 +36,41 @@ type firmwareUpdateApiResponseEmbeddedFirmware struct {
 
 type firmwareUpdateApiResponseEmbeddedFirmwareDataLink struct {
 	Href *url.URL `json:"href"`
+}
+
+func (l firmwareUpdateApiResponseEmbeddedFirmwareDataLink) MarshalJSON() ([]byte, error) {
+	var href string
+	if l.Href != nil {
+		href = l.Href.String()
+	}
+
+	aux := struct {
+		Href string `json:"href"`
+	}{
+		Href: href,
+	}
+
+	return json.Marshal(aux)
+}
+
+func (l *firmwareUpdateApiResponseEmbeddedFirmwareDataLink) UnmarshalJSON(j []byte) error {
+	var m map[string]interface{}
+
+	err := json.Unmarshal(j, &m)
+	if err != nil {
+		return err
+	}
+
+	if href := m["href"]; href != nil {
+		url, err := url.Parse(href.(string))
+		if err != nil {
+			return err
+		}
+
+		l.Href = url
+	}
+
+	return nil
 }
 
 type firmwareUpdateApiResponseEmbeddedFirmwareLinks struct {

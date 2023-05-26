@@ -85,6 +85,6 @@ func TestLatestUnifiVersion(t *testing.T) {
 	gotVersion, gotDownload, err := latestUnifiVersion()
 	require.NoError(err)
 
-	assert.Equal(fwVersion, gotVersion)
+	assert.Equal(fwVersion.Core(), gotVersion)
 	assert.Equal(fwDownload, gotDownload)
 }
