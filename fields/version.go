@@ -3,35 +3,35 @@ package main
 import (
 	"encoding/json"
 	"net/http"
+	"net/url"
 
 	"github.com/hashicorp/go-version"
 )
 
-var uiDownloadUrl = "https://www.ui.com/download/?platform=unifi"
-
 func latestUnifiVersion() (*version.Version, error) {
-	client := &http.Client{}
-
-	req, err := http.NewRequest("GET", uiDownloadUrl, nil)
+	url, err := url.Parse(firmwareUpdateApi)
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Add("X-Requested-With", "XMLHttpRequest")
 
+	query := url.Query()
+	query.Add("filter", firmwareUpdateApiFilter("channel", releaseChannel))
+	query.Add("filter", firmwareUpdateApiFilter("product", unifiControllerProduct))
+	url.RawQuery = query.Encode()
+
+	req, err := http.NewRequest(http.MethodGet, url.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
 
-	var respData struct {
-		Downloads []struct {
-			Id           int    `json:"id"`
-			CategorySlug string `json:"category__slug"`
-			Filename     string `json:"filename"`
-			Version      string `json:"version"`
-		} `json:"downloads"`
-	}
+	var respData firmwareUpdateApiResponse
 	var latestVersion *version.Version
 
 	err = json.NewDecoder(resp.Body).Decode(&respData)
@@ -39,24 +39,18 @@ func latestUnifiVersion() (*version.Version, error) {
 		return nil, err
 	}
 
-	for _, download := range respData.Downloads {
-		if download.CategorySlug != "software" {
+	for _, firmware := range respData.Embedded.Firmware {
+		if firmware.Platform != debianPlatform {
 			continue
 		}
 
-		if download.Filename != "unifi_sysvinit_all.deb" {
-			continue
-		}
-
-		downloadVersion, err := version.NewVersion(download.Version)
+		latestVersion, err = version.NewVersion(firmware.Version)
 		if err != nil {
 			// Skip this entry if the version isn't valid.
 			continue
 		}
 
-		if latestVersion == nil || downloadVersion.GreaterThan(latestVersion) {
-			latestVersion = downloadVersion
-		}
+		break
 	}
 
 	return latestVersion, nil
