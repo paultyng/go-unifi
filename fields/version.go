@@ -3,61 +3,47 @@ package main
 import (
 	"encoding/json"
 	"net/http"
+	"net/url"
 
 	"github.com/hashicorp/go-version"
 )
 
-var uiDownloadUrl = "https://www.ui.com/download/?platform=unifi"
-
-func latestUnifiVersion() (*version.Version, error) {
-	client := &http.Client{}
-
-	req, err := http.NewRequest("GET", uiDownloadUrl, nil)
+func latestUnifiVersion() (*version.Version, *url.URL, error) {
+	url, err := url.Parse(firmwareUpdateApi)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	req.Header.Add("X-Requested-With", "XMLHttpRequest")
 
+	query := url.Query()
+	query.Add("filter", firmwareUpdateApiFilter("channel", releaseChannel))
+	query.Add("filter", firmwareUpdateApiFilter("product", unifiControllerProduct))
+	url.RawQuery = query.Encode()
+
+	req, err := http.NewRequest(http.MethodGet, url.String(), nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	defer resp.Body.Close()
 
-	var respData struct {
-		Downloads []struct {
-			Id           int    `json:"id"`
-			CategorySlug string `json:"category__slug"`
-			Filename     string `json:"filename"`
-			Version      string `json:"version"`
-		} `json:"downloads"`
-	}
-	var latestVersion *version.Version
-
+	var respData firmwareUpdateApiResponse
 	err = json.NewDecoder(resp.Body).Decode(&respData)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	for _, download := range respData.Downloads {
-		if download.CategorySlug != "software" {
+	for _, firmware := range respData.Embedded.Firmware {
+		if firmware.Platform != debianPlatform {
 			continue
 		}
 
-		if download.Filename != "unifi_sysvinit_all.deb" {
-			continue
-		}
-
-		downloadVersion, err := version.NewVersion(download.Version)
-		if err != nil {
-			// Skip this entry if the version isn't valid.
-			continue
-		}
-
-		if latestVersion == nil || downloadVersion.GreaterThan(latestVersion) {
-			latestVersion = downloadVersion
-		}
+		return firmware.Version.Core(), firmware.Links.Data.Href, nil
 	}
 
-	return latestVersion, nil
+	return nil, nil, nil
 }

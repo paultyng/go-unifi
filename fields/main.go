@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"go/format"
 	"io"
+	"net/url"
 	"os"
 	"path"
 	"path/filepath"
@@ -88,8 +89,6 @@ var fileReps = []replacement{
 	{"RadiusProfile", "RADIUSProfile"},
 	{"ApGroups", "APGroup"},
 }
-
-var embedTypes bool
 
 type Resource struct {
 	StructName     string
@@ -194,15 +193,12 @@ func usage() {
 func main() {
 	flag.Usage = usage
 
-	noEmbeddedTypesFlag := flag.Bool("no-embedded-types", true, "Whether to generate top-level type definitions for embedded type definitions")
 	versionBaseDirFlag := flag.String("version-base-dir", ".", "The base directory for version JSON files")
 	outputDirFlag := flag.String("output-dir", ".", "The output directory of the generated Go code")
 	downloadOnly := flag.Bool("download-only", false, "Only download and build the fields JSON directory, do not generate")
 	useLatestVersion := flag.Bool("latest", false, "Use the latest available version")
 
 	flag.Parse()
-
-	embedTypes = !*noEmbeddedTypesFlag
 
 	specifiedVersion := flag.Arg(0)
 	if specifiedVersion != "" && *useLatestVersion {
@@ -216,10 +212,11 @@ func main() {
 	}
 
 	var unifiVersion *version.Version
+	var unifiDownloadUrl *url.URL
 	var err error
 
 	if *useLatestVersion {
-		unifiVersion, err = latestUnifiVersion()
+		unifiVersion, unifiDownloadUrl, err = latestUnifiVersion()
 		if err != nil {
 			panic(err)
 		}
@@ -228,6 +225,11 @@ func main() {
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
+		}
+
+		unifiDownloadUrl, err = url.Parse(fmt.Sprintf("https://dl.ui.com/unifi/%s/unifi_sysvinit_all.deb", unifiVersion))
+		if err != nil {
+			panic(err)
 		}
 	}
 
@@ -251,7 +253,7 @@ func main() {
 		}
 
 		// download fields, create
-		jarFile, err := downloadJar(unifiVersion, fieldsDir)
+		jarFile, err := downloadJar(unifiDownloadUrl, fieldsDir)
 		if err != nil {
 			panic(err)
 		}
@@ -586,9 +588,7 @@ func (r *Resource) generateCode() (string, error) {
 	var buf bytes.Buffer
 	writer := io.Writer(&buf)
 
-	tpl := template.Must(template.New("api.go.tmpl").Funcs(template.FuncMap{
-		"embedTypes": func() bool { return embedTypes },
-	}).Parse(apiGoTemplate))
+	tpl := template.Must(template.New("api.go.tmpl").Parse(apiGoTemplate))
 
 	err = tpl.Execute(writer, r)
 	if err != nil {
