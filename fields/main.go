@@ -89,8 +89,6 @@ var fileReps = []replacement{
 	{"ApGroups", "APGroup"},
 }
 
-var embedTypes bool
-
 type Resource struct {
 	StructName     string
 	ResourcePath   string
@@ -194,15 +192,12 @@ func usage() {
 func main() {
 	flag.Usage = usage
 
-	noEmbeddedTypesFlag := flag.Bool("no-embedded-types", true, "Whether to generate top-level type definitions for embedded type definitions")
 	versionBaseDirFlag := flag.String("version-base-dir", ".", "The base directory for version JSON files")
 	outputDirFlag := flag.String("output-dir", ".", "The output directory of the generated Go code")
 	downloadOnly := flag.Bool("download-only", false, "Only download and build the fields JSON directory, do not generate")
 	useLatestVersion := flag.Bool("latest", false, "Use the latest available version")
 
 	flag.Parse()
-
-	embedTypes = !*noEmbeddedTypesFlag
 
 	specifiedVersion := flag.Arg(0)
 	if specifiedVersion != "" && *useLatestVersion {
@@ -586,9 +581,7 @@ func (r *Resource) generateCode() (string, error) {
 	var buf bytes.Buffer
 	writer := io.Writer(&buf)
 
-	tpl := template.Must(template.New("api.go.tmpl").Funcs(template.FuncMap{
-		"embedTypes": func() bool { return embedTypes },
-	}).Parse(apiGoTemplate))
+	tpl := template.Must(template.New("api.go.tmpl").Parse(apiGoTemplate))
 
 	err = tpl.Execute(writer, r)
 	if err != nil {

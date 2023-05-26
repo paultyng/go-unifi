@@ -17,11 +17,6 @@
 		{{- else }}
 		dst.{{ .FieldName }} = {{ .FieldType }}(aux.{{ .FieldName }})
 		{{- end }}{{- end }}{{- end }}
-{{ define "field-embed" }}
-	{{ .FieldName }} {{ if .IsArray }}[]{{end}}{{ if not .Fields }}{{ .FieldType }}{{ else }}struct {
-	{{ range $fk, $fv := .Fields }}{{ if not $fv }}
-	{{ else }}{{- template "field-embed" $fv }}{{ end }}{{ end }}
-}{{ end }} `json:"{{ .JSONName }}{{ if .OmitEmpty }},omitempty{{ end }}"` {{ if .FieldValidation }}// {{ .FieldValidation }}{{ end }} {{- end }}
 // Code generated from ace.jar fields *.json files
 // DO NOT EDIT.
 
@@ -40,14 +35,6 @@ var (
 	_ json.Marshaler
 )
 
-{{ if embedTypes -}}
-{{- $k := .StructName -}}
-{{- $v :=index .Types .StructName -}}
-type {{ $k }} struct {
-	{{ range $fk, $fv := $v.Fields }}{{ if not $fv }}
-	{{ else }}{{- template "field-embed" $fv }}{{ end }}{{ end }}
-}
-{{- else -}}
 {{ range $k, $v := .Types }}
 type {{ $k }} struct {
 	{{ range $fk, $fv := $v.Fields }}{{ if not $fv }}
@@ -76,7 +63,6 @@ func (dst *{{ $k }}) UnmarshalJSON(b []byte) error {
 	return nil
 }
 {{ end }}
-{{- end -}}
 
 {{ if not .IsSetting }}
 func (c *Client) list{{ .StructName }}(ctx context.Context, site string) ([]{{ .StructName }}, error) {
