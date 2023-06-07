@@ -68,8 +68,7 @@ func TestNetworkUnmarshalJSON(t *testing.T) {
 		t.Run(n, func(t *testing.T) {
 			// set some non-zero value defaults
 			expected := unifi.Network{
-				InternetAccessEnabled:     true,
-				IntraNetworkAccessEnabled: true,
+				InternetAccessEnabled: true,
 			}
 			c.expected(&expected)
 			var actual unifi.Network
