@@ -1,19 +1,19 @@
 ---
 on:
   schedule:
-    - cron: "0 0 * * *"
+    - cron: '0 0 * * *'
   workflow_dispatch: {}
 
 jobs:
   fields:
-    runs-on: "ubuntu-latest"
+    runs-on: 'ubuntu-latest'
     steps:
-      - uses: "actions/checkout@v3.3.0"
-      - uses: "actions/setup-go@v4"
+      - uses: 'actions/checkout@v3.3.0'
+      - uses: 'actions/setup-go@v4'
 
       # TODO: Automatically merge the PR if tests pass.
-      - run: "go generate unifi/fields.go"
-      - uses: "peter-evans/create-pull-request@v5"
+      - run: 'go generate unifi/fields.go'
+      - uses: 'peter-evans/create-pull-request@v5'
         with:
           delete-branch: true
-          title: "Update to latest controller version"
+          title: 'Update to latest controller version'

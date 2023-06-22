@@ -2,20 +2,20 @@
 linters:
   disable-all: true
   enable:
-    - "deadcode"
-    - "errcheck"
-    - "errorlint"
-    - "gofmt"
-    - "gosimple"
-    - "govet"
-    - "ineffassign"
-    - "makezero"
-    - "misspell"
-    - "nakedret"
-    - "nilerr"
-    - "staticcheck"
-    - "structcheck"
-    - "unconvert"
-    - "unparam"
-    - "unused"
-    - "varcheck"
+    - 'deadcode'
+    - 'errcheck'
+    - 'errorlint'
+    - 'gofmt'
+    - 'gosimple'
+    - 'govet'
+    - 'ineffassign'
+    - 'makezero'
+    - 'misspell'
+    - 'nakedret'
+    - 'nilerr'
+    - 'staticcheck'
+    - 'structcheck'
+    - 'unconvert'
+    - 'unparam'
+    - 'unused'
+    - 'varcheck'
