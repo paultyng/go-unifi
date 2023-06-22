@@ -95,7 +95,7 @@ func (c *Client) setAPIUrlStyle(ctx context.Context) error {
 	// see https://github.com/unifi-poller/unifi/blob/4dc44f11f61a2e08bf7ec5b20c71d5bced837b5d/unifi.go#L101-L104
 	// and https://github.com/unifi-poller/unifi/commit/43a6b225031a28f2b358f52d03a7217c7b524143
 
-	req, err := http.NewRequestWithContext(ctx, "GET", c.baseURL.String(), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.baseURL.String(), nil)
 	if err != nil {
 		return err
 	}
@@ -243,7 +243,7 @@ func (c *Client) do(ctx context.Context, method, relativeURL string, reqBody int
 		c.csrf = resp.Header.Get("x-csrf-token")
 	}
 
-	if resp.StatusCode != 200 {
+	if resp.StatusCode != http.StatusOK {
 		errBody := struct {
 			Meta meta `json:"meta"`
 			Data []struct {

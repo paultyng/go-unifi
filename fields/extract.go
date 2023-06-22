@@ -3,6 +3,7 @@ package main
 import (
 	"archive/tar"
 	"archive/zip"
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -20,7 +21,12 @@ import (
 )
 
 func downloadJar(url *url.URL, outputDir string) (string, error) {
-	debResp, err := http.Get(url.String())
+	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, url.String(), nil)
+	if err != nil {
+		return "", fmt.Errorf("unable to download deb: %w", err)
+	}
+
+	debResp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return "", fmt.Errorf("unable to download deb: %w", err)
 	}
@@ -147,7 +153,7 @@ func extractJSON(jarFile, fieldsDir string) error {
 			return fmt.Errorf("unable to marshal setting %q: %w", k, err)
 		}
 
-		err = os.WriteFile(filepath.Join(fieldsDir, fileName), data, 0755)
+		err = os.WriteFile(filepath.Join(fieldsDir, fileName), data, 0o755)
 		if err != nil {
 			return fmt.Errorf("unable to write new settings file: %w", err)
 		}

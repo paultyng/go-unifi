@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	assert "github.com/stretchr/testify/assert"
 	"testing"
+
+	assert "github.com/stretchr/testify/assert"
 )
 
 func TestFieldInfoFromValidation(t *testing.T) {
@@ -37,7 +38,7 @@ func TestFieldInfoFromValidation(t *testing.T) {
 			}
 
 			fieldInfo, err := resource.fieldInfoFromValidation("fieldName", c.validation)
-			//actualType, actualComment, actualOmitEmpty, err := fieldInfoFromValidation(c.validation)
+			// actualType, actualComment, actualOmitEmpty, err := fieldInfoFromValidation(c.validation)
 			if err != nil {
 				t.Fatal(err)
 			}

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"net/url"
@@ -19,7 +20,7 @@ func latestUnifiVersion() (*version.Version, *url.URL, error) {
 	query.Add("filter", firmwareUpdateApiFilter("product", unifiControllerProduct))
 	url.RawQuery = query.Encode()
 
-	req, err := http.NewRequest(http.MethodGet, url.String(), nil)
+	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, url.String(), nil)
 	if err != nil {
 		return nil, nil, err
 	}
