@@ -247,7 +247,7 @@ func main() {
 			panic(err)
 		}
 
-		err = os.MkdirAll(fieldsDir, 0755)
+		err = os.MkdirAll(fieldsDir, 0o755)
 		if err != nil {
 			panic(err)
 		}
@@ -434,7 +434,7 @@ func main() {
 		}
 
 		_ = os.Remove(filepath.Join(outDir, goFile))
-		if err := os.WriteFile(filepath.Join(outDir, goFile), ([]byte)(code), 0644); err != nil {
+		if err := os.WriteFile(filepath.Join(outDir, goFile), ([]byte)(code), 0o644); err != nil {
 			panic(err)
 		}
 	}
@@ -453,7 +453,7 @@ const UnifiVersion = %q
 		panic(err)
 	}
 
-	if err := os.WriteFile(filepath.Join(outDir, "version.generated.go"), versionGo, 0644); err != nil {
+	if err := os.WriteFile(filepath.Join(outDir, "version.generated.go"), versionGo, 0o644); err != nil {
 		panic(err)
 	}
 
@@ -476,17 +476,18 @@ func (r *Resource) processFields(fields map[string]interface{}) {
 	}
 }
 
-func (r *Resource) fieldInfoFromValidation(name string, validation interface{}) (fieldInfo *FieldInfo, err error) {
+func (r *Resource) fieldInfoFromValidation(name string, validation interface{}) (*FieldInfo, error) {
 	fieldName := strcase.ToCamel(name)
 	fieldName = cleanName(fieldName, fieldReps)
 
 	empty := &FieldInfo{}
+	var fieldInfo *FieldInfo
 
 	switch validation := validation.(type) {
 	case []interface{}:
 		if len(validation) == 0 {
 			fieldInfo = NewFieldInfo(fieldName, name, "string", "", false, true, "")
-			err = r.FieldProcessor(fieldName, fieldInfo)
+			err := r.FieldProcessor(fieldName, fieldInfo)
 			return fieldInfo, err
 		}
 		if len(validation) > 1 {
@@ -519,7 +520,7 @@ func (r *Resource) fieldInfoFromValidation(name string, validation interface{}) 
 			result.Fields[child.FieldName] = child
 		}
 
-		err = r.FieldProcessor(fieldName, result)
+		err := r.FieldProcessor(fieldName, result)
 		r.Types[typeName] = result
 		return result, err
 
@@ -535,7 +536,6 @@ func (r *Resource) fieldInfoFromValidation(name string, validation interface{}) 
 			return fieldInfo, r.FieldProcessor(fieldName, fieldInfo)
 		default:
 			if _, err := strconv.ParseFloat(normalized, 64); err == nil {
-
 				if normalized == "09" || normalized == "09.09" {
 					fieldValidation = ""
 				}

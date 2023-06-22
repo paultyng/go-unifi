@@ -65,9 +65,9 @@ func (c *Client) CreateUser(ctx context.Context, site string, d *User) (*User, e
 		return nil, &NotFoundError{}
 	}
 
-	new := respBody.Data[0].Data[0]
+	user := respBody.Data[0].Data[0]
 
-	return &new, nil
+	return &user, nil
 }
 
 func (c *Client) stamgr(ctx context.Context, site, cmd string, data map[string]interface{}) ([]User, error) {
