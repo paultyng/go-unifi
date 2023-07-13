@@ -6,7 +6,7 @@ require (
 	github.com/golangci/golangci-lint v1.53.3
 	github.com/goreleaser/goreleaser v1.19.2
 	github.com/hashicorp/go-version v1.6.0
-	github.com/iancoleman/strcase v0.2.0
+	github.com/iancoleman/strcase v0.3.0
 	github.com/stretchr/testify v1.8.4
 	github.com/tj/assert v0.0.3
 	github.com/ulikunitz/xz v0.5.11
