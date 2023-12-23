@@ -39,7 +39,7 @@ type SettingRadioAi struct {
 	Optimize                    []string `json:"optimize,omitempty"`           // channel|power
 	Radios                      []string `json:"radios,omitempty"`             // na|ng
 	SettingPreference           string   `json:"setting_preference,omitempty"` // auto|manual
-	UseXY                       bool     `json:"useXY"`
+	UseXy                       bool     `json:"useXY"`
 }
 
 func (dst *SettingRadioAi) UnmarshalJSON(b []byte) error {
