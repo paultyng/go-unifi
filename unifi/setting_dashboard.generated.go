@@ -17,17 +17,17 @@ var (
 )
 
 type SettingDashboard struct {
-	ID     string `json:"_id,omitempty"`
-	SiteID string `json:"site_id,omitempty"`
+	ID     *string `json:"_id,omitempty"`
+	SiteID *string `json:"site_id,omitempty"`
 
-	Hidden   bool   `json:"attr_hidden,omitempty"`
-	HiddenID string `json:"attr_hidden_id,omitempty"`
-	NoDelete bool   `json:"attr_no_delete,omitempty"`
-	NoEdit   bool   `json:"attr_no_edit,omitempty"`
+	Hidden   *bool   `json:"attr_hidden,omitempty"`
+	HiddenID *string `json:"attr_hidden_id,omitempty"`
+	NoDelete *bool   `json:"attr_no_delete,omitempty"`
+	NoEdit   *bool   `json:"attr_no_edit,omitempty"`
 
 	Key string `json:"key"`
 
-	LayoutPreference string                    `json:"layout_preference,omitempty"` // auto|custom
+	LayoutPreference *string                   `json:"layout_preference,omitempty"` // auto|custom
 	Widgets          []SettingDashboardWidgets `json:"widgets,omitempty"`
 }
 
@@ -48,7 +48,7 @@ func (dst *SettingDashboard) UnmarshalJSON(b []byte) error {
 }
 
 type SettingDashboardWidgets struct {
-	Name string `json:"name,omitempty"` // traffic_identification|connection_types|wifi_technology|most_active_clients|most_active_aps|meshing|network_activity|wireless_experience|internet|wifi_activity|wifi_channels|wifi_client_experience|wifi_tx_retries|admin_activity|device_client_count|server_ip
+	Name *string `json:"name,omitempty"` // traffic_identification|connection_types|wifi_technology|most_active_clients|most_active_aps|meshing|network_activity|wireless_experience|internet|wifi_activity|wifi_channels|wifi_client_experience|wifi_tx_retries|admin_activity|device_client_count|server_ip
 }
 
 func (dst *SettingDashboardWidgets) UnmarshalJSON(b []byte) error {

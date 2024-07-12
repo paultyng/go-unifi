@@ -17,17 +17,17 @@ var (
 )
 
 type UserGroup struct {
-	ID     string `json:"_id,omitempty"`
-	SiteID string `json:"site_id,omitempty"`
+	ID     *string `json:"_id,omitempty"`
+	SiteID *string `json:"site_id,omitempty"`
 
-	Hidden   bool   `json:"attr_hidden,omitempty"`
-	HiddenID string `json:"attr_hidden_id,omitempty"`
-	NoDelete bool   `json:"attr_no_delete,omitempty"`
-	NoEdit   bool   `json:"attr_no_edit,omitempty"`
+	Hidden   *bool   `json:"attr_hidden,omitempty"`
+	HiddenID *string `json:"attr_hidden_id,omitempty"`
+	NoDelete *bool   `json:"attr_no_delete,omitempty"`
+	NoEdit   *bool   `json:"attr_no_edit,omitempty"`
 
-	Name           string `json:"name,omitempty"`              // .{1,128}
-	QOSRateMaxDown int    `json:"qos_rate_max_down,omitempty"` // -1|[2-9]|[1-9][0-9]{1,4}|100000
-	QOSRateMaxUp   int    `json:"qos_rate_max_up,omitempty"`   // -1|[2-9]|[1-9][0-9]{1,4}|100000
+	Name           *string `json:"name,omitempty"`              // .{1,128}
+	QOSRateMaxDown *int    `json:"qos_rate_max_down,omitempty"` // -1|[2-9]|[1-9][0-9]{1,4}|100000
+	QOSRateMaxUp   *int    `json:"qos_rate_max_up,omitempty"`   // -1|[2-9]|[1-9][0-9]{1,4}|100000
 }
 
 func (dst *UserGroup) UnmarshalJSON(b []byte) error {
@@ -45,8 +45,8 @@ func (dst *UserGroup) UnmarshalJSON(b []byte) error {
 	if err != nil {
 		return fmt.Errorf("unable to unmarshal alias: %w", err)
 	}
-	dst.QOSRateMaxDown = int(aux.QOSRateMaxDown)
-	dst.QOSRateMaxUp = int(aux.QOSRateMaxUp)
+	dst.QOSRateMaxDown = aux.QOSRateMaxDown.Value()
+	dst.QOSRateMaxUp = aux.QOSRateMaxUp.Value()
 
 	return nil
 }

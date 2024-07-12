@@ -50,7 +50,7 @@ func (c *Client) GetDevice(ctx context.Context, site, id string) (*Device, error
 	}
 
 	for _, d := range devices {
-		if d.ID == id {
+		if d.ID != nil && *d.ID == id {
 			return &d, nil
 		}
 	}

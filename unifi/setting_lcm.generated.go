@@ -17,19 +17,19 @@ var (
 )
 
 type SettingLcm struct {
-	ID     string `json:"_id,omitempty"`
-	SiteID string `json:"site_id,omitempty"`
+	ID     *string `json:"_id,omitempty"`
+	SiteID *string `json:"site_id,omitempty"`
 
-	Hidden   bool   `json:"attr_hidden,omitempty"`
-	HiddenID string `json:"attr_hidden_id,omitempty"`
-	NoDelete bool   `json:"attr_no_delete,omitempty"`
-	NoEdit   bool   `json:"attr_no_edit,omitempty"`
+	Hidden   *bool   `json:"attr_hidden,omitempty"`
+	HiddenID *string `json:"attr_hidden_id,omitempty"`
+	NoDelete *bool   `json:"attr_no_delete,omitempty"`
+	NoEdit   *bool   `json:"attr_no_edit,omitempty"`
 
 	Key string `json:"key"`
 
-	Brightness  int  `json:"brightness,omitempty"` // [1-9]|[1-9][0-9]|100
+	Brightness  *int `json:"brightness,omitempty"` // [1-9]|[1-9][0-9]|100
 	Enabled     bool `json:"enabled"`
-	IDleTimeout int  `json:"idle_timeout,omitempty"` // [1-9][0-9]|[1-9][0-9][0-9]|[1-2][0-9][0-9][0-9]|3[0-5][0-9][0-9]|3600
+	IDleTimeout *int `json:"idle_timeout,omitempty"` // [1-9][0-9]|[1-9][0-9][0-9]|[1-2][0-9][0-9][0-9]|3[0-5][0-9][0-9]|3600
 	Sync        bool `json:"sync"`
 	TouchEvent  bool `json:"touch_event"`
 }
@@ -49,8 +49,8 @@ func (dst *SettingLcm) UnmarshalJSON(b []byte) error {
 	if err != nil {
 		return fmt.Errorf("unable to unmarshal alias: %w", err)
 	}
-	dst.Brightness = int(aux.Brightness)
-	dst.IDleTimeout = int(aux.IDleTimeout)
+	dst.Brightness = aux.Brightness.Value()
+	dst.IDleTimeout = aux.IDleTimeout.Value()
 
 	return nil
 }

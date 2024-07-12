@@ -17,13 +17,13 @@ var (
 )
 
 type SettingEtherLighting struct {
-	ID     string `json:"_id,omitempty"`
-	SiteID string `json:"site_id,omitempty"`
+	ID     *string `json:"_id,omitempty"`
+	SiteID *string `json:"site_id,omitempty"`
 
-	Hidden   bool   `json:"attr_hidden,omitempty"`
-	HiddenID string `json:"attr_hidden_id,omitempty"`
-	NoDelete bool   `json:"attr_no_delete,omitempty"`
-	NoEdit   bool   `json:"attr_no_edit,omitempty"`
+	Hidden   *bool   `json:"attr_hidden,omitempty"`
+	HiddenID *string `json:"attr_hidden_id,omitempty"`
+	NoDelete *bool   `json:"attr_no_delete,omitempty"`
+	NoEdit   *bool   `json:"attr_no_edit,omitempty"`
 
 	Key string `json:"key"`
 
@@ -48,8 +48,8 @@ func (dst *SettingEtherLighting) UnmarshalJSON(b []byte) error {
 }
 
 type SettingEtherLightingNetworkOverrides struct {
-	Key         string `json:"key,omitempty"`
-	RawColorHex string `json:"raw_color_hex,omitempty"` // [0-9A-Fa-f]{6}
+	Key         *string `json:"key,omitempty"`
+	RawColorHex *string `json:"raw_color_hex,omitempty"` // [0-9A-Fa-f]{6}
 }
 
 func (dst *SettingEtherLightingNetworkOverrides) UnmarshalJSON(b []byte) error {
@@ -69,8 +69,8 @@ func (dst *SettingEtherLightingNetworkOverrides) UnmarshalJSON(b []byte) error {
 }
 
 type SettingEtherLightingSpeedOverrides struct {
-	Key         string `json:"key,omitempty"`           // FE|GbE|2.5GbE|5GbE|10GbE|25GbE|40GbE|100GbE
-	RawColorHex string `json:"raw_color_hex,omitempty"` // [0-9A-Fa-f]{6}
+	Key         *string `json:"key,omitempty"`           // FE|GbE|2.5GbE|5GbE|10GbE|25GbE|40GbE|100GbE
+	RawColorHex *string `json:"raw_color_hex,omitempty"` // [0-9A-Fa-f]{6}
 }
 
 func (dst *SettingEtherLightingSpeedOverrides) UnmarshalJSON(b []byte) error {

@@ -17,30 +17,30 @@ var (
 )
 
 type SettingIps struct {
-	ID     string `json:"_id,omitempty"`
-	SiteID string `json:"site_id,omitempty"`
+	ID     *string `json:"_id,omitempty"`
+	SiteID *string `json:"site_id,omitempty"`
 
-	Hidden   bool   `json:"attr_hidden,omitempty"`
-	HiddenID string `json:"attr_hidden_id,omitempty"`
-	NoDelete bool   `json:"attr_no_delete,omitempty"`
-	NoEdit   bool   `json:"attr_no_edit,omitempty"`
+	Hidden   *bool   `json:"attr_hidden,omitempty"`
+	HiddenID *string `json:"attr_hidden_id,omitempty"`
+	NoDelete *bool   `json:"attr_no_delete,omitempty"`
+	NoEdit   *bool   `json:"attr_no_edit,omitempty"`
 
 	Key string `json:"key"`
 
 	AdBlockingConfigurations    []SettingIpsAdBlockingConfigurations `json:"ad_blocking_configurations,omitempty"`
 	AdBlockingEnabled           bool                                 `json:"ad_blocking_enabled"`
-	AdvancedFilteringPreference string                               `json:"advanced_filtering_preference,omitempty"` // |auto|manual|disabled
+	AdvancedFilteringPreference *string                              `json:"advanced_filtering_preference,omitempty"` // |auto|manual|disabled
 	DNSFiltering                bool                                 `json:"dns_filtering"`
 	DNSFilters                  []SettingIpsDNSFilters               `json:"dns_filters,omitempty"`
 	EnabledCategories           []string                             `json:"enabled_categories,omitempty"` // emerging-activex|emerging-attackresponse|botcc|emerging-chat|ciarmy|compromised|emerging-dns|emerging-dos|dshield|emerging-exploit|emerging-ftp|emerging-games|emerging-icmp|emerging-icmpinfo|emerging-imap|emerging-inappropriate|emerging-info|emerging-malware|emerging-misc|emerging-mobile|emerging-netbios|emerging-p2p|emerging-policy|emerging-pop3|emerging-rpc|emerging-scada|emerging-scan|emerging-shellcode|emerging-smtp|emerging-snmp|emerging-sql|emerging-telnet|emerging-tftp|tor|emerging-trojan|emerging-useragent|emerging-voip|emerging-webapps|emerging-webclient|emerging-webserver|emerging-worm
 	EnabledNetworks             []string                             `json:"enabled_networks,omitempty"`
 	Honeypot                    []SettingIpsHoneypot                 `json:"honeypot,omitempty"`
 	HoneypotEnabled             bool                                 `json:"honeypot_enabled"`
-	IPsMode                     string                               `json:"ips_mode,omitempty"` // ids|ips|ipsInline|disabled
+	IPsMode                     *string                              `json:"ips_mode,omitempty"` // ids|ips|ipsInline|disabled
 	RestrictIPAddresses         bool                                 `json:"restrict_ip_addresses"`
 	RestrictTor                 bool                                 `json:"restrict_tor"`
 	RestrictTorrents            bool                                 `json:"restrict_torrents"`
-	Suppression                 SettingIpsSuppression                `json:"suppression,omitempty"`
+	Suppression                 *SettingIpsSuppression               `json:"suppression,omitempty"`
 }
 
 func (dst *SettingIps) UnmarshalJSON(b []byte) error {
@@ -80,12 +80,12 @@ func (dst *SettingIpsAdBlockingConfigurations) UnmarshalJSON(b []byte) error {
 }
 
 type SettingIpsAlerts struct {
-	Category  string               `json:"category,omitempty"`
-	Gid       int                  `json:"gid,omitempty"`
-	ID        int                  `json:"id,omitempty"`
-	Signature string               `json:"signature,omitempty"`
+	Category  *string              `json:"category,omitempty"`
+	Gid       *int                 `json:"gid,omitempty"`
+	ID        *int                 `json:"id,omitempty"`
+	Signature *string              `json:"signature,omitempty"`
 	Tracking  []SettingIpsTracking `json:"tracking,omitempty"`
-	Type      string               `json:"type,omitempty"` // all|track
+	Type      *string              `json:"type,omitempty"` // all|track
 }
 
 func (dst *SettingIpsAlerts) UnmarshalJSON(b []byte) error {
@@ -103,8 +103,8 @@ func (dst *SettingIpsAlerts) UnmarshalJSON(b []byte) error {
 	if err != nil {
 		return fmt.Errorf("unable to unmarshal alias: %w", err)
 	}
-	dst.Gid = int(aux.Gid)
-	dst.ID = int(aux.ID)
+	dst.Gid = aux.Gid.Value()
+	dst.ID = aux.ID.Value()
 
 	return nil
 }
@@ -113,11 +113,11 @@ type SettingIpsDNSFilters struct {
 	AllowedSites []string `json:"allowed_sites,omitempty"` // ^[a-zA-Z0-9.-]+$|^$
 	BlockedSites []string `json:"blocked_sites,omitempty"` // ^[a-zA-Z0-9.-]+$|^$
 	BlockedTld   []string `json:"blocked_tld,omitempty"`   // ^[a-zA-Z0-9.-]+$|^$
-	Description  string   `json:"description,omitempty"`
-	Filter       string   `json:"filter,omitempty"` // none|work|family
-	Name         string   `json:"name,omitempty"`
+	Description  *string  `json:"description,omitempty"`
+	Filter       *string  `json:"filter,omitempty"` // none|work|family
+	Name         *string  `json:"name,omitempty"`
 	NetworkID    string   `json:"network_id"`
-	Version      string   `json:"version,omitempty"` // v4|v6
+	Version      *string  `json:"version,omitempty"` // v4|v6
 }
 
 func (dst *SettingIpsDNSFilters) UnmarshalJSON(b []byte) error {
@@ -137,9 +137,9 @@ func (dst *SettingIpsDNSFilters) UnmarshalJSON(b []byte) error {
 }
 
 type SettingIpsHoneypot struct {
-	IPAddress string `json:"ip_address,omitempty"`
-	NetworkID string `json:"network_id"`
-	Version   string `json:"version,omitempty"` // v4|v6
+	IPAddress *string `json:"ip_address,omitempty"`
+	NetworkID string  `json:"network_id"`
+	Version   *string `json:"version,omitempty"` // v4|v6
 }
 
 func (dst *SettingIpsHoneypot) UnmarshalJSON(b []byte) error {
@@ -180,9 +180,9 @@ func (dst *SettingIpsSuppression) UnmarshalJSON(b []byte) error {
 }
 
 type SettingIpsTracking struct {
-	Direction string `json:"direction,omitempty"` // both|src|dest
-	Mode      string `json:"mode,omitempty"`      // ip|subnet|network
-	Value     string `json:"value,omitempty"`
+	Direction *string `json:"direction,omitempty"` // both|src|dest
+	Mode      *string `json:"mode,omitempty"`      // ip|subnet|network
+	Value     *string `json:"value,omitempty"`
 }
 
 func (dst *SettingIpsTracking) UnmarshalJSON(b []byte) error {
@@ -202,9 +202,9 @@ func (dst *SettingIpsTracking) UnmarshalJSON(b []byte) error {
 }
 
 type SettingIpsWhitelist struct {
-	Direction string `json:"direction,omitempty"` // both|src|dest
-	Mode      string `json:"mode,omitempty"`      // ip|subnet|network
-	Value     string `json:"value,omitempty"`
+	Direction *string `json:"direction,omitempty"` // both|src|dest
+	Mode      *string `json:"mode,omitempty"`      // ip|subnet|network
+	Value     *string `json:"value,omitempty"`
 }
 
 func (dst *SettingIpsWhitelist) UnmarshalJSON(b []byte) error {

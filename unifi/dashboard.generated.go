@@ -17,19 +17,19 @@ var (
 )
 
 type Dashboard struct {
-	ID     string `json:"_id,omitempty"`
-	SiteID string `json:"site_id,omitempty"`
+	ID     *string `json:"_id,omitempty"`
+	SiteID *string `json:"site_id,omitempty"`
 
-	Hidden   bool   `json:"attr_hidden,omitempty"`
-	HiddenID string `json:"attr_hidden_id,omitempty"`
-	NoDelete bool   `json:"attr_no_delete,omitempty"`
-	NoEdit   bool   `json:"attr_no_edit,omitempty"`
+	Hidden   *bool   `json:"attr_hidden,omitempty"`
+	HiddenID *string `json:"attr_hidden_id,omitempty"`
+	NoDelete *bool   `json:"attr_no_delete,omitempty"`
+	NoEdit   *bool   `json:"attr_no_edit,omitempty"`
 
-	ControllerVersion string             `json:"controller_version,omitempty"`
-	Desc              string             `json:"desc,omitempty"`
+	ControllerVersion *string            `json:"controller_version,omitempty"`
+	Desc              *string            `json:"desc,omitempty"`
 	IsPublic          bool               `json:"is_public"`
 	Modules           []DashboardModules `json:"modules,omitempty"`
-	Name              string             `json:"name,omitempty"`
+	Name              *string            `json:"name,omitempty"`
 }
 
 func (dst *Dashboard) UnmarshalJSON(b []byte) error {
@@ -49,10 +49,10 @@ func (dst *Dashboard) UnmarshalJSON(b []byte) error {
 }
 
 type DashboardModules struct {
-	Config       string `json:"config,omitempty"`
-	ID           string `json:"id"`
-	ModuleID     string `json:"module_id"`
-	Restrictions string `json:"restrictions,omitempty"`
+	Config       *string `json:"config,omitempty"`
+	ID           string  `json:"id"`
+	ModuleID     string  `json:"module_id"`
+	Restrictions *string `json:"restrictions,omitempty"`
 }
 
 func (dst *DashboardModules) UnmarshalJSON(b []byte) error {

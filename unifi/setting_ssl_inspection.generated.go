@@ -17,17 +17,17 @@ var (
 )
 
 type SettingSslInspection struct {
-	ID     string `json:"_id,omitempty"`
-	SiteID string `json:"site_id,omitempty"`
+	ID     *string `json:"_id,omitempty"`
+	SiteID *string `json:"site_id,omitempty"`
 
-	Hidden   bool   `json:"attr_hidden,omitempty"`
-	HiddenID string `json:"attr_hidden_id,omitempty"`
-	NoDelete bool   `json:"attr_no_delete,omitempty"`
-	NoEdit   bool   `json:"attr_no_edit,omitempty"`
+	Hidden   *bool   `json:"attr_hidden,omitempty"`
+	HiddenID *string `json:"attr_hidden_id,omitempty"`
+	NoDelete *bool   `json:"attr_no_delete,omitempty"`
+	NoEdit   *bool   `json:"attr_no_edit,omitempty"`
 
 	Key string `json:"key"`
 
-	State string `json:"state,omitempty"` // off|simple|advanced
+	State *string `json:"state,omitempty"` // off|simple|advanced
 }
 
 func (dst *SettingSslInspection) UnmarshalJSON(b []byte) error {

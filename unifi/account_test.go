@@ -20,9 +20,9 @@ func TestAccountMarshalJSON(t *testing.T) {
 		"response": {
 			`{"vlan":10,"tunnel_type":1,"tunnel_medium_type":1}`,
 			unifi.Account{
-				VLAN:             10,
-				TunnelType:       1,
-				TunnelMediumType: 1,
+				VLAN:             intPtr(10),
+				TunnelType:       intPtr(1),
+				TunnelMediumType: intPtr(1),
 			},
 		},
 	} {
@@ -34,4 +34,8 @@ func TestAccountMarshalJSON(t *testing.T) {
 			assert.JSONEq(t, c.expectedJSON, string(actual))
 		})
 	}
+}
+
+func intPtr(i int) *int {
+	return &i
 }

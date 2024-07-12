@@ -17,24 +17,24 @@ var (
 )
 
 type RADIUSProfile struct {
-	ID     string `json:"_id,omitempty"`
-	SiteID string `json:"site_id,omitempty"`
+	ID     *string `json:"_id,omitempty"`
+	SiteID *string `json:"site_id,omitempty"`
 
-	Hidden   bool   `json:"attr_hidden,omitempty"`
-	HiddenID string `json:"attr_hidden_id,omitempty"`
-	NoDelete bool   `json:"attr_no_delete,omitempty"`
-	NoEdit   bool   `json:"attr_no_edit,omitempty"`
+	Hidden   *bool   `json:"attr_hidden,omitempty"`
+	HiddenID *string `json:"attr_hidden_id,omitempty"`
+	NoDelete *bool   `json:"attr_no_delete,omitempty"`
+	NoEdit   *bool   `json:"attr_no_edit,omitempty"`
 
 	AccountingEnabled     bool                       `json:"accounting_enabled"`
 	AcctServers           []RADIUSProfileAcctServers `json:"acct_servers,omitempty"`
 	AuthServers           []RADIUSProfileAuthServers `json:"auth_servers,omitempty"`
 	InterimUpdateEnabled  bool                       `json:"interim_update_enabled"`
-	InterimUpdateInterval int                        `json:"interim_update_interval,omitempty"` // ^([6-9][0-9]|[1-9][0-9]{2,3}|[1-7][0-9]{4}|8[0-5][0-9]{3}|86[0-3][0-9][0-9]|86400)$
-	Name                  string                     `json:"name,omitempty"`                    // .{1,128}
+	InterimUpdateInterval *int                       `json:"interim_update_interval,omitempty"` // ^([6-9][0-9]|[1-9][0-9]{2,3}|[1-7][0-9]{4}|8[0-5][0-9]{3}|86[0-3][0-9][0-9]|86400)$
+	Name                  *string                    `json:"name,omitempty"`                    // .{1,128}
 	UseUsgAcctServer      bool                       `json:"use_usg_acct_server"`
 	UseUsgAuthServer      bool                       `json:"use_usg_auth_server"`
 	VLANEnabled           bool                       `json:"vlan_enabled"`
-	VLANWLANMode          string                     `json:"vlan_wlan_mode,omitempty"` // disabled|optional|required
+	VLANWLANMode          *string                    `json:"vlan_wlan_mode,omitempty"` // disabled|optional|required
 }
 
 func (dst *RADIUSProfile) UnmarshalJSON(b []byte) error {
@@ -51,15 +51,15 @@ func (dst *RADIUSProfile) UnmarshalJSON(b []byte) error {
 	if err != nil {
 		return fmt.Errorf("unable to unmarshal alias: %w", err)
 	}
-	dst.InterimUpdateInterval = int(aux.InterimUpdateInterval)
+	dst.InterimUpdateInterval = aux.InterimUpdateInterval.Value()
 
 	return nil
 }
 
 type RADIUSProfileAcctServers struct {
-	IP      string `json:"ip,omitempty"`   // ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$
-	Port    int    `json:"port,omitempty"` // ^([1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5])$|^$
-	XSecret string `json:"x_secret,omitempty"`
+	IP      *string `json:"ip,omitempty"`   // ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$
+	Port    *int    `json:"port,omitempty"` // ^([1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5])$|^$
+	XSecret *string `json:"x_secret,omitempty"`
 }
 
 func (dst *RADIUSProfileAcctServers) UnmarshalJSON(b []byte) error {
@@ -76,15 +76,15 @@ func (dst *RADIUSProfileAcctServers) UnmarshalJSON(b []byte) error {
 	if err != nil {
 		return fmt.Errorf("unable to unmarshal alias: %w", err)
 	}
-	dst.Port = int(aux.Port)
+	dst.Port = aux.Port.Value()
 
 	return nil
 }
 
 type RADIUSProfileAuthServers struct {
-	IP      string `json:"ip,omitempty"`   // ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$
-	Port    int    `json:"port,omitempty"` // ^([1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5])$|^$
-	XSecret string `json:"x_secret,omitempty"`
+	IP      *string `json:"ip,omitempty"`   // ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$
+	Port    *int    `json:"port,omitempty"` // ^([1-9][0-9]{0,3}|[1-5][0-9]{4}|[6][0-4][0-9]{3}|[6][5][0-4][0-9]{2}|[6][5][5][0-2][0-9]|[6][5][5][3][0-5])$|^$
+	XSecret *string `json:"x_secret,omitempty"`
 }
 
 func (dst *RADIUSProfileAuthServers) UnmarshalJSON(b []byte) error {
@@ -101,7 +101,7 @@ func (dst *RADIUSProfileAuthServers) UnmarshalJSON(b []byte) error {
 	if err != nil {
 		return fmt.Errorf("unable to unmarshal alias: %w", err)
 	}
-	dst.Port = int(aux.Port)
+	dst.Port = aux.Port.Value()
 
 	return nil
 }

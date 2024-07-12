@@ -17,22 +17,22 @@ var (
 )
 
 type SettingSuperSdn struct {
-	ID     string `json:"_id,omitempty"`
-	SiteID string `json:"site_id,omitempty"`
+	ID     *string `json:"_id,omitempty"`
+	SiteID *string `json:"site_id,omitempty"`
 
-	Hidden   bool   `json:"attr_hidden,omitempty"`
-	HiddenID string `json:"attr_hidden_id,omitempty"`
-	NoDelete bool   `json:"attr_no_delete,omitempty"`
-	NoEdit   bool   `json:"attr_no_edit,omitempty"`
+	Hidden   *bool   `json:"attr_hidden,omitempty"`
+	HiddenID *string `json:"attr_hidden_id,omitempty"`
+	NoDelete *bool   `json:"attr_no_delete,omitempty"`
+	NoEdit   *bool   `json:"attr_no_edit,omitempty"`
 
 	Key string `json:"key"`
 
-	AuthToken       string `json:"auth_token,omitempty"`
-	DeviceID        string `json:"device_id"`
-	Enabled         bool   `json:"enabled"`
-	Migrated        bool   `json:"migrated"`
-	SsoLoginEnabled string `json:"sso_login_enabled,omitempty"`
-	UbicUuid        string `json:"ubic_uuid,omitempty"`
+	AuthToken       *string `json:"auth_token,omitempty"`
+	DeviceID        string  `json:"device_id"`
+	Enabled         bool    `json:"enabled"`
+	Migrated        bool    `json:"migrated"`
+	SsoLoginEnabled *string `json:"sso_login_enabled,omitempty"`
+	UbicUuid        *string `json:"ubic_uuid,omitempty"`
 }
 
 func (dst *SettingSuperSdn) UnmarshalJSON(b []byte) error {

@@ -17,16 +17,16 @@ var (
 )
 
 type SpatialRecord struct {
-	ID     string `json:"_id,omitempty"`
-	SiteID string `json:"site_id,omitempty"`
+	ID     *string `json:"_id,omitempty"`
+	SiteID *string `json:"site_id,omitempty"`
 
-	Hidden   bool   `json:"attr_hidden,omitempty"`
-	HiddenID string `json:"attr_hidden_id,omitempty"`
-	NoDelete bool   `json:"attr_no_delete,omitempty"`
-	NoEdit   bool   `json:"attr_no_edit,omitempty"`
+	Hidden   *bool   `json:"attr_hidden,omitempty"`
+	HiddenID *string `json:"attr_hidden_id,omitempty"`
+	NoDelete *bool   `json:"attr_no_delete,omitempty"`
+	NoEdit   *bool   `json:"attr_no_edit,omitempty"`
 
 	Devices []SpatialRecordDevices `json:"devices,omitempty"`
-	Name    string                 `json:"name,omitempty"` // .{1,128}
+	Name    *string                `json:"name,omitempty"` // .{1,128}
 }
 
 func (dst *SpatialRecord) UnmarshalJSON(b []byte) error {
@@ -46,8 +46,8 @@ func (dst *SpatialRecord) UnmarshalJSON(b []byte) error {
 }
 
 type SpatialRecordDevices struct {
-	MAC      string                `json:"mac,omitempty"` // ^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$
-	Position SpatialRecordPosition `json:"position,omitempty"`
+	MAC      *string                `json:"mac,omitempty"` // ^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$
+	Position *SpatialRecordPosition `json:"position,omitempty"`
 }
 
 func (dst *SpatialRecordDevices) UnmarshalJSON(b []byte) error {
@@ -67,9 +67,9 @@ func (dst *SpatialRecordDevices) UnmarshalJSON(b []byte) error {
 }
 
 type SpatialRecordPosition struct {
-	X float64 `json:"x,omitempty"` // (^([-]?[\d]+)$)|(^([-]?[\d]+[.]?[\d]+)$)
-	Y float64 `json:"y,omitempty"` // (^([-]?[\d]+)$)|(^([-]?[\d]+[.]?[\d]+)$)
-	Z float64 `json:"z,omitempty"` // (^([-]?[\d]+)$)|(^([-]?[\d]+[.]?[\d]+)$)
+	X *float64 `json:"x,omitempty"` // (^([-]?[\d]+)$)|(^([-]?[\d]+[.]?[\d]+)$)
+	Y *float64 `json:"y,omitempty"` // (^([-]?[\d]+)$)|(^([-]?[\d]+[.]?[\d]+)$)
+	Z *float64 `json:"z,omitempty"` // (^([-]?[\d]+)$)|(^([-]?[\d]+[.]?[\d]+)$)
 }
 
 func (dst *SpatialRecordPosition) UnmarshalJSON(b []byte) error {

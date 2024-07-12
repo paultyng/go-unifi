@@ -2,28 +2,7 @@ package unifi
 
 import (
 	"context"
-	"encoding/json"
 )
-
-func (dst *Account) MarshalJSON() ([]byte, error) {
-	type Alias Account
-	aux := &struct {
-		*Alias
-
-		TunnelType       emptyStringInt `json:"tunnel_type"`
-		TunnelMediumType emptyStringInt `json:"tunnel_medium_type"`
-		VLAN             emptyStringInt `json:"vlan"`
-	}{
-		Alias: (*Alias)(dst),
-	}
-
-	aux.TunnelType = emptyStringInt(dst.TunnelType)
-	aux.TunnelMediumType = emptyStringInt(dst.TunnelMediumType)
-	aux.VLAN = emptyStringInt(dst.VLAN)
-
-	b, err := json.Marshal(aux)
-	return b, err
-}
 
 func (c *Client) ListAccount(ctx context.Context, site string) ([]Account, error) {
 	return c.listAccount(ctx, site)
