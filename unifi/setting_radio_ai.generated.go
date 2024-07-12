@@ -28,6 +28,7 @@ type SettingRadioAi struct {
 	Key string `json:"key"`
 
 	AutoAdjustChannelsToCountry bool     `json:"auto_adjust_channels_to_country"`
+	Channels6E                  []int    `json:"channels_6e,omitempty"` // [1-9]|[1-2][0-9]|3[3-9]|[4-5][0-9]|6[0-1]|6[5-9]|[7-8][0-9]|9[0-3]|9[7-9]|1[0-1][0-9]|12[0-5]|129|1[3-4][0-9]|15[0-7]|16[1-9]|1[7-8][0-9]|19[3-9]|2[0-1][0-9]|22[0-1]|22[5-9]|233
 	ChannelsNa                  []int    `json:"channels_na,omitempty"` // 34|36|38|40|42|44|46|48|52|56|60|64|100|104|108|112|116|120|124|128|132|136|140|144|149|153|157|161|165|169
 	ChannelsNg                  []int    `json:"channels_ng,omitempty"` // 1|2|3|4|5|6|7|8|9|10|11|12|13|14
 	CronExpr                    string   `json:"cron_expr,omitempty"`
@@ -39,12 +40,13 @@ type SettingRadioAi struct {
 	Optimize                    []string `json:"optimize,omitempty"`           // channel|power
 	Radios                      []string `json:"radios,omitempty"`             // na|ng
 	SettingPreference           string   `json:"setting_preference,omitempty"` // auto|manual
-	UseXY                       bool     `json:"useXY"`
+	UseXy                       bool     `json:"useXY"`
 }
 
 func (dst *SettingRadioAi) UnmarshalJSON(b []byte) error {
 	type Alias SettingRadioAi
 	aux := &struct {
+		Channels6E []emptyStringInt `json:"channels_6e"`
 		ChannelsNa []emptyStringInt `json:"channels_na"`
 		ChannelsNg []emptyStringInt `json:"channels_ng"`
 		HtModesNa  []emptyStringInt `json:"ht_modes_na"`
@@ -58,6 +60,10 @@ func (dst *SettingRadioAi) UnmarshalJSON(b []byte) error {
 	err := json.Unmarshal(b, &aux)
 	if err != nil {
 		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
+	dst.Channels6E = make([]int, len(aux.Channels6E))
+	for i, v := range aux.Channels6E {
+		dst.Channels6E[i] = int(v)
 	}
 	dst.ChannelsNa = make([]int, len(aux.ChannelsNa))
 	for i, v := range aux.ChannelsNa {

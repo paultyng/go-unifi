@@ -26,6 +26,7 @@ type WLAN struct {
 	NoEdit   bool   `json:"attr_no_edit,omitempty"`
 
 	ApGroupIDs                  []string                   `json:"ap_group_ids,omitempty"`
+	ApGroupMode                 string                     `json:"ap_group_mode,omitempty"` // all|groups|devices
 	AuthCache                   bool                       `json:"auth_cache"`
 	BSupported                  bool                       `json:"b_supported"`
 	BroadcastFilterEnabled      bool                       `json:"bc_filter_enabled"`
@@ -59,6 +60,7 @@ type WLAN struct {
 	MinrateNgDataRateKbps       int                        `json:"minrate_ng_data_rate_kbps,omitempty"`
 	MinrateNgEnabled            bool                       `json:"minrate_ng_enabled"`
 	MinrateSettingPreference    string                     `json:"minrate_setting_preference,omitempty"` // auto|manual
+	MloEnabled                  bool                       `json:"mlo_enabled"`
 	MulticastEnhanceEnabled     bool                       `json:"mcastenhance_enabled"`
 	Name                        string                     `json:"name,omitempty"` // .{1,32}
 	NameCombineEnabled          bool                       `json:"name_combine_enabled"`
@@ -71,6 +73,8 @@ type WLAN struct {
 	PMFCipher                   string                     `json:"pmf_cipher,omitempty"` // auto|aes-128-cmac|bip-gmac-256
 	PMFMode                     string                     `json:"pmf_mode,omitempty"`   // disabled|optional|required
 	Priority                    string                     `json:"priority,omitempty"`   // medium|high|low
+	PrivatePresharedKeys        []WLANPrivatePresharedKeys `json:"private_preshared_keys,omitempty"`
+	PrivatePresharedKeysEnabled bool                       `json:"private_preshared_keys_enabled"`
 	ProxyArp                    bool                       `json:"proxy_arp"`
 	RADIUSDasEnabled            bool                       `json:"radius_das_enabled"`
 	RADIUSMACAuthEnabled        bool                       `json:"radius_mac_auth_enabled"`
@@ -92,6 +96,7 @@ type WLAN struct {
 	SettingPreference           string                     `json:"setting_preference,omitempty"` // auto|manual
 	TdlsProhibit                bool                       `json:"tdls_prohibit"`
 	UapsdEnabled                bool                       `json:"uapsd_enabled"`
+	UidWorkspaceUrl             string                     `json:"uid_workspace_url,omitempty"`
 	UserGroupID                 string                     `json:"usergroup_id"`
 	VLAN                        int                        `json:"vlan,omitempty"` // [2-9]|[1-9][0-9]{1,2}|[1-3][0-9]{3}|40[0-8][0-9]|409[0-5]|^$
 	VLANEnabled                 bool                       `json:"vlan_enabled"`
@@ -151,6 +156,27 @@ func (dst *WLAN) UnmarshalJSON(b []byte) error {
 	dst.SaeSync = int(aux.SaeSync)
 	dst.VLAN = int(aux.VLAN)
 	dst.WEPIDX = int(aux.WEPIDX)
+
+	return nil
+}
+
+type WLANPrivatePresharedKeys struct {
+	NetworkID string `json:"networkconf_id"`
+	Password  string `json:"password,omitempty"` // [\x20-\x7E]{8,255}
+}
+
+func (dst *WLANPrivatePresharedKeys) UnmarshalJSON(b []byte) error {
+	type Alias WLANPrivatePresharedKeys
+	aux := &struct {
+		*Alias
+	}{
+		Alias: (*Alias)(dst),
+	}
+
+	err := json.Unmarshal(b, &aux)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshal alias: %w", err)
+	}
 
 	return nil
 }
