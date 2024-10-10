@@ -29,6 +29,7 @@ type SettingGuestAccess struct {
 
 	AllowedSubnet                          string   `json:"allowed_subnet_,omitempty"`
 	Auth                                   string   `json:"auth,omitempty"` // none|hotspot|facebook_wifi|custom
+	AuthUrl                                string   `json:"auth_url,omitempty"`
 	AuthorizeUseSandbox                    bool     `json:"authorize_use_sandbox"`
 	CustomIP                               string   `json:"custom_ip"` // ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^$
 	EcEnabled                              bool     `json:"ec_enabled"`
