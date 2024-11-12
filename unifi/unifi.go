@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -42,6 +43,16 @@ type APIError struct {
 
 func (err *APIError) Error() string {
 	return err.Message
+}
+
+func (err *APIError) Is(target error) bool {
+	var apiError *APIError
+	if errors.As(target, &apiError) {
+		if err.RC == apiError.RC && err.Message == apiError.Message {
+			return true
+		}
+	}
+	return false
 }
 
 type Client struct {
