@@ -30,9 +30,7 @@ jobs:
     steps:
       - uses: 'actions/checkout@v4'
       - uses: 'actions/setup-go@v5'
-      - uses: 'golangci/golangci-lint-action@v3'
-        with:
-          skip-pkg-cache: true
+      - uses: 'golangci/golangci-lint-action@v6'
 
   test:
     needs: 'build'
