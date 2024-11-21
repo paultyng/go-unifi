@@ -1,6 +1,7 @@
 module github.com/paultyng/go-unifi
 
-go 1.22
+go 1.22.1
+
 toolchain go1.23.1
 
 require (

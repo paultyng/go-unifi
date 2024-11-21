@@ -74,10 +74,10 @@ func TestLatestUnifiVersion(t *testing.T) {
 		assert.Contains(query["filter"], firmwareUpdateApiFilter("product", unifiControllerProduct))
 
 		resp, err := json.Marshal(respData)
-		require.NoError(err)
+		assert.NoError(err)
 
 		_, err = rw.Write(resp)
-		require.NoError(err)
+		assert.NoError(err)
 	}))
 	defer server.Close()
 

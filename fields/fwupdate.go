@@ -38,7 +38,7 @@ type firmwareUpdateApiResponseEmbeddedFirmwareDataLink struct {
 	Href *url.URL `json:"href"`
 }
 
-func (l firmwareUpdateApiResponseEmbeddedFirmwareDataLink) MarshalJSON() ([]byte, error) {
+func (l *firmwareUpdateApiResponseEmbeddedFirmwareDataLink) MarshalJSON() ([]byte, error) {
 	var href string
 	if l.Href != nil {
 		href = l.Href.String()
