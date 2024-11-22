@@ -9,6 +9,8 @@ import (
 )
 
 func TestNetworkUnmarshalJSON(t *testing.T) {
+	t.Parallel()
+
 	for n, c := range map[string]struct {
 		expected func(n *unifi.Network)
 		json     string
@@ -66,6 +68,8 @@ func TestNetworkUnmarshalJSON(t *testing.T) {
 		},
 	} {
 		t.Run(n, func(t *testing.T) {
+			t.Parallel()
+
 			// set some non-zero value defaults
 			expected := unifi.Network{
 				InternetAccessEnabled: true,

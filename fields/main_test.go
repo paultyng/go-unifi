@@ -9,6 +9,8 @@ import (
 )
 
 func TestFieldInfoFromValidation(t *testing.T) {
+	t.Parallel()
+
 	for i, c := range []struct {
 		expectedType      string
 		expectedComment   string
@@ -32,6 +34,8 @@ func TestFieldInfoFromValidation(t *testing.T) {
 		{"bool", "", false, "true|false"},
 	} {
 		t.Run(fmt.Sprintf("%d %s %s", i, c.expectedType, c.validation), func(t *testing.T) {
+			t.Parallel()
+
 			resource := &Resource{
 				StructName:     "TestType",
 				Types:          make(map[string]*FieldInfo),
@@ -57,6 +61,8 @@ func TestFieldInfoFromValidation(t *testing.T) {
 }
 
 func TestResourceTypes(t *testing.T) {
+	t.Parallel()
+
 	testData := `
 {
   "note": ".{0,1024}",
@@ -147,6 +153,8 @@ func TestResourceTypes(t *testing.T) {
 	}
 
 	t.Run("structural test", func(t *testing.T) {
+		t.Parallel()
+
 		resource := NewResource("Struct", "path")
 		resource.FieldProcessor = expectation.FieldProcessor
 
