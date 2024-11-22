@@ -24,7 +24,6 @@ linters:
     - 'lll'
     - 'maintidx'
     - 'nestif'
-    - 'perfsprint'
     - 'revive'
     - 'stylecheck'
     - 'varnamelen'

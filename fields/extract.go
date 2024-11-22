@@ -54,7 +54,7 @@ func downloadJar(url *url.URL, outputDir string) (string, error) {
 		}
 	}
 	if uncompressedReader == nil {
-		return "", fmt.Errorf("unable to find .deb data file")
+		return "", errors.New("unable to find .deb data file")
 	}
 
 	tarReader := tar.NewReader(uncompressedReader)
@@ -86,7 +86,7 @@ func downloadJar(url *url.URL, outputDir string) (string, error) {
 	}
 
 	if aceJar == nil {
-		return "", fmt.Errorf("unable to find ace.jar")
+		return "", errors.New("unable to find ace.jar")
 	}
 
 	defer aceJar.Close()
