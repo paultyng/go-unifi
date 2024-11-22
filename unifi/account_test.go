@@ -9,6 +9,8 @@ import (
 )
 
 func TestAccountMarshalJSON(t *testing.T) {
+	t.Parallel()
+
 	for n, c := range map[string]struct {
 		expectedJSON string
 		acc          unifi.Account
@@ -27,6 +29,8 @@ func TestAccountMarshalJSON(t *testing.T) {
 		},
 	} {
 		t.Run(n, func(t *testing.T) {
+			t.Parallel()
+
 			actual, err := json.Marshal(&c.acc)
 			if err != nil {
 				t.Fatal(err)

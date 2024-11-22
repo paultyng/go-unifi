@@ -3,6 +3,8 @@ linters:
   enable-all: true
   disable:
     - 'depguard'
+    - 'mnd'
+    - 'nlreturn'
     - 'tagliatelle'
 
     # Temporary
@@ -21,11 +23,7 @@ linters:
     - 'gosec'
     - 'lll'
     - 'maintidx'
-    - 'mnd'
     - 'nestif'
-    - 'nlreturn'
-    - 'paralleltest'
-    - 'perfsprint'
     - 'revive'
     - 'stylecheck'
     - 'varnamelen'

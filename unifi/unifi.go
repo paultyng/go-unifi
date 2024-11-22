@@ -1,9 +1,10 @@
-package unifi //
+package unifi
 
 import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -183,7 +184,7 @@ func (c *Client) Login(ctx context.Context, user, pass string) error {
 	c.version = si.Version
 
 	if c.version == "" {
-		return fmt.Errorf("unable to determine controller version")
+		return errors.New("unable to determine controller version")
 	}
 
 	return nil

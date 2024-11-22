@@ -2,6 +2,7 @@ package unifi
 
 import (
 	"context"
+	"errors"
 	"fmt"
 )
 
@@ -54,7 +55,7 @@ func (c *Client) CreateUser(ctx context.Context, site string, d *User) (*User, e
 	}
 
 	if len(respBody.Data) != 1 {
-		return nil, fmt.Errorf("malformed group response")
+		return nil, errors.New("malformed group response")
 	}
 
 	if err := respBody.Data[0].Meta.error(); err != nil {
