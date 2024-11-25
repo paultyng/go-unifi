@@ -9,7 +9,7 @@ require (
 	github.com/goreleaser/goreleaser v1.26.2
 	github.com/hashicorp/go-version v1.7.0
 	github.com/iancoleman/strcase v0.3.0
-	github.com/stretchr/testify v1.9.0
+	github.com/stretchr/testify v1.10.0
 	github.com/tj/assert v0.0.3
 	github.com/ulikunitz/xz v0.5.12
 	github.com/xor-gate/ar v0.0.0-20170530204233-5c72ae81e2b7
