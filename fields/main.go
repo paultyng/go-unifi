@@ -20,6 +20,7 @@ import (
 
 	"github.com/hashicorp/go-version"
 	"github.com/iancoleman/strcase"
+	log "github.com/sirupsen/logrus"
 )
 
 type replacement struct {
@@ -124,7 +125,7 @@ func NewResource(structName string, resourcePath string) *Resource {
 	// are named such that they stay at the top for consistency. The spacer items create a
 	// blank line in the resulting generated file.
 	//
-	// This hack is here for stability of the generatd code, but can be removed if desired.
+	// This hack is here for stability of the generated code, but can be removed if desired.
 	baseType.Fields = map[string]*FieldInfo{
 		"   ID":      NewFieldInfo("ID", "_id", "string", "", true, false, ""),
 		"   SiteID":  NewFieldInfo("SiteID", "site_id", "string", "", true, false, ""),
@@ -190,6 +191,19 @@ func usage() {
 	flag.PrintDefaults()
 }
 
+func setupLogging(debugEnabled bool) {
+	log.SetFormatter(&log.TextFormatter{
+		DisableTimestamp:       true,
+		DisableLevelTruncation: true,
+		FullTimestamp:          false,
+	})
+	if debugEnabled {
+		log.SetLevel(log.DebugLevel)
+	} else {
+		log.SetLevel(log.InfoLevel)
+	}
+}
+
 func main() {
 	flag.Usage = usage
 
@@ -197,16 +211,17 @@ func main() {
 	outputDirFlag := flag.String("output-dir", ".", "The output directory of the generated Go code")
 	downloadOnly := flag.Bool("download-only", false, "Only download and build the fields JSON directory, do not generate")
 	useLatestVersion := flag.Bool("latest", false, "Use the latest available version")
+	debugFlag := flag.Bool("debug", false, "Enable debug logging")
 
 	flag.Parse()
-
+	setupLogging(*debugFlag)
 	specifiedVersion := flag.Arg(0)
 	if specifiedVersion != "" && *useLatestVersion {
-		fmt.Print("error: cannot specify version with latest\n\n")
+		log.Error("cannot specify version with latest\n\n")
 		usage()
 		os.Exit(1)
 	} else if specifiedVersion == "" && !*useLatestVersion {
-		fmt.Print("error: must specify version or latest\n\n")
+		log.Error("must specify version or latest\n\n")
 		usage()
 		os.Exit(1)
 	}
@@ -218,23 +233,29 @@ func main() {
 	if *useLatestVersion {
 		unifiVersion, unifiDownloadUrl, err = latestUnifiVersion()
 		if err != nil {
+			log.Fatalln("unable to determine latest UniFi Controller version")
 			panic(err)
 		}
 	} else {
 		unifiVersion, err = version.NewVersion(specifiedVersion)
 		if err != nil {
-			fmt.Println(err)
+			log.Errorf("invalid version %s: %s", specifiedVersion, err)
 			os.Exit(1)
 		}
 
 		unifiDownloadUrl, err = url.Parse(fmt.Sprintf("https://dl.ui.com/unifi/%s/unifi_sysvinit_all.deb", unifiVersion))
 		if err != nil {
+			log.Fatalln("unable to parse download URL")
 			panic(err)
 		}
 	}
 
+	log.Infof("UniFi Controller version: %s\n", unifiVersion)
+	log.Infof("UniFi Controller download URL: %s\n", unifiDownloadUrl)
+
 	wd, err := os.Getwd()
 	if err != nil {
+		log.Fatalln("unable to determine working directory")
 		panic(err)
 	}
 
@@ -252,14 +273,18 @@ func main() {
 			panic(err)
 		}
 
+		log.Infoln("Downloading UniFi Controller JAR...")
 		// download fields, create
 		jarFile, err := downloadJar(unifiDownloadUrl, fieldsDir)
 		if err != nil {
+			log.Fatalf("unable to download UniFi Controller JAR from %s", unifiDownloadUrl)
 			panic(err)
 		}
 
+		log.Debugln("Extracting fields JSONs...")
 		err = extractJSON(jarFile, fieldsDir)
 		if err != nil {
+			log.Fatalf("unable to extract fields JSONs from %s", jarFile)
 			panic(err)
 		}
 
@@ -269,19 +294,22 @@ func main() {
 		}
 	}
 	if !fieldsInfo.IsDir() {
-		panic("version info isn't a directory")
+		log.Errorln("version info isn't a directory")
+		os.Exit(1)
 	}
 
 	if *downloadOnly {
-		fmt.Println("Fields JSON ready!")
+		log.Infoln("Fields JSON ready!")
 		os.Exit(0)
 	}
 
 	fieldsFiles, err := os.ReadDir(fieldsDir)
 	if err != nil {
+		log.Fatalf("unable to read fields directory %s", fieldsDir)
 		panic(err)
 	}
 
+	log.Infoln("Generating resources...")
 	for _, fieldsFile := range fieldsFiles {
 		name := fieldsFile.Name()
 		ext := filepath.Ext(name)
@@ -295,6 +323,7 @@ func main() {
 			continue
 		}
 
+		log.Debugf("Processing %s...", fieldsFile.Name())
 		name = name[:len(name)-len(ext)]
 
 		urlPath := strings.ToLower(name)
@@ -304,7 +333,7 @@ func main() {
 		fieldsFilePath := filepath.Join(fieldsDir, fieldsFile.Name())
 		b, err := os.ReadFile(fieldsFilePath)
 		if err != nil {
-			fmt.Printf("skipping file %s: %s", fieldsFile.Name(), err)
+			log.Warnf("skipping file %s: %s", fieldsFile.Name(), err)
 			continue
 		}
 
@@ -424,19 +453,23 @@ func main() {
 
 		err = resource.processJSON(b)
 		if err != nil {
-			fmt.Printf("skipping file %s: %s", fieldsFile.Name(), err)
+			log.Warnf("skipping file %s: %s", fieldsFile.Name(), err)
 			continue
 		}
 
 		var code string
 		if code, err = resource.generateCode(); err != nil {
-			panic(err)
+			log.Errorf("failed to generate code for %s: %s", fieldsFile.Name(), err)
+			continue
 		}
 
-		_ = os.Remove(filepath.Join(outDir, goFile))
-		if err := os.WriteFile(filepath.Join(outDir, goFile), ([]byte)(code), 0o644); err != nil {
-			panic(err)
+		goFilePath := filepath.Join(outDir, goFile)
+		_ = os.Remove(goFilePath)
+		if err := os.WriteFile(goFile, ([]byte)(code), 0o644); err != nil {
+			log.Errorf("failed to write file %s: %s", goFile, err)
+			continue
 		}
+		log.Debugf("Generated %s with resource %s\n\n", goFile, structName)
 	}
 
 	// Write version file.
@@ -450,14 +483,16 @@ const UnifiVersion = %q
 
 	versionGo, err = format.Source(versionGo)
 	if err != nil {
-		panic(err)
+		log.Errorf("failed to format version file: %s", err)
+		os.Exit(1)
 	}
 
 	if err := os.WriteFile(filepath.Join(outDir, "version.generated.go"), versionGo, 0o644); err != nil {
-		panic(err)
+		log.Errorf("failed to write version file: %s", err)
+		os.Exit(1)
 	}
 
-	fmt.Printf("%s\n", outDir)
+	log.Infof("Generated resources in %s\n", outDir)
 }
 
 func (r *Resource) IsSetting() bool {
@@ -557,7 +592,7 @@ func (r *Resource) fieldInfoFromValidation(name string, validation interface{}) 
 			}
 		}
 		if validation != "" && normalized != "" {
-			fmt.Printf("normalize %q to %q\n", validation, normalized)
+			log.Debugf("normalize %q to %q", validation, normalized)
 		}
 
 		omitEmpty = omitEmpty || (!strings.Contains(validation, "^$") && !strings.HasSuffix(fieldName, "ID"))
