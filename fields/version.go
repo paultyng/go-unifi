@@ -5,8 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/hashicorp/go-version"
+	"go/format"
 	"net/http"
 	"net/url"
+	"os"
+	"path/filepath"
 )
 
 const (
@@ -80,4 +83,21 @@ func determineUnifiVersion(versionMarker string) (*UnifiVersion, error) {
 		}
 		return NewUnifiVersion(unifiVersion, unifiDownloadUrl), nil
 	}
+}
+
+func writeVersionFile(version *version.Version, outDir string) error {
+	versionGo := []byte(fmt.Sprintf(`
+// Generated code. DO NOT EDIT.
+
+package unifi
+
+const UnifiVersion = %q
+`, version))
+
+	versionGo, err := format.Source(versionGo)
+	if err != nil {
+		return err
+	}
+
+	return os.WriteFile(filepath.Join(outDir, "version.generated.go"), versionGo, 0o644)
 }

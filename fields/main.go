@@ -415,27 +415,13 @@ func main() {
 		log.Debugf("Generated %s with resource %s\n\n", goFile, structName)
 	}
 
-	// Write version file.
-	versionGo := []byte(fmt.Sprintf(`
-// Generated code. DO NOT EDIT.
-
-package unifi
-
-const UnifiVersion = %q
-`, unifiVersion.Version))
-
-	versionGo, err = format.Source(versionGo)
-	if err != nil {
-		log.Errorf("failed to format version file: %s", err)
-		os.Exit(1)
+	log.Infof("Writing version file...")
+	if err = writeVersionFile(unifiVersion.Version, outDir); err != nil {
+		log.Errorf("failed to write version file to %s", outDir)
+		panic(err)
 	}
 
-	if err := os.WriteFile(filepath.Join(outDir, "version.generated.go"), versionGo, 0o644); err != nil {
-		log.Errorf("failed to write version file: %s", err)
-		os.Exit(1)
-	}
-
-	log.Infof("Generated resources in %s\n", outDir)
+	log.Infof("Generated resources in %s", outDir)
 }
 
 func (r *Resource) IsSetting() bool {
