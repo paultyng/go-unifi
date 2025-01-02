@@ -7,8 +7,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/ulikunitz/xz"
-	"github.com/xor-gate/ar"
 	"io"
 	"net/http"
 	"net/url"
@@ -18,6 +16,8 @@ import (
 	"strings"
 
 	"github.com/iancoleman/strcase"
+	"github.com/ulikunitz/xz"
+	"github.com/xor-gate/ar"
 )
 
 func DownloadAndExtract(downloadUrl url.URL, outputDir string) error {
@@ -49,7 +49,7 @@ func DownloadAndExtract(downloadUrl url.URL, outputDir string) error {
 		}
 	}
 	if !targetInfo.IsDir() {
-		return fmt.Errorf("fields info isn't a directory")
+		return errors.New("fields info isn't a directory")
 	}
 	return nil
 }

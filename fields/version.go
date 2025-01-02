@@ -3,13 +3,15 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
-	"github.com/hashicorp/go-version"
 	"go/format"
 	"net/http"
 	"net/url"
 	"os"
 	"path/filepath"
+
+	"github.com/hashicorp/go-version"
 )
 
 const (
@@ -65,7 +67,7 @@ func latestUnifiVersion() (*UnifiVersion, error) {
 		return NewUnifiVersion(firmware.Version.Core(), firmware.Links.Data.Href), nil
 	}
 
-	return nil, nil
+	return nil, errors.New("no Unifi Controller firmware found")
 }
 
 func determineUnifiVersion(versionMarker string) (*UnifiVersion, error) {
