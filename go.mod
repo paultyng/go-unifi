@@ -9,6 +9,7 @@ require (
 	github.com/goreleaser/goreleaser v1.26.2
 	github.com/hashicorp/go-version v1.7.0
 	github.com/iancoleman/strcase v0.3.0
+	github.com/sirupsen/logrus v1.9.3
 	github.com/stretchr/testify v1.10.0
 	github.com/tj/assert v0.0.3
 	github.com/ulikunitz/xz v0.5.12
@@ -359,7 +360,6 @@ require (
 	github.com/sigstore/cosign/v2 v2.2.4 // indirect
 	github.com/sigstore/rekor v1.3.6 // indirect
 	github.com/sigstore/sigstore v1.8.3 // indirect
-	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/sivchari/containedctx v1.0.3 // indirect
 	github.com/sivchari/tenv v1.12.1 // indirect
 	github.com/skeema/knownhosts v1.2.2 // indirect

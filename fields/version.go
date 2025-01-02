@@ -3,16 +3,33 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
+	"github.com/hashicorp/go-version"
 	"net/http"
 	"net/url"
-
-	"github.com/hashicorp/go-version"
 )
 
-func latestUnifiVersion() (*version.Version, *url.URL, error) {
+const (
+	LatestVersionMarker = "latest"
+	baseDownloadUrl     = "https://dl.ui.com/unifi/%s/unifi_sysvinit_all.deb"
+)
+
+type UnifiVersion struct {
+	Version     *version.Version
+	DownloadUrl *url.URL
+}
+
+func NewUnifiVersion(unifiVersion *version.Version, downloadUrl *url.URL) *UnifiVersion {
+	return &UnifiVersion{
+		Version:     unifiVersion,
+		DownloadUrl: downloadUrl,
+	}
+}
+
+func latestUnifiVersion() (*UnifiVersion, error) {
 	url, err := url.Parse(firmwareUpdateApi)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
 	query := url.Query()
@@ -22,29 +39,45 @@ func latestUnifiVersion() (*version.Version, *url.URL, error) {
 
 	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, url.String(), nil)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 	defer resp.Body.Close()
 
 	var respData firmwareUpdateApiResponse
 	err = json.NewDecoder(resp.Body).Decode(&respData)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
 	for _, firmware := range respData.Embedded.Firmware {
 		if firmware.Platform != debianPlatform {
 			continue
 		}
-
-		return firmware.Version.Core(), firmware.Links.Data.Href, nil
+		return NewUnifiVersion(firmware.Version.Core(), firmware.Links.Data.Href), nil
 	}
 
-	return nil, nil, nil
+	return nil, nil
+}
+
+func determineUnifiVersion(versionMarker string) (*UnifiVersion, error) {
+	if versionMarker == LatestVersionMarker {
+		return latestUnifiVersion()
+	} else {
+		unifiVersion, err := version.NewVersion(versionMarker)
+		if err != nil {
+			return nil, err
+		}
+		downloadUrl := fmt.Sprintf(baseDownloadUrl, unifiVersion)
+		unifiDownloadUrl, err := url.Parse(downloadUrl)
+		if err != nil {
+			return nil, err
+		}
+		return NewUnifiVersion(unifiVersion, unifiDownloadUrl), nil
+	}
 }

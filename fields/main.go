@@ -4,12 +4,10 @@ import (
 	"bytes"
 	_ "embed"
 	"encoding/json"
-	"errors"
 	"flag"
 	"fmt"
 	"go/format"
 	"io"
-	"net/url"
 	"os"
 	"path"
 	"path/filepath"
@@ -18,12 +16,9 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/hashicorp/go-version"
 	"github.com/iancoleman/strcase"
 	log "github.com/sirupsen/logrus"
 )
-
-const LatestVersionMarker = "latest"
 
 type replacement struct {
 	Old string
@@ -221,33 +216,14 @@ func main() {
 	if specifiedVersion == "" {
 		specifiedVersion = LatestVersionMarker // default to latest version
 	}
-
-	var unifiVersion *version.Version
-	var unifiDownloadUrl *url.URL
-	var err error
-
-	if specifiedVersion == LatestVersionMarker {
-		unifiVersion, unifiDownloadUrl, err = latestUnifiVersion()
-		if err != nil {
-			log.Fatalln("unable to determine latest UniFi Controller version")
-			panic(err)
-		}
-	} else {
-		unifiVersion, err = version.NewVersion(specifiedVersion)
-		if err != nil {
-			log.Errorf("invalid version %s: %s", specifiedVersion, err)
-			os.Exit(1)
-		}
-
-		unifiDownloadUrl, err = url.Parse(fmt.Sprintf("https://dl.ui.com/unifi/%s/unifi_sysvinit_all.deb", unifiVersion))
-		if err != nil {
-			log.Fatalln("unable to parse download URL")
-			panic(err)
-		}
+	unifiVersion, err := determineUnifiVersion(specifiedVersion)
+	if err != nil {
+		log.Fatalf("unable to determine version and download URL for Unifi version %s", specifiedVersion)
+		panic(err)
 	}
 
-	log.Infof("UniFi Controller version: %s\n", unifiVersion)
-	log.Infof("UniFi Controller download URL: %s\n", unifiDownloadUrl)
+	log.Infof("UniFi Controller version: %s", unifiVersion.Version)
+	log.Infof("UniFi Controller download URL: %s", unifiVersion.DownloadUrl.String())
 
 	wd, err := os.Getwd()
 	if err != nil {
@@ -255,50 +231,21 @@ func main() {
 		panic(err)
 	}
 
-	fieldsDir := filepath.Join(wd, *versionBaseDirFlag, fmt.Sprintf("v%s", unifiVersion))
-	outDir := filepath.Join(wd, *outputDirFlag)
-
-	fieldsInfo, err := os.Stat(fieldsDir)
+	fieldsDir := filepath.Join(wd, *versionBaseDirFlag, fmt.Sprintf("v%s", unifiVersion.Version))
+	log.Infoln("Downloading UniFi Controller field definitions...")
+	err = DownloadAndExtract(*unifiVersion.DownloadUrl, fieldsDir)
 	if err != nil {
-		if !errors.Is(err, os.ErrNotExist) {
-			panic(err)
-		}
-
-		err = os.MkdirAll(fieldsDir, 0o755)
-		if err != nil {
-			panic(err)
-		}
-
-		log.Infoln("Downloading UniFi Controller JAR...")
-		// download fields, create
-		jarFile, err := downloadJar(unifiDownloadUrl, fieldsDir)
-		if err != nil {
-			log.Fatalf("unable to download UniFi Controller JAR from %s", unifiDownloadUrl)
-			panic(err)
-		}
-
-		log.Debugln("Extracting fields JSONs...")
-		err = extractJSON(jarFile, fieldsDir)
-		if err != nil {
-			log.Fatalf("unable to extract fields JSONs from %s", jarFile)
-			panic(err)
-		}
-
-		fieldsInfo, err = os.Stat(fieldsDir)
-		if err != nil {
-			panic(err)
-		}
+		log.Fatalln("unable to download and extract UniFi Controller field definitions")
+		panic(err)
 	}
-	if !fieldsInfo.IsDir() {
-		log.Errorln("version info isn't a directory")
-		os.Exit(1)
-	}
+	log.Infof("Downloaded UniFi Controller field definitions in %s", fieldsDir)
 
 	if *downloadOnly {
 		log.Infoln("Fields JSON ready!")
 		os.Exit(0)
 	}
 
+	outDir := filepath.Join(wd, *outputDirFlag)
 	fieldsFiles, err := os.ReadDir(fieldsDir)
 	if err != nil {
 		log.Fatalf("unable to read fields directory %s", fieldsDir)
@@ -475,7 +422,7 @@ func main() {
 package unifi
 
 const UnifiVersion = %q
-`, unifiVersion))
+`, unifiVersion.Version))
 
 	versionGo, err = format.Source(versionGo)
 	if err != nil {

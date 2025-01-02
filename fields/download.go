@@ -7,6 +7,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/ulikunitz/xz"
+	"github.com/xor-gate/ar"
 	"io"
 	"net/http"
 	"net/url"
@@ -16,19 +18,51 @@ import (
 	"strings"
 
 	"github.com/iancoleman/strcase"
-	"github.com/ulikunitz/xz"
-	"github.com/xor-gate/ar"
 )
 
-func downloadJar(url *url.URL, outputDir string) (string, error) {
-	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, url.String(), nil)
+func DownloadAndExtract(downloadUrl url.URL, outputDir string) error {
+	targetInfo, err := os.Stat(outputDir)
 	if err != nil {
-		return "", fmt.Errorf("unable to download deb: %w", err)
+		if !errors.Is(err, os.ErrNotExist) {
+			return err
+		}
+
+		err = os.MkdirAll(outputDir, 0o755)
+		if err != nil {
+			return err
+		}
+
+		// download fields, create
+		jarFile, err := downloadJar(downloadUrl, outputDir)
+		if err != nil {
+			return err
+		}
+
+		err = extractJSON(jarFile, outputDir)
+		if err != nil {
+			return err
+		}
+
+		targetInfo, err = os.Stat(outputDir)
+		if err != nil {
+			return err
+		}
+	}
+	if !targetInfo.IsDir() {
+		return fmt.Errorf("fields info isn't a directory")
+	}
+	return nil
+}
+
+func downloadJar(downloadUrl url.URL, outputDir string) (string, error) {
+	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, downloadUrl.String(), nil)
+	if err != nil {
+		return "", fmt.Errorf("unable to download UniFi Controller deb: %w", err)
 	}
 
 	debResp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return "", fmt.Errorf("unable to download deb: %w", err)
+		return "", fmt.Errorf("unable to download UniFi Controller deb: %w", err)
 	}
 	defer debResp.Body.Close()
 
