@@ -23,6 +23,8 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+const LatestVersionMarker = "latest"
+
 type replacement struct {
 	Old string
 	New string
@@ -188,6 +190,7 @@ func cleanName(name string, reps []replacement) string {
 
 func usage() {
 	fmt.Printf("Usage: %s [OPTIONS] version\n", path.Base(os.Args[0]))
+	fmt.Printf("version can be a specific version or '%s' (default) for the latest UniFi Controller version\n", LatestVersionMarker)
 	flag.PrintDefaults()
 }
 
@@ -210,27 +213,20 @@ func main() {
 	versionBaseDirFlag := flag.String("version-base-dir", ".", "The base directory for version JSON files")
 	outputDirFlag := flag.String("output-dir", ".", "The output directory of the generated Go code")
 	downloadOnly := flag.Bool("download-only", false, "Only download and build the fields JSON directory, do not generate")
-	useLatestVersion := flag.Bool("latest", false, "Use the latest available version")
 	debugFlag := flag.Bool("debug", false, "Enable debug logging")
 
 	flag.Parse()
 	setupLogging(*debugFlag)
-	specifiedVersion := flag.Arg(0)
-	if specifiedVersion != "" && *useLatestVersion {
-		log.Error("cannot specify version with latest\n\n")
-		usage()
-		os.Exit(1)
-	} else if specifiedVersion == "" && !*useLatestVersion {
-		log.Error("must specify version or latest\n\n")
-		usage()
-		os.Exit(1)
+	specifiedVersion := strings.TrimSpace(flag.Arg(0))
+	if specifiedVersion == "" {
+		specifiedVersion = LatestVersionMarker // default to latest version
 	}
 
 	var unifiVersion *version.Version
 	var unifiDownloadUrl *url.URL
 	var err error
 
-	if *useLatestVersion {
+	if specifiedVersion == LatestVersionMarker {
 		unifiVersion, unifiDownloadUrl, err = latestUnifiVersion()
 		if err != nil {
 			log.Fatalln("unable to determine latest UniFi Controller version")
