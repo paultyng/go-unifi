@@ -84,9 +84,9 @@ func TestLatestUnifiVersion(t *testing.T) {
 	defer server.Close()
 
 	firmwareUpdateApi = server.URL
-	gotVersion, gotDownload, err := latestUnifiVersion()
+	gotVersion, err := latestUnifiVersion()
 	require.NoError(err)
 
-	assert.Equal(fwVersion.Core(), gotVersion)
-	assert.Equal(fwDownload, gotDownload)
+	assert.Equal(fwVersion.Core(), gotVersion.Version)
+	assert.Equal(fwDownload, gotVersion.DownloadUrl)
 }
