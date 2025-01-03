@@ -78,6 +78,7 @@ func determineUnifiVersion(versionMarker string) (*UnifiVersion, error) {
 		if err != nil {
 			return nil, err
 		}
+		unifiVersion = unifiVersion.Core()
 		downloadUrl := fmt.Sprintf(baseDownloadUrl, unifiVersion)
 		unifiDownloadUrl, err := url.Parse(downloadUrl)
 		if err != nil {
@@ -94,7 +95,7 @@ func writeVersionFile(version *version.Version, outDir string) error {
 package unifi
 
 const UnifiVersion = %q
-`, version))
+`, version.Core()))
 
 	versionGo, err := format.Source(versionGo)
 	if err != nil {
