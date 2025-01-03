@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -12,9 +13,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestLatestUnifiVersion(t *testing.T) {
-	t.Parallel()
-
+func assertLatestVersionUsingProvider(t *testing.T, provider func() (*UnifiVersion, error)) {
+	t.Helper()
 	assert := assert.New(t)
 	require := require.New(t)
 
@@ -84,9 +84,65 @@ func TestLatestUnifiVersion(t *testing.T) {
 	defer server.Close()
 
 	firmwareUpdateApi = server.URL
-	gotVersion, gotDownload, err := latestUnifiVersion()
+	gotVersion, err := provider()
 	require.NoError(err)
 
-	assert.Equal(fwVersion.Core(), gotVersion)
-	assert.Equal(fwDownload, gotDownload)
+	assert.Equal(fwVersion.Core(), gotVersion.Version)
+	assert.Equal(fwDownload, gotVersion.DownloadUrl)
+}
+
+func TestLatestUnifiVersion(t *testing.T) {
+	t.Parallel()
+	assertLatestVersionUsingProvider(t, func() (*UnifiVersion, error) {
+		return latestUnifiVersion()
+	})
+}
+
+func TestDetermineUnifiVersion_latest(t *testing.T) {
+	t.Parallel()
+	assertLatestVersionUsingProvider(t, func() (*UnifiVersion, error) {
+		return determineUnifiVersion(LatestVersionMarker)
+	})
+}
+
+func TestDetermineUnifiVersion_provided(t *testing.T) {
+	t.Parallel()
+	testCases := map[string]string{
+		"7.3.83+atag-7.3.83-19645": "7.3.83",
+		"7.3.83":                   "7.3.83",
+		"7.3":                      "7.3.0",
+		"7":                        "7.0.0",
+	}
+
+	for providedVersion, expectedVersion := range testCases {
+		t.Run(providedVersion, func(t *testing.T) {
+			t.Parallel()
+			assert := assert.New(t)
+			require := require.New(t)
+
+			unifiVersion, err := determineUnifiVersion(providedVersion)
+			require.NoError(err)
+
+			assert.Equal(expectedVersion, unifiVersion.Version.String())
+			assert.Equal(fmt.Sprintf(baseDownloadUrl, expectedVersion), unifiVersion.DownloadUrl.String())
+		})
+	}
+}
+
+func TestDetermineUnifiVersion_invalid(t *testing.T) {
+	t.Parallel()
+	testCases := []string{
+		"invalid",
+		"-1",
+		"",
+	}
+	assert := assert.New(t)
+
+	for _, providedVersion := range testCases {
+		t.Run(providedVersion, func(t *testing.T) {
+			t.Parallel()
+			_, err := determineUnifiVersion(providedVersion)
+			assert.ErrorContains(err, providedVersion)
+		})
+	}
 }
