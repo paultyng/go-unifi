@@ -44,9 +44,6 @@ type SettingUsg struct {
 	DNSVerification                SettingUsgDNSVerification `json:"dns_verification,omitempty"`
 	DNSmasqAllServers              bool                      `json:"dnsmasq_all_servers"`
 	EchoServer                     string                    `json:"echo_server,omitempty"` // [^\"\' ]{1,255}
-	FirewallGuestDefaultLog        bool                      `json:"firewall_guest_default_log"`
-	FirewallLanDefaultLog          bool                      `json:"firewall_lan_default_log"`
-	FirewallWANDefaultLog          bool                      `json:"firewall_wan_default_log"`
 	FtpModule                      bool                      `json:"ftp_module"`
 	GeoIPFilteringBlock            string                    `json:"geo_ip_filtering_block,omitempty"`     // block|allow
 	GeoIPFilteringCountries        string                    `json:"geo_ip_filtering_countries,omitempty"` // ^([A-Z]{2})?(,[A-Z]{2}){0,149}$
@@ -80,6 +77,7 @@ type SettingUsg struct {
 	TimeoutSettingPreference       string                    `json:"timeout_setting_preference,omitempty"` // auto|manual
 	UDPOtherTimeout                int                       `json:"udp_other_timeout,omitempty"`
 	UDPStreamTimeout               int                       `json:"udp_stream_timeout,omitempty"`
+	UnbindWANMonitors              bool                      `json:"unbind_wan_monitors"`
 	UpnpEnabled                    bool                      `json:"upnp_enabled"`
 	UpnpNATPmpEnabled              bool                      `json:"upnp_nat_pmp_enabled"`
 	UpnpSecureMode                 bool                      `json:"upnp_secure_mode"`

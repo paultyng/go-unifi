@@ -29,16 +29,15 @@ type SettingIps struct {
 
 	AdBlockingConfigurations    []SettingIpsAdBlockingConfigurations `json:"ad_blocking_configurations,omitempty"`
 	AdBlockingEnabled           bool                                 `json:"ad_blocking_enabled"`
-	AdvancedFilteringPreference string                               `json:"advanced_filtering_preference,omitempty"` // |auto|manual|disabled
+	AdvancedFilteringPreference string                               `json:"advanced_filtering_preference,omitempty"` // |manual|disabled
 	DNSFiltering                bool                                 `json:"dns_filtering"`
 	DNSFilters                  []SettingIpsDNSFilters               `json:"dns_filters,omitempty"`
-	EnabledCategories           []string                             `json:"enabled_categories,omitempty"` // emerging-activex|emerging-attackresponse|botcc|emerging-chat|ciarmy|compromised|emerging-dns|emerging-dos|dshield|emerging-exploit|emerging-ftp|emerging-games|emerging-icmp|emerging-icmpinfo|emerging-imap|emerging-inappropriate|emerging-info|emerging-malware|emerging-misc|emerging-mobile|emerging-netbios|emerging-p2p|emerging-policy|emerging-pop3|emerging-rpc|emerging-scada|emerging-scan|emerging-shellcode|emerging-smtp|emerging-snmp|emerging-sql|emerging-telnet|emerging-tftp|tor|emerging-trojan|emerging-useragent|emerging-voip|emerging-webapps|emerging-webclient|emerging-webserver|emerging-worm|exploit-kit|adware-pup|botcc-portgrouped|phishing|threatview-cs-c2|3coresec|chat|coinminer|current-events|drop|hunting|icmp-info|inappropriate|info|ja3|policy|scada
+	EnabledCategories           []string                             `json:"enabled_categories,omitempty"` // emerging-activex|emerging-attackresponse|botcc|emerging-chat|ciarmy|compromised|emerging-dns|emerging-dos|dshield|emerging-exploit|emerging-ftp|emerging-games|emerging-icmp|emerging-icmpinfo|emerging-imap|emerging-inappropriate|emerging-info|emerging-malware|emerging-misc|emerging-mobile|emerging-netbios|emerging-p2p|emerging-policy|emerging-pop3|emerging-rpc|emerging-scada|emerging-scan|emerging-shellcode|emerging-smtp|emerging-snmp|emerging-sql|emerging-telnet|emerging-tftp|tor|emerging-useragent|emerging-voip|emerging-webapps|emerging-webclient|emerging-webserver|emerging-worm|exploit-kit|adware-pup|botcc-portgrouped|phishing|threatview-cs-c2|3coresec|chat|coinminer|current-events|drop|hunting|icmp-info|inappropriate|info|ja3|policy|scada|dark-web-blocker-list|malicious-hosts
 	EnabledNetworks             []string                             `json:"enabled_networks,omitempty"`
 	Honeypot                    []SettingIpsHoneypot                 `json:"honeypot,omitempty"`
 	HoneypotEnabled             bool                                 `json:"honeypot_enabled"`
 	IPsMode                     string                               `json:"ips_mode,omitempty"` // ids|ips|ipsInline|disabled
-	RestrictIPAddresses         bool                                 `json:"restrict_ip_addresses"`
-	RestrictTor                 bool                                 `json:"restrict_tor"`
+	MemoryOptimized             bool                                 `json:"memory_optimized"`
 	RestrictTorrents            bool                                 `json:"restrict_torrents"`
 	Suppression                 SettingIpsSuppression                `json:"suppression,omitempty"`
 }

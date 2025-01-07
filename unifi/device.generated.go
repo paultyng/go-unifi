@@ -90,7 +90,8 @@ type Device struct {
 	PowerSourceCtrl             string                    `json:"power_source_ctrl,omitempty"`        // auto|8023af|8023at|8023bt-type3|8023bt-type4|pasv24|poe-injector|ac|adapter|dc|rps
 	PowerSourceCtrlBudget       int                       `json:"power_source_ctrl_budget,omitempty"` // [0-9]|[1-9][0-9]|[1-9][0-9][0-9]
 	PowerSourceCtrlEnabled      bool                      `json:"power_source_ctrl_enabled,omitempty"`
-	PtpApMAC                    string                    `json:"ptp_ap_mac,omitempty"` // ^([0-9A-Fa-f]{2}[:]){5}([0-9A-Fa-f]{2})$
+	PtmpApMAC                   string                    `json:"ptmp_ap_mac,omitempty"` // ^([0-9A-Fa-f]{2}[:]){5}([0-9A-Fa-f]{2})$
+	PtpApMAC                    string                    `json:"ptp_ap_mac,omitempty"`  // ^([0-9A-Fa-f]{2}[:]){5}([0-9A-Fa-f]{2})$
 	RADIUSProfileID             string                    `json:"radiusprofile_id,omitempty"`
 	RadioTable                  []DeviceRadioTable        `json:"radio_table,omitempty"`
 	ResetbtnEnabled             string                    `json:"resetbtn_enabled,omitempty"` // on|off
@@ -98,7 +99,7 @@ type Device struct {
 	SnmpContact                 string                    `json:"snmp_contact,omitempty"`  // .{0,255}
 	SnmpLocation                string                    `json:"snmp_location,omitempty"` // .{0,255}
 	State                       DeviceState               `json:"state"`
-	StationMode                 string                    `json:"station_mode,omitempty"` // ptp|wifi
+	StationMode                 string                    `json:"station_mode,omitempty"` // ptp|ptmp|wifi
 	StpPriority                 string                    `json:"stp_priority,omitempty"` // 0|4096|8192|12288|16384|20480|24576|28672|32768|36864|40960|45056|49152|53248|57344|61440
 	StpVersion                  string                    `json:"stp_version,omitempty"`  // stp|rstp|disabled
 	SwitchVLANEnabled           bool                      `json:"switch_vlan_enabled,omitempty"`
@@ -183,6 +184,7 @@ func (dst *DeviceConfigNetwork) UnmarshalJSON(b []byte) error {
 type DeviceEtherLighting struct {
 	Behavior   string `json:"behavior,omitempty"`   // breath|steady
 	Brightness int    `json:"brightness,omitempty"` // [1-9]|[1-9][0-9]|100
+	LedMode    string `json:"led_mode,omitempty"`   // standard|etherlighting
 	Mode       string `json:"mode,omitempty"`       // speed|network
 }
 

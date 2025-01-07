@@ -27,7 +27,7 @@ type SettingRsyslogd struct {
 
 	Key string `json:"key"`
 
-	Contents                    []string `json:"contents,omitempty"` // device|client|triggers|updates|admin_activity|critical|security_detections|vpn
+	Contents                    []string `json:"contents,omitempty"` // device|client|firewall_default_policy|triggers|updates|admin_activity|critical|security_detections|vpn
 	Debug                       bool     `json:"debug"`
 	Enabled                     bool     `json:"enabled"`
 	IP                          string   `json:"ip,omitempty"`
