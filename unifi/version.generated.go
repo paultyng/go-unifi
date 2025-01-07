@@ -2,4 +2,4 @@
 
 package unifi
 
-const UnifiVersion = "8.6.9"
+const UnifiVersion = "9.0.108"

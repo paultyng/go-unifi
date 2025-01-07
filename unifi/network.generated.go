@@ -75,6 +75,7 @@ type Network struct {
 	DomainName                                    string                          `json:"domain_name"` // (?=^.{3,253}$)(^((?!-)[a-zA-Z0-9-]{1,63}(?<!-)\.)+[a-zA-Z]{2,63}$)|^$|[a-zA-Z0-9-]{1,63}
 	Enabled                                       bool                            `json:"enabled"`
 	ExposedToSiteVPN                              bool                            `json:"exposed_to_site_vpn"`
+	FirewallZoneID                                string                          `json:"firewall_zone_id"`
 	GatewayDevice                                 string                          `json:"gateway_device"`         // (^$|^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$)
 	GatewayType                                   string                          `json:"gateway_type,omitempty"` // default|switch
 	IGMPFastleave                                 bool                            `json:"igmp_fastleave"`
@@ -170,7 +171,8 @@ type Network struct {
 	RemoteVPNSubnets                              []string                        `json:"remote_vpn_subnets,omitempty"` // ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\/([1-9]|[1-2][0-9]|3[0-2])$|^$
 	ReportWANEvent                                bool                            `json:"report_wan_event"`
 	RequireMschapv2                               bool                            `json:"require_mschapv2"`
-	RouteDistance                                 int                             `json:"route_distance,omitempty"`     // ^[1-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]$|^$
+	RouteDistance                                 int                             `json:"route_distance,omitempty"` // ^[1-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]$|^$
+	SdwanRemoteSiteID                             string                          `json:"sdwan_remote_site_id"`
 	SettingPreference                             string                          `json:"setting_preference,omitempty"` // auto|manual
 	SingleNetworkLan                              string                          `json:"single_network_lan,omitempty"`
 	UidPolicyEnabled                              bool                            `json:"uid_policy_enabled"`
@@ -194,7 +196,7 @@ type Network struct {
 	VPNClientDefaultRoute                         bool                            `json:"vpn_client_default_route"`
 	VPNClientPullDNS                              bool                            `json:"vpn_client_pull_dns"`
 	VPNProtocol                                   string                          `json:"vpn_protocol,omitempty"`       // TCP|UDP
-	VPNType                                       string                          `json:"vpn_type,omitempty"`           // auto|ipsec-vpn|openvpn-client|openvpn-server|openvpn-vpn|pptp-client|l2tp-server|pptp-server|uid-server|wireguard-server|wireguard-client
+	VPNType                                       string                          `json:"vpn_type,omitempty"`           // auto|ipsec-vpn|openvpn-client|openvpn-server|openvpn-vpn|pptp-client|l2tp-server|pptp-server|sdwan-hub-spoke-tunnel|sdwan-mesh-tunnel|uid-server|wireguard-server|wireguard-client
 	VrrpIPSubnetGw1                               string                          `json:"vrrp_ip_subnet_gw1,omitempty"` // ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\/([1-9]|[1-2][0-9]|30)$
 	VrrpIPSubnetGw2                               string                          `json:"vrrp_ip_subnet_gw2,omitempty"` // ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\/([1-9]|[1-2][0-9]|30)$
 	VrrpVrid                                      int                             `json:"vrrp_vrid,omitempty"`          // [1-9]|[1-9][0-9]
