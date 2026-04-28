@@ -1,3 +1,15 @@
+> [!IMPORTANT]
+> **This repository is archived and no longer maintained.**
+>
+> This SDK was primarily used by `paultyng/terraform-provider-unifi`, which is also archived. The forks of that provider each maintain their own SDK fork:
+>
+> - [filipowm/go-unifi](https://github.com/filipowm/go-unifi)
+> - [ubiquiti-community/go-unifi](https://github.com/ubiquiti-community/go-unifi)
+> - [akerl/go-unifi](https://github.com/akerl/go-unifi)
+
+---
+
+
 # Unifi Go SDK [![GoDoc](https://godoc.org/github.com/paultyng/go-unifi?status.svg)](https://godoc.org/github.com/paultyng/go-unifi)
 
 This was written primarily for use in my [Terraform provider for Unifi](https://github.com/paultyng/terraform-provider-unifi).
